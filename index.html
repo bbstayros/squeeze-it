@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Squeeze It</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: Arial;
+      background: #111;
+      color: white;
+    }
+
+    #game {
+      display: grid;
+      grid-template-columns: repeat(4, 80px);
+      grid-template-rows: repeat(6, 80px);
+      gap: 5px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .cell {
+      background: #333;
+      border-radius: 10px;
+    }
+
+    .target {
+      background: red;
+      cursor: pointer;
+    }
+
+    #info {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Squeeze It</h1>
+
+<div id="info">
+  Score: <span id="score">0</span> |
+  Time: <span id="time">45</span>
+</div>
+
+<button onclick="startGame()">Start</button>
+
+<div id="game"></div>
+
+<script>
+  const game = document.getElementById("game");
+  const scoreDisplay = document.getElementById("score");
+  const timeDisplay = document.getElementById("time");
+
+  let score = 0;
+  let time = 45;
+  let interval;
+  let activeCell = null;
+
+  // Create grid
+  for (let i = 0; i < 24; i++) {
+    const cell = document.createElement("div");
+    cell.classList.add("cell");
+    game.appendChild(cell);
+  }
+
+  function randomTarget() {
+    const cells = document.querySelectorAll(".cell");
+    cells.forEach(c => c.classList.remove("target"));
+
+    const randomIndex = Math.floor(Math.random() * cells.length);
+    activeCell = cells[randomIndex];
+    activeCell.classList.add("target");
+
+    activeCell.onclick = () => {
+      score++;
+      scoreDisplay.textContent = score;
+      randomTarget();
+    };
+  }
+
+  function startGame() {
+    score = 0;
+    time = 45;
+    scoreDisplay.textContent = score;
+    timeDisplay.textContent = time;
+
+    randomTarget();
+
+    interval = setInterval(() => {
+      time--;
+      timeDisplay.textContent = time;
+
+      if (time <= 0) {
+        clearInterval(interval);
+        alert("Game Over! Score: " + score);
+      }
+    }, 1000);
+  }
+</script>
+
+</body>
+</html>
