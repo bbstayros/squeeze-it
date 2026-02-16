@@ -5,6 +5,9 @@ const scoreEl = document.getElementById("score");
 const timeEl = document.getElementById("time");
 const startBtn = document.getElementById("startBtn");
 const countdownEl = document.getElementById("countdown");
+const levelSelect = document.getElementById("levelSelect");
+const levelButtons = document.querySelectorAll(".level-btn");
+
 
 let W = 0, H = 0;
 
@@ -21,12 +24,21 @@ function resize() {
 }
 window.addEventListener("resize", resize);
 
+levelButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    difficulty = btn.dataset.level;
+
+    levelButtons.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+  });
+});
+
 let score = 0;
 let timeLeft = 45;
 let gameRunning = false;
 let playerFrozen = false;
 let freezeTimer = null;
-let difficulty = "hard"; // easy | medium | hard
+let difficulty = "null"; // easy | medium | hard
 let timeTimer = null;
 let rafId = null;
 
@@ -140,6 +152,8 @@ function tryHit(x, y) {
       if (e.type === "normal") {
         score += 10;
         scoreEl.textContent = score;
+        entities.splice(i, 1);
+        spawnEntity();
       }
 
       if (e.type === "shield") {
@@ -250,10 +264,15 @@ function endRound() {
 }
 
 startBtn.addEventListener("click", () => {
+  if (!difficulty) return;
+
+  levelSelect.style.display = "none";
+
   if (gameRunning) return;
   startBtn.disabled = true;
   startCountdownThenPlay();
 });
+
 
 // αρχικοποίηση
 resize();
