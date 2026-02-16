@@ -41,6 +41,8 @@ let freezeTimer = null;
 let difficulty = null; // easy | medium | hard
 let timeTimer = null;
 let rafId = null;
+let spawnTimer = 0;
+let spawnInterval = 500; // milliseconds
 
 // --- “Ανθρωπάκια” (προς το παρόν κύκλοι) ---
 const entities = [];
@@ -116,7 +118,6 @@ function spawnEntity() {
 
 function resetEntities() {
   entities.length = 0;
-  for (let i = 0; i < MAX_ENTITIES; i++) spawnEntity();
 }
 
 function update(dt) {
@@ -138,12 +139,12 @@ function update(dt) {
       entities.splice(i, 1);
     }
   }
+spawnTimer += dt * 1000;
 
-  // Μετά διατηρούμε πληθυσμό
-  while (entities.length < MAX_ENTITIES) {
-    spawnEntity();
-  }
-
+if (spawnTimer >= spawnInterval) {
+  spawnTimer = 0;
+  spawnEntity();
+}
   // Εγγύηση τουλάχιστον 1 normal
   let normalCount = entities.filter(e => e.type === "normal").length;
 
@@ -284,6 +285,7 @@ function startCountdownThenPlay() {
 
 function beginRound() {
   score = 0;
+  spawnTimer = 0;
   timeLeft = 45;
   scoreEl.textContent = score;
   timeEl.textContent = timeLeft;
@@ -301,6 +303,10 @@ function beginRound() {
     timeEl.textContent = timeLeft;
     if (timeLeft <= 0) endRound();
   }, 1000);
+
+  if (difficulty === "easy") spawnInterval = 700;
+if (difficulty === "medium") spawnInterval = 500;
+if (difficulty === "hard") spawnInterval = 350;
 }
 
 function endRound() {
