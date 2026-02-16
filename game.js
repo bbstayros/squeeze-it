@@ -104,6 +104,9 @@ function update(dt) {
     if (e.y < e.r) { e.y = e.r; e.vy *= -1; }
     if (e.y > H - e.r) { e.y = H - e.r; e.vy *= -1; }
   }
+  while (entities.length < MAX_ENTITIES) {
+  spawnEntity();
+  }
 }
 
 function draw() {
@@ -171,8 +174,6 @@ function tryHit(x, y) {
 
       // ΑΦΑΙΡΕΣΗ ΠΑΝΤΑ
       entities.splice(i, 1);
-      spawnEntity();
-
       return;
     }
   }
