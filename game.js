@@ -38,7 +38,7 @@ let timeLeft = 45;
 let gameRunning = false;
 let playerFrozen = false;
 let freezeTimer = null;
-let difficulty = "null"; // easy | medium | hard
+let difficulty = null; // easy | medium | hard
 let timeTimer = null;
 let rafId = null;
 
@@ -152,31 +152,31 @@ function tryHit(x, y) {
       if (e.type === "normal") {
         score += 10;
         scoreEl.textContent = score;
-        entities.splice(i, 1);
-        spawnEntity();
       }
 
       if (e.type === "shield") {
-        // δεν δίνει πόντους
+        // no score
       }
 
       if (e.type === "spike") {
-  activateFreeze();
+        activateFreeze();
+        timeLeft = Math.max(0, timeLeft - 2);
+        timeEl.textContent = timeLeft;
 
-  timeLeft = Math.max(0, timeLeft - 2);
-  timeEl.textContent = timeLeft;
+        if (timeLeft <= 0) {
+          endRound();
+          return;
+        }
+      }
 
-  if (timeLeft <= 0) {
-    endRound();
-    return;
-  }
-}
+      // ΑΦΑΙΡΕΣΗ ΠΑΝΤΑ
+      entities.splice(i, 1);
+      spawnEntity();
 
       return;
     }
   }
 }
-
 
 function onPointerDown(evt) {
   if (!gameRunning) return;
