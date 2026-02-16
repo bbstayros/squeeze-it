@@ -50,7 +50,7 @@
   Time: <span id="time">45</span>
 </div>
 
-<button onclick="startGame()">Start</button>
+<button id="startBtn" onclick="startGame()">Start</button>
 
 <div id="game"></div>
 
@@ -58,6 +58,7 @@
   const game = document.getElementById("game");
   const scoreDisplay = document.getElementById("score");
   const timeDisplay = document.getElementById("time");
+  const startBtn = document.getElementById("startBtn");
 
   let score = 0;
   let time = 45;
@@ -87,24 +88,27 @@
   }
 
   function startGame() {
-    score = 0;
-    time = 45;
-    scoreDisplay.textContent = score;
+  startBtn.disabled = true;
+
+  score = 0;
+  time = 45;
+  scoreDisplay.textContent = score;
+  timeDisplay.textContent = time;
+
+  randomTarget();
+
+  interval = setInterval(() => {
+    time--;
     timeDisplay.textContent = time;
 
-    randomTarget();
-
-    interval = setInterval(() => {
-      time--;
-      timeDisplay.textContent = time;
-
-      if (time <= 0) {
-        clearInterval(interval);
-        alert("Game Over! Score: " + score);
-      }
-    }, 1000);
-  }
+    if (time <= 0) {
+      clearInterval(interval);
+      startBtn.disabled = false;
+      alert("Game Over! Score: " + score);
+    }
+  }, 1000);
+}
 </script>
-
+  
 </body>
 </html>
