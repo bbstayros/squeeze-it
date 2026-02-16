@@ -64,6 +64,7 @@
   let time = 45;
   let interval;
   let activeCell = null;
+  let gameRunning = false;
 
   // Create grid
   for (let i = 0; i < 24; i++) {
@@ -87,7 +88,9 @@
     };
   }
 
-  function startGame() {
+function startGame() {
+  if (gameRunning) return;  
+  gameRunning = true;
   startBtn.disabled = true;
 
   score = 0;
@@ -95,6 +98,7 @@
   scoreDisplay.textContent = score;
   timeDisplay.textContent = time;
 
+  clearInterval(interval);  
   randomTarget();
 
   interval = setInterval(() => {
@@ -103,12 +107,13 @@
 
     if (time <= 0) {
       clearInterval(interval);
+      gameRunning = false;
       startBtn.disabled = false;
       alert("Game Over! Score: " + score);
     }
   }, 1000);
 }
-</script>
   
+</script>
 </body>
 </html>
