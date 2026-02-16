@@ -24,6 +24,9 @@ window.addEventListener("resize", resize);
 let score = 0;
 let timeLeft = 45;
 let gameRunning = false;
+let playerFrozen = false;
+let freezeTimer = null;
+let difficulty = "hard"; // easy | medium | hard
 let timeTimer = null;
 let rafId = null;
 
@@ -34,6 +37,26 @@ const BASE_SPEED = 140;    // px/sec
 const MAX_ENTITIES = 8;    // ξεκινάμε χαμηλά
 
 function rand(min, max) { return Math.random() * (max - min) + min; }
+
+function getRandomType() {
+  const r = Math.random();
+
+  if (difficulty === "easy") {
+    return "normal";
+  }
+
+  if (difficulty === "medium") {
+    return r < 0.7 ? "normal" : "shield";
+  }
+
+  if (difficulty === "hard") {
+    if (r < 0.6) return "normal";
+    if (r < 0.85) return "shield";
+    return "spike";
+  }
+
+  return "normal";
+}
 
 function spawnEntity() {
   // τυχαίο σημείο μέσα στα όρια
@@ -49,7 +72,7 @@ function spawnEntity() {
     vx: Math.cos(angle) * speed,
     vy: Math.sin(angle) * speed,
     r: ENTITY_R,
-    type: "normal" // αργότερα: shield / spike
+    type: getRandomType() // Random: normal / shield / spike
   });
 }
 
@@ -83,7 +106,10 @@ function draw() {
     // normal = κόκκινο (προς το παρόν)
     ctx.beginPath();
     ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2);
-    ctx.fillStyle = (e.type === "normal") ? "#ff3b30" : "#34c759";
+    if (e.type === "normal") ctx.fillStyle = "#ff3b30";
+    if (e.type === "shield") ctx.fillStyle = "#ffd60a";
+    if (e.type === "spike") ctx.fillStyle = "#ff006e";
+
     ctx.fill();
 
     // μικρή “λάμψη” για να φαίνεται πιο game
@@ -103,29 +129,53 @@ function getPointerPos(evt) {
 }
 
 function tryHit(x, y) {
-  // βρίσκουμε τον “κοντινότερο” στόχο που πατήθηκε
+  if (playerFrozen) return;
+
   for (let i = entities.length - 1; i >= 0; i--) {
     const e = entities[i];
     const dx = x - e.x, dy = y - e.y;
-    if (dx*dx + dy*dy <= e.r*e.r) {
-      // hit
-      score += 10;
-      scoreEl.textContent = score;
 
-      // μικρό “push” για feedback
-      e.vx *= 1.06;
-      e.vy *= 1.06;
+    if (dx*dx + dy*dy <= e.r*e.r) {
+
+      if (e.type === "normal") {
+        score += 10;
+        scoreEl.textContent = score;
+      }
+
+      if (e.type === "shield") {
+        // δεν δίνει πόντους
+      }
+
+      if (e.type === "spike") {
+        activateFreeze();
+        timeLeft = Math.max(0, timeLeft - 2);
+        timeEl.textContent = timeLeft;
+      }
 
       return;
     }
   }
 }
 
+
 function onPointerDown(evt) {
   if (!gameRunning) return;
   evt.preventDefault();
   const p = getPointerPos(evt);
   tryHit(p.x, p.y);
+}
+
+function activateFreeze() {
+  playerFrozen = true;
+
+  canvas.style.filter = "grayscale(1) blur(2px)";
+
+  if (freezeTimer) clearTimeout(freezeTimer);
+
+  freezeTimer = setTimeout(() => {
+    playerFrozen = false;
+    canvas.style.filter = "none";
+  }, 800);
 }
 
 canvas.addEventListener("mousedown", onPointerDown);
