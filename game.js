@@ -147,10 +147,16 @@ function tryHit(x, y) {
       }
 
       if (e.type === "spike") {
-        activateFreeze();
-        timeLeft = Math.max(0, timeLeft - 2);
-        timeEl.textContent = timeLeft;
-      }
+  activateFreeze();
+
+  timeLeft = Math.max(0, timeLeft - 2);
+  timeEl.textContent = timeLeft;
+
+  if (timeLeft <= 0) {
+    endRound();
+    return;
+  }
+}
 
       return;
     }
