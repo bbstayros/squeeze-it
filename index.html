@@ -86,9 +86,6 @@
     activeCell.onclick = () => {
       score++;
       scoreDisplay.textContent = score;
-      targetInterval = setInterval(() => {
-  randomTarget();
-}, 800);
     };
   }
 
@@ -104,6 +101,11 @@ function startGame() {
 
   clearInterval(interval);  
   randomTarget();
+
+clearInterval(targetInterval);
+targetInterval = setInterval(() => {
+  randomTarget();
+}, 800);
 
   interval = setInterval(() => {
     time--;
