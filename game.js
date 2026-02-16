@@ -107,6 +107,13 @@ function update(dt) {
   while (entities.length < MAX_ENTITIES) {
   spawnEntity();
   }
+  let normalCount = entities.filter(e => e.type === "normal").length;
+
+if (normalCount === 0) {
+  // Βρίσκουμε ένα random entity και το κάνουμε normal
+  const randomIndex = Math.floor(Math.random() * entities.length);
+  entities[randomIndex].type = "normal";
+   }
 }
 
 function draw() {
