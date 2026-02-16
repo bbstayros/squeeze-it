@@ -71,20 +71,46 @@ function getRandomType() {
 }
 
 function spawnEntity() {
-  // τυχαίο σημείο μέσα στα όρια
-  const x = rand(ENTITY_R, W - ENTITY_R);
-  const y = rand(ENTITY_R, H - ENTITY_R);
+  const side = Math.floor(Math.random() * 4);
+  const speed = BASE_SPEED * rand(0.8, 1.2);
 
-  // τυχαία διεύθυνση
-  const angle = rand(0, Math.PI * 2);
-  const speed = BASE_SPEED * rand(0.75, 1.15);
+  let x, y, vx, vy;
+
+  if (side === 0) { // from LEFT
+    x = -ENTITY_R;
+    y = rand(ENTITY_R, H - ENTITY_R);
+    vx = speed;
+    vy = rand(-20, 20);
+  }
+
+  if (side === 1) { // from RIGHT
+    x = W + ENTITY_R;
+    y = rand(ENTITY_R, H - ENTITY_R);
+    vx = -speed;
+    vy = rand(-20, 20);
+  }
+
+  if (side === 2) { // from TOP
+    x = rand(ENTITY_R, W - ENTITY_R);
+    y = -ENTITY_R;
+    vx = rand(-20, 20);
+    vy = speed;
+  }
+
+  if (side === 3) { // from BOTTOM
+    x = rand(ENTITY_R, W - ENTITY_R);
+    y = H + ENTITY_R;
+    vx = rand(-20, 20);
+    vy = -speed;
+  }
 
   entities.push({
-    x, y,
-    vx: Math.cos(angle) * speed,
-    vy: Math.sin(angle) * speed,
+    x,
+    y,
+    vx,
+    vy,
     r: ENTITY_R,
-    type: getRandomType() // Random: normal / shield / spike
+    type: getRandomType()
   });
 }
 
@@ -94,26 +120,37 @@ function resetEntities() {
 }
 
 function update(dt) {
-  // κίνηση + αναπήδηση στα όρια (αίσθηση “τρέχει μέσα στην οθόνη”)
-  for (const e of entities) {
+
+  // Πρώτα κίνηση & removal
+  for (let i = entities.length - 1; i >= 0; i--) {
+    const e = entities[i];
+
     e.x += e.vx * dt;
     e.y += e.vy * dt;
 
-    if (e.x < e.r) { e.x = e.r; e.vx *= -1; }
-    if (e.x > W - e.r) { e.x = W - e.r; e.vx *= -1; }
-    if (e.y < e.r) { e.y = e.r; e.vy *= -1; }
-    if (e.y > H - e.r) { e.y = H - e.r; e.vy *= -1; }
+    // Αν βγει από οθόνη, αφαιρείται
+    if (
+      e.x < -e.r - 10 ||
+      e.x > W + e.r + 10 ||
+      e.y < -e.r - 10 ||
+      e.y > H + e.r + 10
+    ) {
+      entities.splice(i, 1);
+    }
   }
+
+  // Μετά διατηρούμε πληθυσμό
   while (entities.length < MAX_ENTITIES) {
-  spawnEntity();
+    spawnEntity();
   }
+
+  // Εγγύηση τουλάχιστον 1 normal
   let normalCount = entities.filter(e => e.type === "normal").length;
 
-if (normalCount === 0) {
-  // Βρίσκουμε ένα random entity και το κάνουμε normal
-  const randomIndex = Math.floor(Math.random() * entities.length);
-  entities[randomIndex].type = "normal";
-   }
+  if (normalCount === 0 && entities.length > 0) {
+    const randomIndex = Math.floor(Math.random() * entities.length);
+    entities[randomIndex].type = "normal";
+  }
 }
 
 function draw() {
