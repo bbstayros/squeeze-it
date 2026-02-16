@@ -192,21 +192,28 @@ function tryHit(x, y) {
 
   for (let i = entities.length - 1; i >= 0; i--) {
     const e = entities[i];
-    const dx = x - e.x, dy = y - e.y;
+    const dx = x - e.x;
+    const dy = y - e.y;
 
-    if (dx*dx + dy*dy <= e.r*e.r) {
+    if (dx * dx + dy * dy <= e.r * e.r) {
 
+      // NORMAL → σκοράρει & φεύγει
       if (e.type === "normal") {
         score += 10;
         scoreEl.textContent = score;
+
+        entities.splice(i, 1);
       }
 
+      // SHIELD → δεν φεύγει
       if (e.type === "shield") {
-        // no score
+        // ίσως αργότερα βάλουμε animation "block"
       }
 
+      // SPIKE → freeze & -2 sec, αλλά ΔΕΝ φεύγει
       if (e.type === "spike") {
         activateFreeze();
+
         timeLeft = Math.max(0, timeLeft - 2);
         timeEl.textContent = timeLeft;
 
@@ -216,8 +223,6 @@ function tryHit(x, y) {
         }
       }
 
-      // ΑΦΑΙΡΕΣΗ ΠΑΝΤΑ
-      entities.splice(i, 1);
       return;
     }
   }
