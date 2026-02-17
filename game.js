@@ -134,7 +134,16 @@ function update(dt) {
 } 
     e.x += e.vx * dt;
     e.y += e.vy * dt;
-
+// ✅ ΑΦΑΙΡΕΣΗ ΑΝ ΒΓΕΙ ΕΚΤΟΣ ΟΘΟΝΗΣ
+  if (
+    e.x < -e.r - 20 ||
+    e.x > W + e.r + 20 ||
+    e.y < -e.r - 20 ||
+    e.y > H + e.r + 20
+  ) {
+    entities.splice(i, 1);
+    continue;
+  }
      }
 spawnTimer += dt * 1000;
 
