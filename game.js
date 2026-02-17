@@ -437,6 +437,9 @@ function beginRound() {
   }, 1000);
 }
 
+function calculateGems(score) {
+  return Math.floor(score / 100);
+}
 function endRound() {
   gameRunning = false;
 
@@ -447,15 +450,19 @@ function endRound() {
   totalGems += earnedGems;
 
   localStorage.setItem("squeeze_gems", totalGems);
+
   startBtn.disabled = false;
 
-  alert(
-    "Game Over!\n" +
-    "Score: " + score +
-    "\nYou earned: " + earnedGems + " Gems" +
-    "\nTotal Gems: " + totalGems
-  );
+  setTimeout(() => {
+    alert(
+      "Game Over!\n" +
+      "Score: " + score +
+      "\nYou earned: " + earnedGems + " Gems" +
+      "\nTotal Gems: " + totalGems
+    );
+  }, 50);
 }
+
 
 startBtn.addEventListener("click", () => {
   if (!difficulty) return;
