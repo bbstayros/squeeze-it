@@ -53,6 +53,8 @@ let spawnInterval = 500; // ms
 let combo = 0;
 let comboTimer = 0;
 let comboTimeout = 1.2; // seconds
+let totalGems = parseInt(localStorage.getItem("squeeze_gems")) || 0;
+let earnedGems = 0;
 
 // --- “Ανθρωπάκια” (προς το παρόν κύκλοι) ---
 const entities = [];
@@ -437,12 +439,22 @@ function beginRound() {
 
 function endRound() {
   gameRunning = false;
+
   if (rafId) cancelAnimationFrame(rafId);
   if (timeTimer) clearInterval(timeTimer);
 
+  earnedGems = calculateGems(score);
+  totalGems += earnedGems;
+
+  localStorage.setItem("squeeze_gems", totalGems);
   startBtn.disabled = false;
 
-  alert("Game Over! Score: " + score);
+  alert(
+    "Game Over!\n" +
+    "Score: " + score +
+    "\nYou earned: " + earnedGems + " Gems" +
+    "\nTotal Gems: " + totalGems
+  );
 }
 
 startBtn.addEventListener("click", () => {
