@@ -43,6 +43,9 @@ let timeTimer = null;
 let rafId = null;
 let spawnTimer = 0;
 let spawnInterval = 500; // milliseconds
+let combo = 0;
+let comboTimer = 0;
+let comboTimeout = 1.2; // seconds
 
 // --- “Ανθρωπάκια” (προς το παρόν κύκλοι) ---
 const entities = [];
@@ -122,6 +125,14 @@ function resetEntities() {
 
 function update(dt) {
 
+      // Combo decay
+if (combo > 0) {
+  comboTimer -= dt;
+  if (comboTimer <= 0) {
+    combo = 0;
+  }
+}
+ 
   // Πρώτα κίνηση & removal
   for (let i = entities.length - 1; i >= 0; i--) {
     const e = entities[i];
@@ -132,6 +143,7 @@ function update(dt) {
     continue;
   }
 } 
+
     e.x += e.vx * dt;
     e.y += e.vy * dt;
 // ✅ ΑΦΑΙΡΕΣΗ ΑΝ ΒΓΕΙ ΕΚΤΟΣ ΟΘΟΝΗΣ
@@ -238,7 +250,17 @@ function tryHit(x, y) {
 
       // NORMAL → σκοράρει & φεύγει
       if (e.type === "normal") {
-  score += 10;
+
+  combo++;
+  comboTimer = comboTimeout;
+
+  let multiplier = 1;
+
+  if (combo >= 20) multiplier = 4;
+  else if (combo >= 10) multiplier = 3;
+  else if (combo >= 5) multiplier = 2;
+
+  score += 10 * multiplier;
   scoreEl.textContent = score;
 
   hitEffects.push({
@@ -249,16 +271,29 @@ function tryHit(x, y) {
   });
 
   e.hit = true;
-  e.hitTimer = 0.12; // λίγο πιο smooth
+  e.hitTimer = 0.12;
 }
 
       // SHIELD → δεν φεύγει
       if (e.type === "shield") {
-        // ίσως αργότερα βάλουμε animation "block"
+        combo = 0;
+hitEffects.push({
+  x: W / 2,
+  y: 60,
+  radius: 20,
+  alpha: 0.6
+});
       }
 
       // SPIKE → freeze & -2 sec, αλλά ΔΕΝ φεύγει
       if (e.type === "spike") {
+        combo = 0;
+hitEffects.push({
+  x: W / 2,
+  y: 60,
+  radius: 20,
+  alpha: 0.6
+});
         activateFreeze();
 
         timeLeft = Math.max(0, timeLeft - 2);
