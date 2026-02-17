@@ -7,7 +7,7 @@ const startBtn = document.getElementById("startBtn");
 const countdownEl = document.getElementById("countdown");
 const levelSelect = document.getElementById("levelSelect");
 const levelButtons = document.querySelectorAll(".level-btn");
-
+const hitEffects = [];
 
 let W = 0, H = 0;
 
@@ -125,20 +125,17 @@ function update(dt) {
   // Πρώτα κίνηση & removal
   for (let i = entities.length - 1; i >= 0; i--) {
     const e = entities[i];
-
+    if (e.hit) {
+  e.hitTimer -= dt;
+  if (e.hitTimer <= 0) {
+    entities.splice(i, 1);
+    continue;
+  }
+} 
     e.x += e.vx * dt;
     e.y += e.vy * dt;
 
-    // Αν βγει από οθόνη, αφαιρείται
-    if (
-      e.x < -e.r - 10 ||
-      e.x > W + e.r + 10 ||
-      e.y < -e.r - 10 ||
-      e.y > H + e.r + 10
-    ) {
-      entities.splice(i, 1);
-    }
-  }
+     }
 spawnTimer += dt * 1000;
 
 if (spawnTimer >= spawnInterval) {
@@ -152,31 +149,63 @@ if (spawnTimer >= spawnInterval) {
     const randomIndex = Math.floor(Math.random() * entities.length);
     entities[randomIndex].type = "normal";
   }
+  for (let i = hitEffects.length - 1; i >= 0; i--) {
+  const h = hitEffects[i];
+
+  h.radius += 200 * dt;
+  h.alpha -= 2 * dt;
+
+  if (h.alpha <= 0) {
+    hitEffects.splice(i, 1);
+  }
+}
 }
 
 function draw() {
   ctx.clearRect(0, 0, W, H);
 
-  // φόντο “αρένα”
+  // Φόντο
   ctx.fillStyle = "#151a22";
   ctx.fillRect(0, 0, W, H);
 
-  // ζωγραφίζουμε “στόχους”
+  // Entities
   for (const e of entities) {
-    // normal = κόκκινο (προς το παρόν)
+
+    let scale = 1;
+
+    if (e.hit) {
+      scale = 1 + (e.hitTimer * 6); // πιο έντονο pop
+    }
+
     ctx.beginPath();
-    ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2);
+    ctx.arc(e.x, e.y, e.r * scale, 0, Math.PI * 2);
+
     if (e.type === "normal") ctx.fillStyle = "#ff3b30";
     if (e.type === "shield") ctx.fillStyle = "#ffd60a";
     if (e.type === "spike") ctx.fillStyle = "#ff006e";
 
     ctx.fill();
 
-    // μικρή “λάμψη” για να φαίνεται πιο game
+    // highlight
     ctx.beginPath();
-    ctx.arc(e.x - e.r * 0.25, e.y - e.r * 0.25, e.r * 0.35, 0, Math.PI * 2);
+    ctx.arc(
+      e.x - e.r * 0.25,
+      e.y - e.r * 0.25,
+      e.r * 0.35 * scale,
+      0,
+      Math.PI * 2
+    );
     ctx.fillStyle = "rgba(255,255,255,0.25)";
     ctx.fill();
+  }
+
+  // Hit ring effects
+  for (const h of hitEffects) {
+    ctx.beginPath();
+    ctx.arc(h.x, h.y, h.radius, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(255,255,255,${h.alpha})`;
+    ctx.lineWidth = 3;
+    ctx.stroke();
   }
 }
 
@@ -200,11 +229,19 @@ function tryHit(x, y) {
 
       // NORMAL → σκοράρει & φεύγει
       if (e.type === "normal") {
-        score += 10;
-        scoreEl.textContent = score;
+  score += 10;
+  scoreEl.textContent = score;
 
-        entities.splice(i, 1);
-      }
+  hitEffects.push({
+    x: e.x,
+    y: e.y,
+    radius: 10,
+    alpha: 1
+  });
+
+  e.hit = true;
+  e.hitTimer = 0.12; // λίγο πιο smooth
+}
 
       // SHIELD → δεν φεύγει
       if (e.type === "shield") {
