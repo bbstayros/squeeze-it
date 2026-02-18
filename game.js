@@ -13,6 +13,8 @@ const closeShop = document.getElementById("closeShop");
 const themeList = document.getElementById("themeList");
 const shopOverlay = document.getElementById("shopOverlay");
 const gemCount = document.getElementById("gemCount");
+const DAILY_REWARD_AMOUNT = 50;
+const DAILY_REWARD_KEY = "squeeze_daily_last_claim";
 const hitEffects = [];
 const floatingTexts = [];
 
@@ -86,6 +88,28 @@ const themes = {
     unlocked: false
   }
 };
+
+// ===== Συνάρτηση ελέγχου =====
+function canClaimDailyReward() {
+  const lastClaim = localStorage.getItem(DAILY_REWARD_KEY);
+  if (!lastClaim) return true;
+
+  const now = Date.now();
+  const diff = now - parseInt(lastClaim);
+
+  return diff >= 24 * 60 * 60 * 1000; // 24 ώρες
+}
+
+// ===== Claim Function =====
+function claimDailyReward() {
+  if (!canClaimDailyReward()) return;
+
+  totalGems += DAILY_REWARD_AMOUNT;
+  localStorage.setItem("squeeze_gems", totalGems);
+  localStorage.setItem(DAILY_REWARD_KEY, Date.now());
+
+  renderShop();
+}
 
 // ===== unlocks από localStorage =====
 function loadThemeUnlocks() {
@@ -245,11 +269,34 @@ closeShop.addEventListener("click", () => {
 
 // Render Shop
 function renderShop() {
-
-  gemCount.textContent = totalGems;   // 🔥 προσθήκη
-
+  gemCount.textContent = totalGems;
   themeList.innerHTML = "";
 
+  // ===== DAILY REWARD BLOCK =====
+  const dailyDiv = document.createElement("div");
+  dailyDiv.className = "theme-item";
+
+  const dailyText = document.createElement("strong");
+  dailyText.textContent = "Daily Reward";
+
+  const dailyBtn = document.createElement("button");
+
+  if (canClaimDailyReward()) {
+    dailyBtn.textContent = "Claim +50 💎";
+    dailyBtn.onclick = () => {
+      claimDailyReward();
+      renderShop();
+    };
+  } else {
+    dailyBtn.textContent = "Come back tomorrow";
+    dailyBtn.disabled = true;
+  }
+
+  dailyDiv.appendChild(dailyText);
+  dailyDiv.appendChild(dailyBtn);
+  themeList.appendChild(dailyDiv);
+
+  // ===== THEMES =====
   for (let key in themes) {
     const theme = themes[key];
 
@@ -265,7 +312,6 @@ function renderShop() {
       btn.textContent = "Buy (" + theme.price + " 💎)";
       btn.onclick = () => {
         buyTheme(key);
-        alert("Unlocked " + theme.name + "!");
         renderShop();
       };
     } else if (currentTheme.name === theme.name) {
