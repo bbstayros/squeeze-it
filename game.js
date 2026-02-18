@@ -15,6 +15,13 @@ const shopOverlay = document.getElementById("shopOverlay");
 const gemCount = document.getElementById("gemCount");
 const DAILY_REWARD_AMOUNT = 50;
 const DAILY_REWARD_KEY = "squeeze_daily_last_claim";
+
+// ===== ECONOMY SYSTEM =====
+const DAILY_REWARD_KEY = "squeeze_daily_last_claim";
+const STREAK_KEY = "squeeze_daily_streak";
+const AD_REWARD_AMOUNT = 100;
+const STREAK_REWARDS = [50, 60, 75, 90, 110, 150, 250];
+
 const hitEffects = [];
 const floatingTexts = [];
 
@@ -155,21 +162,13 @@ function buyTheme(themeKey) {
     theme.unlocked = true;
     saveThemeUnlocks();
     localStorage.setItem("squeeze_gems", totalGems);
-    alert("Unlocked " + theme.name + "!");
-  } else {
-    alert("Not enough gems!");
-  }
+  } 
 }
 
 // ===== Equip Function =====
 function equipTheme(themeKey) {
   const theme = themes[themeKey];
   if (!theme) return;
-
-  if (!theme.unlocked) {
-    alert("Theme locked!");
-    return;
-  }
 
   currentTheme = theme;
   localStorage.setItem("squeeze_equipped_theme", themeKey);
@@ -267,26 +266,81 @@ closeShop.addEventListener("click", () => {
   shopPanel.classList.add("hidden");
 });
 
+// TOAST SYSTEM
+function showToast(text) {
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = text;
+  document.body.appendChild(toast);
+
+  setTimeout(() => toast.classList.add("show"), 10);
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 300);
+  }, 2000);
+}
+
+// Daily + Streak Logic
+function canClaimDailyReward() {
+  const lastClaim = localStorage.getItem(DAILY_REWARD_KEY);
+  if (!lastClaim) return true;
+
+  return Date.now() - parseInt(lastClaim) >= 24 * 60 * 60 * 1000;
+}
+
+function claimDailyReward() {
+  if (!canClaimDailyReward()) return;
+
+  let streak = parseInt(localStorage.getItem(STREAK_KEY)) || 0;
+
+  streak++;
+  if (streak > 7) streak = 1;
+
+  const reward = STREAK_REWARDS[streak - 1];
+
+  totalGems += reward;
+
+  localStorage.setItem("squeeze_gems", totalGems);
+  localStorage.setItem(DAILY_REWARD_KEY, Date.now());
+  localStorage.setItem(STREAK_KEY, streak);
+
+  showToast("Day " + streak + " Reward: +" + reward + " 💎");
+
+  renderShop();
+}
+
+// Rewarded Ad Simulation
+function watchAdReward() {
+  showToast("Watching Ad...");
+  
+  setTimeout(() => {
+    totalGems += AD_REWARD_AMOUNT;
+    localStorage.setItem("squeeze_gems", totalGems);
+    showToast("Ad Reward: +100 💎");
+    renderShop();
+  }, 1500);
+}
+
 // Render Shop
 function renderShop() {
   gemCount.textContent = totalGems;
   themeList.innerHTML = "";
 
-  // ===== DAILY REWARD BLOCK =====
+  // ===== DAILY + STREAK =====
   const dailyDiv = document.createElement("div");
   dailyDiv.className = "theme-item";
 
+  const streak = parseInt(localStorage.getItem(STREAK_KEY)) || 0;
+
   const dailyText = document.createElement("strong");
-  dailyText.textContent = "Daily Reward";
+  dailyText.textContent = "Daily Reward (Day " + (streak || 1) + ")";
 
   const dailyBtn = document.createElement("button");
 
   if (canClaimDailyReward()) {
-    dailyBtn.textContent = "Claim +50 💎";
-    dailyBtn.onclick = () => {
-      claimDailyReward();
-      renderShop();
-    };
+    dailyBtn.textContent = "Claim 💎";
+    dailyBtn.onclick = claimDailyReward;
   } else {
     dailyBtn.textContent = "Come back tomorrow";
     dailyBtn.disabled = true;
@@ -295,6 +349,21 @@ function renderShop() {
   dailyDiv.appendChild(dailyText);
   dailyDiv.appendChild(dailyBtn);
   themeList.appendChild(dailyDiv);
+
+  // ===== AD REWARD =====
+  const adDiv = document.createElement("div");
+  adDiv.className = "theme-item";
+
+  const adText = document.createElement("strong");
+  adText.textContent = "Watch Ad";
+
+  const adBtn = document.createElement("button");
+  adBtn.textContent = "+100 💎";
+  adBtn.onclick = watchAdReward;
+
+  adDiv.appendChild(adText);
+  adDiv.appendChild(adBtn);
+  themeList.appendChild(adDiv);
 
   // ===== THEMES =====
   for (let key in themes) {
@@ -679,15 +748,7 @@ function endRound() {
   localStorage.setItem("squeeze_gems", totalGems);
 
   startBtn.disabled = false;
-
-  setTimeout(() => {
-    alert(
-      "Game Over!\n" +
-      "Score: " + score +
-      "\nYou earned: " + earnedGems + " Gems" +
-      "\nTotal Gems: " + totalGems
-    );
-  }, 50);
+, 50);
 }
 
 
