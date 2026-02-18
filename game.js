@@ -11,8 +11,11 @@ const shopBtn = document.getElementById("shopBtn");
 const shopPanel = document.getElementById("shopPanel");
 const closeShop = document.getElementById("closeShop");
 const themeList = document.getElementById("themeList");
+const shopOverlay = document.getElementById("shopOverlay");
+const gemCount = document.getElementById("gemCount");
 const hitEffects = [];
 const floatingTexts = [];
+
 
 let W = 0,
   H = 0;
@@ -222,7 +225,18 @@ function resetEntities() {
 // Shop open / close logic
 shopBtn.addEventListener("click", () => {
   renderShop();
+  shopOverlay.classList.remove("hidden");
   shopPanel.classList.remove("hidden");
+});
+
+closeShop.addEventListener("click", () => {
+  shopOverlay.classList.add("hidden");
+  shopPanel.classList.add("hidden");
+});
+
+shopOverlay.addEventListener("click", () => {
+  shopOverlay.classList.add("hidden");
+  shopPanel.classList.add("hidden");
 });
 
 closeShop.addEventListener("click", () => {
@@ -231,6 +245,9 @@ closeShop.addEventListener("click", () => {
 
 // Render Shop
 function renderShop() {
+
+  gemCount.textContent = totalGems;   // 🔥 προσθήκη
+
   themeList.innerHTML = "";
 
   for (let key in themes) {
@@ -245,9 +262,10 @@ function renderShop() {
     const btn = document.createElement("button");
 
     if (!theme.unlocked) {
-      btn.textContent = "Buy (" + theme.price + "💎)";
+      btn.textContent = "Buy (" + theme.price + " 💎)";
       btn.onclick = () => {
         buyTheme(key);
+        alert("Unlocked " + theme.name + "!");
         renderShop();
       };
     } else if (currentTheme.name === theme.name) {
