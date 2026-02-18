@@ -84,7 +84,34 @@ function getRandomType() {
 function spawnEntity() {
   const side = Math.floor(Math.random() * 4);
   const speed = BASE_SPEED * rand(0.8, 1.2);
+  const themes = {
+  classic: {
+    name: "classic",
+    bg: "#151a22",
+    normal: "#ff3b30",
+    shield: "#ffd60a",
+    spike: "#ff006e"
+  },
+  zombie: {
+    name: "zombie",
+    bg: "#0f1a12",
+    normal: "#4caf50",
+    shield: "#8bc34a",
+    spike: "#2e7d32"
+  }
+};
 
+let currentTheme = themes.classic;
+
+  window.addEventListener("keydown", (e) => {
+  if (e.key === "t") {
+    currentTheme =
+      currentTheme.name === "classic"
+        ? themes.zombie
+        : themes.classic;
+  }
+});
+  
   let x, y, vx, vy;
 
   if (side === 0) {
@@ -206,7 +233,7 @@ function draw() {
   ctx.clearRect(0, 0, W, H);
 
   // Φόντο
-  ctx.fillStyle = "#151a22";
+  ctx.fillStyle = currentTheme.bg;
   ctx.fillRect(0, 0, W, H);
 
   // Entities
@@ -218,11 +245,7 @@ for (const e of entities) {
 
   // fake walk bounce
   const bounce = Math.sin(e.walkPhase) * 3;
-
-  const bodyColor =
-    e.type === "normal" ? "#ff3b30" :
-    e.type === "shield" ? "#ffd60a" :
-    "#ff006e";
+  const bodyColor = currentTheme[e.type];
 
   // SHADOW
   ctx.beginPath();
@@ -241,9 +264,16 @@ for (const e of entities) {
   ctx.fill();
 
   // HEAD
-  ctx.beginPath();
-  ctx.arc(0, -10, 7, 0, Math.PI * 2);
-  ctx.fill();
+ctx.beginPath();
+ctx.arc(0, -10, 7, 0, Math.PI * 2);
+ctx.fill();
+
+// Zombie eyes
+if (currentTheme.name === "zombie") {
+  ctx.fillStyle = "black";
+  ctx.fillRect(-3, -12, 2, 2);
+  ctx.fillRect(1, -12, 2, 2);
+}
 
   // LEGS
   const legOffset = Math.sin(e.walkPhase) * 4;
