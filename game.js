@@ -60,23 +60,46 @@ let earnedGems = 0;
 const entities = [];
 
 // ===== THEME SYSTEM =====
-
 const themes = {
   classic: {
     name: "classic",
     bg: "#151a22",
     normal: "#ff3b30",
     shield: "#ffd60a",
-    spike: "#ff006e"
+    spike: "#ff006e",
+    price: 0,
+    unlocked: true
   },
   zombie: {
     name: "zombie",
     bg: "#0f1a12",
     normal: "#4caf50",
     shield: "#8bc34a",
-    spike: "#2e7d32"
+    spike: "#2e7d32",
+    price: 300,
+    unlocked: false
   }
 };
+
+// ===== unlocks από localStorage =====
+function loadThemeUnlocks() {
+  const saved = JSON.parse(localStorage.getItem("squeeze_theme_unlocks"));
+  if (!saved) return;
+
+  for (let key in saved) {
+    if (themes[key]) {
+      themes[key].unlocked = saved[key];
+    }
+  }
+}
+
+function saveThemeUnlocks() {
+  const data = {};
+  for (let key in themes) {
+    data[key] = themes[key].unlocked;
+  }
+  localStorage.setItem("squeeze_theme_unlocks", JSON.stringify(data));
+}
 
 let currentTheme = themes.classic;
 
@@ -89,6 +112,38 @@ window.addEventListener("keydown", (e) => {
         : themes.classic;
   }
 });
+
+// ===== Buy Theme Function =====
+function buyTheme(themeKey) {
+  const theme = themes[themeKey];
+  if (!theme) return;
+
+  if (theme.unlocked) return;
+
+  if (totalGems >= theme.price) {
+    totalGems -= theme.price;
+    theme.unlocked = true;
+    saveThemeUnlocks();
+    localStorage.setItem("squeeze_gems", totalGems);
+    alert("Unlocked " + theme.name + "!");
+  } else {
+    alert("Not enough gems!");
+  }
+}
+
+// ===== Equip Function =====
+function equipTheme(themeKey) {
+  const theme = themes[themeKey];
+  if (!theme) return;
+
+  if (!theme.unlocked) {
+    alert("Theme locked!");
+    return;
+  }
+
+  currentTheme = theme;
+  localStorage.setItem("squeeze_equipped_theme", themeKey);
+}
 
 const ENTITY_R = 22; // μέγεθος “στόχου”
 const BASE_SPEED = 140; // px/sec
@@ -532,6 +587,16 @@ startBtn.addEventListener("click", () => {
   startCountdownThenPlay();
 });
 
+function loadEquippedTheme() {
+  const saved = localStorage.getItem("squeeze_equipped_theme");
+  if (saved && themes[saved] && themes[saved].unlocked) {
+    currentTheme = themes[saved];
+  }
+}
+
+
 // init
+loadThemeUnlocks();
+loadEquippedTheme();
 resize();
 draw();
