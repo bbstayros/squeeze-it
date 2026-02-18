@@ -117,17 +117,6 @@ function spawnEntity() {
   const side = Math.floor(Math.random() * 4);
   const speed = BASE_SPEED * rand(0.8, 1.2);
 
-let currentTheme = themes.classic;
-
-  window.addEventListener("keydown", (e) => {
-  if (e.key === "t") {
-    currentTheme =
-      currentTheme.name === "classic"
-        ? themes.zombie
-        : themes.classic;
-  }
-});
-  
   let x, y, vx, vy;
 
   if (side === 0) {
