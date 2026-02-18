@@ -113,7 +113,7 @@ function spawnEntity() {
     vy = -speed;
   }
 
-  entities.push({
+ entities.push({
   x,
   y,
   vx,
