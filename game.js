@@ -114,16 +114,16 @@ function spawnEntity() {
   }
 
   entities.push({
-    x,
-    y,
-    vx,
-    vy,
-    r: ENTITY_R,
-    type: getRandomType(),
-    hit: false,
-    hitTimer: 0
-    walkPhase: Math.random() * Math.PI * 2
-  });
+  x,
+  y,
+  vx,
+  vy,
+  r: ENTITY_R,
+  type: getRandomType(),
+  hit: false,
+  hitTimer: 0,
+  walkPhase: Math.random() * Math.PI * 2
+});
 }
 
 function resetEntities() {
