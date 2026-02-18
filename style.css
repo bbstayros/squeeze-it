@@ -99,34 +99,6 @@ canvas#game{
 }
 
 /* ================= SHOP PANEL ================= */
-
-.shop-panel{
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.65);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index: 100;
-}
-
-.shop-panel > div,
-#shopPanel{
-  background: linear-gradient(145deg, #1b1f27, #11141a);
-  width: 320px;
-  max-height: 80vh;
-  overflow-y: auto;
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-  animation: shopPop 0.25s ease-out;
-}
-
-@keyframes shopPop{
-  from{ transform: scale(0.9); opacity:0; }
-  to{ transform: scale(1); opacity:1; }
-}
-
 #shopPanel h2{
   text-align:center;
   margin-bottom:20px;
@@ -161,4 +133,80 @@ canvas#game{
 
 .theme-item button:hover{
   opacity:0.9;
+}
+
+.topbar-actions{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+/* overlay (σκοτεινό φόντο πίσω από το shop) */
+#shopOverlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 50;
+}
+
+/* panel */
+#shopPanel{
+  position: fixed;
+  left: 50%;
+  top: 64px;                 /* κάτω από το topbar */
+  transform: translateX(-50%);
+  width: min(420px, calc(100vw - 24px));
+  background: rgba(20, 24, 32, 0.92);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  padding: 14px;
+  z-index: 60;
+  backdrop-filter: blur(10px);
+}
+
+#shopPanel h2{
+  margin: 0 0 10px 0;
+  font-size: 20px;
+}
+
+.shop-balance{
+  opacity: 0.9;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.theme-list{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 45vh;
+  overflow: auto;
+  padding-right: 6px;
+}
+
+.theme-item{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.06);
+}
+
+.theme-item strong{
+  text-transform: capitalize;
+}
+
+.theme-item button{
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.close-btn{
+  width: 100%;
+  margin-top: 12px;
 }
