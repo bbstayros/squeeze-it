@@ -6,26 +6,38 @@
   <title>Squeeze It</title>
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
 
   <header class="topbar">
     <div class="stat">Score: <span id="score">0</span></div>
     <div class="stat">Time: <span id="time">45</span>s</div>
     <button id="startBtn" class="btn">Start</button>
+    <button id="shopBtn" class="btn">Shop</button>
   </header>
 
   <main class="wrap">
+
     <div id="levelSelect" class="level-select">
-  <h2>Select Difficulty</h2>
-  <div class="levels">
-    <button class="level-btn" data-level="easy">Easy</button>
-    <button class="level-btn" data-level="medium">Medium</button>
-    <button class="level-btn" data-level="hard">Hard</button>
-  </div>
-</div>
+      <h2>Select Difficulty</h2>
+      <div class="levels">
+        <button class="level-btn" data-level="easy">Easy</button>
+        <button class="level-btn" data-level="medium">Medium</button>
+        <button class="level-btn" data-level="hard">Hard</button>
+      </div>
+    </div>
+
     <canvas id="game"></canvas>
     <div id="countdown" class="countdown hidden">3</div>
+
   </main>
+
+  <!-- SHOP PANEL -->
+  <div id="shopPanel" class="hidden shop-panel">
+    <h2>Shop</h2>
+    <div id="themeList"></div>
+    <button id="closeShop" class="btn">Close</button>
+  </div>
 
   <script src="game.js"></script>
 </body>
