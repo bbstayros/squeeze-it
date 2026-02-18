@@ -13,8 +13,6 @@ const closeShop = document.getElementById("closeShop");
 const themeList = document.getElementById("themeList");
 const shopOverlay = document.getElementById("shopOverlay");
 const gemCount = document.getElementById("gemCount");
-const DAILY_REWARD_AMOUNT = 50;
-const DAILY_REWARD_KEY = "squeeze_daily_last_claim";
 
 // ===== ECONOMY SYSTEM =====
 const DAILY_REWARD_KEY = "squeeze_daily_last_claim";
@@ -96,28 +94,6 @@ const themes = {
   }
 };
 
-// ===== Συνάρτηση ελέγχου =====
-function canClaimDailyReward() {
-  const lastClaim = localStorage.getItem(DAILY_REWARD_KEY);
-  if (!lastClaim) return true;
-
-  const now = Date.now();
-  const diff = now - parseInt(lastClaim);
-
-  return diff >= 24 * 60 * 60 * 1000; // 24 ώρες
-}
-
-// ===== Claim Function =====
-function claimDailyReward() {
-  if (!canClaimDailyReward()) return;
-
-  totalGems += DAILY_REWARD_AMOUNT;
-  localStorage.setItem("squeeze_gems", totalGems);
-  localStorage.setItem(DAILY_REWARD_KEY, Date.now());
-
-  renderShop();
-}
-
 // ===== unlocks από localStorage =====
 function loadThemeUnlocks() {
   const saved = JSON.parse(localStorage.getItem("squeeze_theme_unlocks"));
@@ -170,8 +146,14 @@ function equipTheme(themeKey) {
   const theme = themes[themeKey];
   if (!theme) return;
 
+  if (!theme.unlocked) {
+    showToast("Theme locked 🔒");
+    return;
+  }
+
   currentTheme = theme;
   localStorage.setItem("squeeze_equipped_theme", themeKey);
+  showToast("Equipped: " + theme.name + " ✅");
 }
 
 const ENTITY_R = 22; // μέγεθος “στόχου”
@@ -259,10 +241,6 @@ closeShop.addEventListener("click", () => {
 
 shopOverlay.addEventListener("click", () => {
   shopOverlay.classList.add("hidden");
-  shopPanel.classList.add("hidden");
-});
-
-closeShop.addEventListener("click", () => {
   shopPanel.classList.add("hidden");
 });
 
@@ -736,6 +714,7 @@ function beginRound() {
 function calculateGems(score) {
   return Math.floor(score / 100);
 }
+
 function endRound() {
   gameRunning = false;
 
@@ -748,9 +727,9 @@ function endRound() {
   localStorage.setItem("squeeze_gems", totalGems);
 
   startBtn.disabled = false;
-, 50);
-}
 
+  showToast("Round End! +" + earnedGems + " 💎");
+}
 
 startBtn.addEventListener("click", () => {
   if (!difficulty) return;
