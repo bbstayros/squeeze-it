@@ -122,6 +122,7 @@ function spawnEntity() {
     type: getRandomType(),
     hit: false,
     hitTimer: 0
+    walkPhase: Math.random() * Math.PI * 2
   });
 }
 
@@ -152,6 +153,7 @@ function update(dt) {
     }
 
     e.x += e.vx * dt;
+    e.walkPhase += dt * 8;
     e.y += e.vy * dt;
 
     // ✅ Αφαίρεση αν βγει εκτός οθόνης
@@ -208,30 +210,51 @@ function draw() {
   ctx.fillRect(0, 0, W, H);
 
   // Entities
-  for (const e of entities) {
-    let scale = 1;
-    if (e.hit) scale = 1 + e.hitTimer * 6;
+  // Entities
+for (const e of entities) {
 
-    ctx.beginPath();
-    ctx.arc(e.x, e.y, e.r * scale, 0, Math.PI * 2);
+  let scale = 1;
+  if (e.hit) scale = 1 + e.hitTimer * 6;
 
-    if (e.type === "normal") ctx.fillStyle = "#ff3b30";
-    if (e.type === "shield") ctx.fillStyle = "#ffd60a";
-    if (e.type === "spike") ctx.fillStyle = "#ff006e";
-    ctx.fill();
+  // fake walk bounce
+  const bounce = Math.sin(e.walkPhase) * 3;
 
-    // highlight
-    ctx.beginPath();
-    ctx.arc(
-      e.x - e.r * 0.25,
-      e.y - e.r * 0.25,
-      e.r * 0.35 * scale,
-      0,
-      Math.PI * 2
-    );
-    ctx.fillStyle = "rgba(255,255,255,0.25)";
-    ctx.fill();
-  }
+  const bodyColor =
+    e.type === "normal" ? "#ff3b30" :
+    e.type === "shield" ? "#ffd60a" :
+    "#ff006e";
+
+  // SHADOW
+  ctx.beginPath();
+  ctx.ellipse(e.x, e.y + e.r * 0.9, e.r * 0.7, e.r * 0.25, 0, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(0,0,0,0.25)";
+  ctx.fill();
+
+  ctx.save();
+  ctx.translate(e.x, e.y + bounce);
+  ctx.scale(scale, scale);
+
+  // BODY
+  ctx.fillStyle = bodyColor;
+  ctx.beginPath();
+  ctx.roundRect(-8, -2, 16, 20, 4);
+  ctx.fill();
+
+  // HEAD
+  ctx.beginPath();
+  ctx.arc(0, -10, 7, 0, Math.PI * 2);
+  ctx.fill();
+
+  // LEGS
+  const legOffset = Math.sin(e.walkPhase) * 4;
+
+  ctx.beginPath();
+  ctx.rect(-5, 18, 4, 8 + legOffset);
+  ctx.rect(1, 18, 4, 8 - legOffset);
+  ctx.fill();
+
+  ctx.restore();
+}
 
   // Hit rings
   for (const h of hitEffects) {
