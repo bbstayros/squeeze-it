@@ -7,7 +7,10 @@ const startBtn = document.getElementById("startBtn");
 const countdownEl = document.getElementById("countdown");
 const levelSelect = document.getElementById("levelSelect");
 const levelButtons = document.querySelectorAll(".level-btn");
-
+const shopBtn = document.getElementById("shopBtn");
+const shopPanel = document.getElementById("shopPanel");
+const closeShop = document.getElementById("closeShop");
+const themeList = document.getElementById("themeList");
 const hitEffects = [];
 const floatingTexts = [];
 
@@ -215,6 +218,53 @@ function spawnEntity() {
 
 function resetEntities() {
   entities.length = 0;
+}
+// Shop open / close logic
+shopBtn.addEventListener("click", () => {
+  renderShop();
+  shopPanel.classList.remove("hidden");
+});
+
+closeShop.addEventListener("click", () => {
+  shopPanel.classList.add("hidden");
+});
+
+// Render Shop
+function renderShop() {
+  themeList.innerHTML = "";
+
+  for (let key in themes) {
+    const theme = themes[key];
+
+    const item = document.createElement("div");
+    item.className = "theme-item";
+
+    const name = document.createElement("strong");
+    name.textContent = theme.name;
+
+    const btn = document.createElement("button");
+
+    if (!theme.unlocked) {
+      btn.textContent = "Buy (" + theme.price + "💎)";
+      btn.onclick = () => {
+        buyTheme(key);
+        renderShop();
+      };
+    } else if (currentTheme.name === theme.name) {
+      btn.textContent = "Equipped";
+      btn.disabled = true;
+    } else {
+      btn.textContent = "Equip";
+      btn.onclick = () => {
+        equipTheme(key);
+        renderShop();
+      };
+    }
+
+    item.appendChild(name);
+    item.appendChild(btn);
+    themeList.appendChild(item);
+  }
 }
 
 function update(dt) {
