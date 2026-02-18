@@ -58,6 +58,38 @@ let earnedGems = 0;
 
 // --- “Ανθρωπάκια” (προς το παρόν κύκλοι) ---
 const entities = [];
+
+// ===== THEME SYSTEM =====
+
+const themes = {
+  classic: {
+    name: "classic",
+    bg: "#151a22",
+    normal: "#ff3b30",
+    shield: "#ffd60a",
+    spike: "#ff006e"
+  },
+  zombie: {
+    name: "zombie",
+    bg: "#0f1a12",
+    normal: "#4caf50",
+    shield: "#8bc34a",
+    spike: "#2e7d32"
+  }
+};
+
+let currentTheme = themes.classic;
+
+// Debug toggle
+window.addEventListener("keydown", (e) => {
+  if (e.key === "t") {
+    currentTheme =
+      currentTheme.name === "classic"
+        ? themes.zombie
+        : themes.classic;
+  }
+});
+
 const ENTITY_R = 22; // μέγεθος “στόχου”
 const BASE_SPEED = 140; // px/sec
 const MAX_ENTITIES = 8; // active entities cap
@@ -84,22 +116,6 @@ function getRandomType() {
 function spawnEntity() {
   const side = Math.floor(Math.random() * 4);
   const speed = BASE_SPEED * rand(0.8, 1.2);
-  const themes = {
-  classic: {
-    name: "classic",
-    bg: "#151a22",
-    normal: "#ff3b30",
-    shield: "#ffd60a",
-    spike: "#ff006e"
-  },
-  zombie: {
-    name: "zombie",
-    bg: "#0f1a12",
-    normal: "#4caf50",
-    shield: "#8bc34a",
-    spike: "#2e7d32"
-  }
-};
 
 let currentTheme = themes.classic;
 
