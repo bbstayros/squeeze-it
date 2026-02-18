@@ -9,36 +9,48 @@
 
 <body>
 
-  <header class="topbar">
-    <div class="stat">Score: <span id="score">0</span></div>
-    <div class="stat">Time: <span id="time">45</span>s</div>
-    <button id="startBtn" class="btn">Start</button>
+<header class="topbar">
+  <div class="stat">Score: <span id="score">0</span></div>
+  <div class="stat">Time: <span id="time">45</span>s</div>
+
+  <div class="topbar-actions">
     <button id="shopBtn" class="btn">Shop</button>
-  </header>
+    <button id="startBtn" class="btn">Start</button>
+  </div>
+</header>
 
-  <main class="wrap">
+<!-- Overlay -->
+<div id="shopOverlay" class="hidden"></div>
 
-    <div id="levelSelect" class="level-select">
-      <h2>Select Difficulty</h2>
-      <div class="levels">
-        <button class="level-btn" data-level="easy">Easy</button>
-        <button class="level-btn" data-level="medium">Medium</button>
-        <button class="level-btn" data-level="hard">Hard</button>
-      </div>
-    </div>
+<!-- Shop Panel -->
+<div id="shopPanel" class="hidden">
+  <h2>Shop</h2>
 
-    <canvas id="game"></canvas>
-    <div id="countdown" class="countdown hidden">3</div>
-
-  </main>
-
-  <!-- SHOP PANEL -->
-  <div id="shopPanel" class="hidden shop-panel">
-    <h2>Shop</h2>
-    <div id="themeList"></div>
-    <button id="closeShop" class="btn">Close</button>
+  <div class="shop-balance">
+    Gems: <span id="gemCount">0</span> 💎
   </div>
 
-  <script src="game.js"></script>
+  <div id="themeList" class="theme-list"></div>
+
+  <button id="closeShop" class="btn close-btn">Close</button>
+</div>
+
+<main class="wrap">
+
+  <div id="levelSelect" class="level-select">
+    <h2>Select Difficulty</h2>
+    <div class="levels">
+      <button class="level-btn" data-level="easy">Easy</button>
+      <button class="level-btn" data-level="medium">Medium</button>
+      <button class="level-btn" data-level="hard">Hard</button>
+    </div>
+  </div>
+
+  <canvas id="game"></canvas>
+  <div id="countdown" class="countdown hidden">3</div>
+
+</main>
+
+<script src="game.js"></script>
 </body>
 </html>
