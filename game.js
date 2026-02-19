@@ -838,7 +838,7 @@ function generateMilestoneReward(level){
 function renderMilestones(){
   milestoneList.innerHTML = "";
 
-  const start = 5;
+  const start = Math.max(5, playerLevel - 20);
   const end = playerLevel + 50;
 
   for(let lvl = start; lvl <= end; lvl++){
