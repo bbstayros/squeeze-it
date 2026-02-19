@@ -29,6 +29,7 @@ console.log("closeMilestones:", closeMilestones);
 
 // ===== MILESTONES OPEN / CLOSE =====
 milestonesBtn.addEventListener("click", () => {
+  console.log("Milestones clicked");
   renderMilestones();
   milestoneScreen.classList.remove("hidden");
 });
@@ -843,6 +844,7 @@ function generateMilestoneReward(level){
 }
 
 function renderMilestones(){
+  console.log("Rendering milestones. Player level:", playerLevel);
   milestoneList.innerHTML = "";
 
   const start = Math.max(5, playerLevel - 20);
