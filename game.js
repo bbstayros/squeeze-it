@@ -13,6 +13,16 @@ const closeShop = document.getElementById("closeShop");
 const themeList = document.getElementById("themeList");
 const shopOverlay = document.getElementById("shopOverlay");
 const gemCount = document.getElementById("gemCount");
+const levelDisplay = document.getElementById("levelDisplay");
+const xpFill = document.getElementById("xpFill");
+
+function updateXPUI() {
+  levelDisplay.textContent = playerLevel;
+
+  const percent = currentXP / xpNeededForLevel(playerLevel);
+  xpFill.style.width = (percent * 100) + "%";
+}
+
 
 // ===== ECONOMY SYSTEM =====
 const DAILY_REWARD_KEY = "squeeze_daily_last_claim";
@@ -68,6 +78,33 @@ let comboTimer = 0;
 let comboTimeout = 1.2; // seconds
 let totalGems = parseInt(localStorage.getItem("squeeze_gems")) || 0;
 let earnedGems = 0;
+
+// ===== XP SYSTEM =====
+let playerLevel = parseInt(localStorage.getItem("squeeze_level")) || 1;
+let currentXP = parseInt(localStorage.getItem("squeeze_xp")) || 0;
+
+function xpNeededForLevel(level) {
+  return 100 + level * 40;
+}
+
+function addXP(amount) {
+  currentXP += amount;
+
+  let xpNeeded = xpNeededForLevel(playerLevel);
+
+  while (currentXP >= xpNeeded) {
+    currentXP -= xpNeeded;
+    playerLevel++;
+    showToast("LEVEL UP! 🔥 Level " + playerLevel);
+    xpNeeded = xpNeededForLevel(playerLevel);
+  }
+
+  localStorage.setItem("squeeze_level", playerLevel);
+  localStorage.setItem("squeeze_xp", currentXP);
+
+  updateXPUI();
+}
+
 
 // --- “Ανθρωπάκια” (προς το παρόν κύκλοι) ---
 const entities = [];
@@ -343,7 +380,7 @@ function renderShop() {
   adDiv.appendChild(adBtn);
   themeList.appendChild(adDiv);
 
-  // ===== THEMES =====
+   // ===== THEMES =====
   for (let key in themes) {
     const theme = themes[key];
 
@@ -726,6 +763,9 @@ function endRound() {
 
   localStorage.setItem("squeeze_gems", totalGems);
 
+  const xpEarned = Math.floor(score / 10);
+  addXP(xpEarned);
+  
   startBtn.disabled = false;
 
   showToast("Round End! +" + earnedGems + " 💎");
@@ -735,6 +775,7 @@ startBtn.addEventListener("click", () => {
   if (!difficulty) return;
 
   levelSelect.style.display = "none";
+
 
   if (gameRunning) return;
   startBtn.disabled = true;
@@ -750,6 +791,7 @@ function loadEquippedTheme() {
 
 
 // init
+updateXPUI();
 loadThemeUnlocks();
 loadEquippedTheme();
 resize();
