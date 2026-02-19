@@ -844,6 +844,7 @@ function generateMilestoneReward(level){
 }
 
 function renderMilestones(){
+  console.log("Player level is:", playerLevel);
   console.log("Rendering milestones. Player level:", playerLevel);
   milestoneList.innerHTML = "";
 
