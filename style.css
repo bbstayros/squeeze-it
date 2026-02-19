@@ -64,8 +64,6 @@ canvas#game{
   background: rgba(0,0,0,0.35);
 }
 
-.hidden{ display:none; }
-
 .level-select{
   position:absolute;
   inset:0;
@@ -313,4 +311,8 @@ canvas#game{
   border-radius:12px;
   font-weight:bold;
   cursor:pointer;
+}
+
+.hidden {
+  display: none !important;
 }
