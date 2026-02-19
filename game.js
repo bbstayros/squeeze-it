@@ -604,7 +604,8 @@ function tryHit(x, y) {
         else if (combo >= 10) multiplier = 3;
         else if (combo >= 5) multiplier = 2;
 
-        const gained = 10 * multiplier;
+        const levelBonusMultiplier = 1 + (playerLevel - 1) * 0.01;
+        const gained = Math.floor(10 * multiplier * levelBonusMultiplier);
 
         score += gained;
         scoreEl.textContent = score;
