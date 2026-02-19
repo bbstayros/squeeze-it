@@ -21,6 +21,12 @@ const milestoneScreen = document.getElementById("milestoneScreen");
 const milestoneList = document.getElementById("milestoneList");
 const closeMilestones = document.getElementById("closeMilestones");
 
+console.log("milestonesBtn:", milestonesBtn);
+console.log("milestoneScreen:", milestoneScreen);
+console.log("milestoneList:", milestoneList);
+console.log("closeMilestones:", closeMilestones);
+
+
 // ===== MILESTONES OPEN / CLOSE =====
 milestonesBtn.addEventListener("click", () => {
   renderMilestones();
