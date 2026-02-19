@@ -907,5 +907,6 @@ updateXPUI();
 loadThemeUnlocks();
 loadEquippedTheme();
 resize();
+draw();  
   });
-draw();
+
