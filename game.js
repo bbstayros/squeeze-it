@@ -764,8 +764,15 @@ function endRound() {
 
   localStorage.setItem("squeeze_gems", totalGems);
 
-  const xpEarned = Math.floor(score / 10);
-  addXP(xpEarned);
+ let difficultyXPBonus = 1;
+
+if (difficulty === "easy") difficultyXPBonus = 0.7;
+if (difficulty === "medium") difficultyXPBonus = 1;
+if (difficulty === "hard") difficultyXPBonus = 1.4;
+
+const xpEarned = Math.floor((score / 10) * difficultyXPBonus);
+addXP(xpEarned);
+;
   
   startBtn.disabled = false;
 
