@@ -15,6 +15,21 @@ const shopOverlay = document.getElementById("shopOverlay");
 const gemCount = document.getElementById("gemCount");
 const levelDisplay = document.getElementById("levelDisplay");
 const xpFill = document.getElementById("xpFill");
+const milestonesBtn = document.getElementById("milestonesBtn");
+const milestoneScreen = document.getElementById("milestoneScreen");
+const milestoneList = document.getElementById("milestoneList");
+const closeMilestones = document.getElementById("closeMilestones");
+
+// ===== MILESTONES OPEN / CLOSE =====
+milestonesBtn.addEventListener("click", () => {
+  renderMilestones();
+  milestoneScreen.classList.remove("hidden");
+});
+
+closeMilestones.addEventListener("click", () => {
+  milestoneScreen.classList.add("hidden");
+});
+
 
 function updateXPUI() {
   levelDisplay.textContent = playerLevel;
@@ -105,6 +120,10 @@ function addXP(amount) {
   updateXPUI();
 }
 
+// ===== MILESTONE SYSTEM =====
+
+const CLAIMED_KEY = "squeeze_milestones_claimed";
+let claimedMilestones = JSON.parse(localStorage.getItem(CLAIMED_KEY)) || [];
 
 // --- “Ανθρωπάκια” (προς το παρόν κύκλοι) ---
 const entities = [];
@@ -797,6 +816,90 @@ function loadEquippedTheme() {
   }
 }
 
+function generateMilestoneReward(level){
+  if(level < 25){
+    return { type:"gems", amount:100 + level*5 };
+  }
+  if(level < 75){
+    if(level % 10 === 0){
+      return { type:"skin", rarity:"rare" };
+    }
+    return { type:"gems", amount:150 + level*6 };
+  }
+  if(level < 150){
+    if(level % 15 === 0){
+      return { type:"skin", rarity:"epic" };
+    }
+    return { type:"gems", amount:200 + level*8 };
+  }
+  return { type:"gems", amount:300 + level*10 };
+}
+
+function renderMilestones(){
+  milestoneList.innerHTML = "";
+
+  const start = Math.max(5, playerLevel - 20);
+  const end = playerLevel + 50;
+
+  for(let lvl = start; lvl <= end; lvl++){
+    if(lvl % 5 !== 0) continue;
+
+    const reward = generateMilestoneReward(lvl);
+    const card = document.createElement("div");
+    card.className = "milestone-card";
+
+    if(claimedMilestones.includes(lvl)){
+      card.classList.add("completed");
+    }else if(playerLevel >= lvl){
+      card.classList.add("current");
+    }
+
+    const label = document.createElement("div");
+    label.innerHTML = `<strong>Level ${lvl}</strong>`;
+
+    const rewardText = document.createElement("div");
+    rewardText.className = "milestone-reward";
+
+    if(reward.type === "gems"){
+      rewardText.textContent = `+${reward.amount} 💎`;
+    }else{
+      rewardText.textContent = `${reward.rarity.toUpperCase()} Skin`;
+    }
+
+    const right = document.createElement("div");
+
+    if(playerLevel >= lvl && !claimedMilestones.includes(lvl)){
+      const btn = document.createElement("button");
+      btn.className = "claim-btn";
+      btn.textContent = "Claim";
+      btn.onclick = () => claimMilestone(lvl);
+      right.appendChild(btn);
+    }
+
+    card.appendChild(label);
+    card.appendChild(rewardText);
+    card.appendChild(right);
+    milestoneList.appendChild(card);
+  }
+}
+
+function claimMilestone(level){
+  if(claimedMilestones.includes(level)) return;
+
+  const reward = generateMilestoneReward(level);
+
+  if(reward.type === "gems"){
+    totalGems += reward.amount;
+    localStorage.setItem("squeeze_gems", totalGems);
+  }
+
+  claimedMilestones.push(level);
+  localStorage.setItem(CLAIMED_KEY, JSON.stringify(claimedMilestones));
+
+  showToast("Milestone Reward Claimed! 🎉");
+
+  renderMilestones();
+}
 
 // init
 updateXPUI();
