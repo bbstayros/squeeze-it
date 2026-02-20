@@ -809,6 +809,20 @@ const shadowAlpha = 0.25 * shadowScale;
       ctx.translate(e.x, e.y + bounce);
       ctx.scale(scale, scale);
 
+      // ===== Glow Effect =====
+      if (e.type === "shield") {
+      ctx.shadowColor = "#ffd60a";
+      ctx.shadowBlur = 15;
+      } 
+      else if (e.type === "spike") {
+      ctx.shadowColor = "#ff0033";
+      ctx.shadowBlur = 18;
+      }
+      else {
+      ctx.shadowColor = "rgba(255,255,255,0.15)";
+      ctx.shadowBlur = 6;
+      }
+
       // body
       ctx.fillStyle = bodyColor;
       ctx.beginPath();
@@ -843,6 +857,7 @@ const shadowAlpha = 0.25 * shadowScale;
       ctx.rect(1, 18, 4, 8 - legOffset);
       ctx.fill();
 
+      ctx.shadowBlur = 0;
       ctx.restore();
     }
 
