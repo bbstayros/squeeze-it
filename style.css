@@ -366,3 +366,51 @@ canvas#game{
   z-index: -1;
   pointer-events: none;
 }
+
+/* ================= END PANEL ================= */
+
+.end-panel{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index: 300;
+  backdrop-filter: blur(6px);
+}
+
+.end-card{
+  background: rgba(20,24,32,0.95);
+  padding: 24px;
+  border-radius: 20px;
+  width: min(420px, 90%);
+  text-align:center;
+  animation: popIn 0.3s ease;
+}
+
+.end-stat{
+  margin: 12px 0;
+  font-size: 18px;
+}
+
+.end-buttons{
+  display:flex;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.end-buttons .btn{
+  flex:1;
+}
+
+@keyframes popIn{
+  from{
+    transform: scale(0.8);
+    opacity:0;
+  }
+  to{
+    transform: scale(1);
+    opacity:1;
+  }
+}
