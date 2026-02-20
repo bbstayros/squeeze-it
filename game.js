@@ -1,4 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
+
+/* =====================================================
+   DOM
+===================================================== */
+
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
@@ -8,233 +13,205 @@ const startBtn = document.getElementById("startBtn");
 const countdownEl = document.getElementById("countdown");
 const levelSelect = document.getElementById("levelSelect");
 const levelButtons = document.querySelectorAll(".level-btn");
+
 const shopBtn = document.getElementById("shopBtn");
 const shopPanel = document.getElementById("shopPanel");
 const closeShop = document.getElementById("closeShop");
 const themeList = document.getElementById("themeList");
 const shopOverlay = document.getElementById("shopOverlay");
 const gemCount = document.getElementById("gemCount");
+
 const levelDisplay = document.getElementById("levelDisplay");
 const xpFill = document.getElementById("xpFill");
+
 const milestonesBtn = document.getElementById("milestonesBtn");
 const milestoneScreen = document.getElementById("milestoneScreen");
 const milestoneList = document.getElementById("milestoneList");
 const closeMilestones = document.getElementById("closeMilestones");
 
-console.log("milestonesBtn:", milestonesBtn);
-console.log("milestoneScreen:", milestoneScreen);
-console.log("milestoneList:", milestoneList);
-console.log("closeMilestones:", closeMilestones);
+/* =====================================================
+   CONFIG
+===================================================== */
 
+const Config = {
+  roundSeconds: 45,
+  entityRadius: 22,
+  baseSpeed: 140,
+  maxEntities: 8,
 
-// ===== MILESTONES OPEN / CLOSE =====
-milestonesBtn.addEventListener("click", () => {
-  console.log("Milestones clicked");
-  renderMilestones();
-  milestoneScreen.classList.remove("hidden");
-});
+  comboTimeout: 1.2,
+  hitVanishSec: 0.12,
 
-closeMilestones.addEventListener("click", () => {
-  milestoneScreen.classList.add("hidden");
-});
+  spawnIntervalMs: { easy: 700, medium: 500, hard: 350 },
 
+  gemsPerScore: 100,
+  xpScoreDiv: 10,
+  xpDifficultyBonus: { easy: 0.7, medium: 1.0, hard: 1.4 },
 
-function updateXPUI() {
-  levelDisplay.textContent = playerLevel;
+  freezeMs: 800,
+  spikeTimePenalty: 2
+};
 
-  const percent = currentXP / xpNeededForLevel(playerLevel);
-  xpFill.style.width = (percent * 100) + "%";
+/* =====================================================
+   STATE
+===================================================== */
+
+const State = {
+  W: 0,
+  H: 0,
+
+  gameRunning: false,
+  difficulty: null,
+
+  score: 0,
+  timeLeft: Config.roundSeconds,
+
+  combo: 0,
+  comboTimer: 0,
+
+  spawnTimerMs: 0,
+  spawnIntervalMs: Config.spawnIntervalMs.medium,
+
+  playerFrozen: false,
+
+  entities: [],
+  hitEffects: [],
+  floatingTexts: [],
+
+  totalGems: parseInt(localStorage.getItem("squeeze_gems")) || 0,
+  earnedGems: 0,
+
+  playerLevel: parseInt(localStorage.getItem("squeeze_level")) || 1,
+  currentXP: parseInt(localStorage.getItem("squeeze_xp")) || 0,
+
+  claimedMilestones:
+    JSON.parse(localStorage.getItem("squeeze_milestones_claimed")) || [],
+
+  timers: {
+    rafId: null,
+    timeTimer: null,
+    freezeTimer: null,
+    countdownTimer: null
+  }
+};
+
+/* =====================================================
+   STORAGE
+===================================================== */
+
+const Storage = {
+  saveGems() {
+    localStorage.setItem("squeeze_gems", State.totalGems);
+  },
+  saveXP() {
+    localStorage.setItem("squeeze_level", State.playerLevel);
+    localStorage.setItem("squeeze_xp", State.currentXP);
+  },
+  saveClaimed() {
+    localStorage.setItem(
+      "squeeze_milestones_claimed",
+      JSON.stringify(State.claimedMilestones)
+    );
+  }
+};
+
+/* =====================================================
+   UI
+===================================================== */
+
+const UI = {
+  setScore(v) { scoreEl.textContent = v; },
+  setTime(v) { timeEl.textContent = v; },
+  setGems(v) { gemCount.textContent = v; },
+
+  setFrozen(isFrozen) {
+    canvas.style.filter = isFrozen
+      ? "grayscale(1) blur(2px)"
+      : "none";
+  },
+
+  show(el) { el.classList.remove("hidden"); },
+  hide(el) { el.classList.add("hidden"); }
+};
+
+/* =====================================================
+   UTIL
+===================================================== */
+
+function rand(min, max) {
+  return Math.random() * (max - min) + min;
 }
 
+function clearTimers() {
+  const t = State.timers;
+  if (t.rafId) cancelAnimationFrame(t.rafId);
+  if (t.timeTimer) clearInterval(t.timeTimer);
+  if (t.freezeTimer) clearTimeout(t.freezeTimer);
+  if (t.countdownTimer) clearInterval(t.countdownTimer);
 
-// ===== ECONOMY SYSTEM =====
-const DAILY_REWARD_KEY = "squeeze_daily_last_claim";
-const STREAK_KEY = "squeeze_daily_streak";
-const AD_REWARD_AMOUNT = 100;
-const STREAK_REWARDS = [50, 60, 75, 90, 110, 150, 250];
+  t.rafId = t.timeTimer = t.freezeTimer = t.countdownTimer = null;
+}
 
-const hitEffects = [];
-const floatingTexts = [];
-
-
-let W = 0,
-  H = 0;
+/* =====================================================
+   RESIZE
+===================================================== */
 
 function resize() {
-  // “πραγματικά” pixels για καθαρότητα
   const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
   const rect = canvas.getBoundingClientRect();
-  W = Math.floor(rect.width);
-  H = Math.floor(rect.height);
 
-  canvas.width = Math.floor(W * dpr);
-  canvas.height = Math.floor(H * dpr);
+  State.W = Math.floor(rect.width);
+  State.H = Math.floor(rect.height);
+
+  canvas.width = Math.floor(State.W * dpr);
+  canvas.height = Math.floor(State.H * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
+
 window.addEventListener("resize", resize);
 
-levelButtons.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    difficulty = btn.dataset.level;
-
-    levelButtons.forEach((b) => b.classList.remove("active"));
-    btn.classList.add("active");
-  });
-});
-
-let score = 0;
-let timeLeft = 45;
-let gameRunning = false;
-
-let playerFrozen = false;
-let freezeTimer = null;
-
-let difficulty = null; // easy | medium | hard
-let timeTimer = null;
-let rafId = null;
-
-let spawnTimer = 0;
-let spawnInterval = 500; // ms
-
-let combo = 0;
-let comboTimer = 0;
-let comboTimeout = 1.2; // seconds
-let totalGems = parseInt(localStorage.getItem("squeeze_gems")) || 0;
-let earnedGems = 0;
-
-// ===== XP SYSTEM =====
-let playerLevel = parseInt(localStorage.getItem("squeeze_level")) || 1;
-let currentXP = parseInt(localStorage.getItem("squeeze_xp")) || 0;
+/* =====================================================
+   XP
+===================================================== */
 
 function xpNeededForLevel(level) {
   return 100 + level * 40;
 }
 
 function addXP(amount) {
-  currentXP += amount;
+  State.currentXP += amount;
 
-  let xpNeeded = xpNeededForLevel(playerLevel);
+  let xpNeeded = xpNeededForLevel(State.playerLevel);
 
-  while (currentXP >= xpNeeded) {
-    currentXP -= xpNeeded;
-    playerLevel++;
-    showToast("LEVEL UP! 🔥 Level " + playerLevel);
-    xpNeeded = xpNeededForLevel(playerLevel);
+  while (State.currentXP >= xpNeeded) {
+    State.currentXP -= xpNeeded;
+    State.playerLevel++;
+    xpNeeded = xpNeededForLevel(State.playerLevel);
   }
 
-  localStorage.setItem("squeeze_level", playerLevel);
-  localStorage.setItem("squeeze_xp", currentXP);
-
+  Storage.saveXP();
   updateXPUI();
 }
 
-// ===== MILESTONE SYSTEM =====
-
-const CLAIMED_KEY = "squeeze_milestones_claimed";
-let claimedMilestones = JSON.parse(localStorage.getItem(CLAIMED_KEY)) || [];
-
-// --- “Ανθρωπάκια” (προς το παρόν κύκλοι) ---
-const entities = [];
-
-// ===== THEME SYSTEM =====
-const themes = {
-  classic: {
-    name: "classic",
-    bg: "#151a22",
-    normal: "#ff3b30",
-    shield: "#ffd60a",
-    spike: "#ff006e",
-    price: 0,
-    unlocked: true
-  },
-  zombie: {
-    name: "zombie",
-    bg: "#0f1a12",
-    normal: "#4caf50",
-    shield: "#8bc34a",
-    spike: "#2e7d32",
-    price: 300,
-    unlocked: false
-  }
-};
-
-// ===== unlocks από localStorage =====
-function loadThemeUnlocks() {
-  const saved = JSON.parse(localStorage.getItem("squeeze_theme_unlocks"));
-  if (!saved) return;
-
-  for (let key in saved) {
-    if (themes[key]) {
-      themes[key].unlocked = saved[key];
-    }
-  }
+function updateXPUI() {
+  levelDisplay.textContent = State.playerLevel;
+  const percent =
+    State.currentXP / xpNeededForLevel(State.playerLevel);
+  xpFill.style.width = percent * 100 + "%";
 }
 
-function saveThemeUnlocks() {
-  const data = {};
-  for (let key in themes) {
-    data[key] = themes[key].unlocked;
-  }
-  localStorage.setItem("squeeze_theme_unlocks", JSON.stringify(data));
-}
-
-let currentTheme = themes.classic;
-
-// Debug toggle
-window.addEventListener("keydown", (e) => {
-  if (e.key === "t") {
-    currentTheme =
-      currentTheme.name === "classic"
-        ? themes.zombie
-        : themes.classic;
-  }
-});
-
-// ===== Buy Theme Function =====
-function buyTheme(themeKey) {
-  const theme = themes[themeKey];
-  if (!theme) return;
-
-  if (theme.unlocked) return;
-
-  if (totalGems >= theme.price) {
-    totalGems -= theme.price;
-    theme.unlocked = true;
-    saveThemeUnlocks();
-    localStorage.setItem("squeeze_gems", totalGems);
-  } 
-}
-
-// ===== Equip Function =====
-function equipTheme(themeKey) {
-  const theme = themes[themeKey];
-  if (!theme) return;
-
-  if (!theme.unlocked) {
-    showToast("Theme locked 🔒");
-    return;
-  }
-
-  currentTheme = theme;
-  localStorage.setItem("squeeze_equipped_theme", themeKey);
-  showToast("Equipped: " + theme.name + " ✅");
-}
-
-const ENTITY_R = 22; // μέγεθος “στόχου”
-const BASE_SPEED = 140; // px/sec
-const MAX_ENTITIES = 8; // active entities cap
-
-function rand(min, max) {
-  return Math.random() * (max - min) + min;
-}
+/* =====================================================
+   ENTITIES
+===================================================== */
 
 function getRandomType() {
   const r = Math.random();
 
-  if (difficulty === "easy") return "normal";
-  if (difficulty === "medium") return r < 0.7 ? "normal" : "shield";
+  if (State.difficulty === "easy") return "normal";
+  if (State.difficulty === "medium")
+    return r < 0.7 ? "normal" : "shield";
 
-  if (difficulty === "hard") {
+  if (State.difficulty === "hard") {
     if (r < 0.6) return "normal";
     if (r < 0.85) return "shield";
     return "spike";
@@ -245,474 +222,111 @@ function getRandomType() {
 
 function spawnEntity() {
   const side = Math.floor(Math.random() * 4);
-  const speed = BASE_SPEED * rand(0.8, 1.2);
+  const speed = Config.baseSpeed * rand(0.8, 1.2);
 
   let x, y, vx, vy;
 
   if (side === 0) {
-    // LEFT -> RIGHT
-    x = -ENTITY_R;
-    y = rand(ENTITY_R, H - ENTITY_R);
+    x = -Config.entityRadius;
+    y = rand(Config.entityRadius, State.H - Config.entityRadius);
     vx = speed;
     vy = rand(-20, 20);
   } else if (side === 1) {
-    // RIGHT -> LEFT
-    x = W + ENTITY_R;
-    y = rand(ENTITY_R, H - ENTITY_R);
+    x = State.W + Config.entityRadius;
+    y = rand(Config.entityRadius, State.H - Config.entityRadius);
     vx = -speed;
     vy = rand(-20, 20);
   } else if (side === 2) {
-    // TOP -> DOWN
-    x = rand(ENTITY_R, W - ENTITY_R);
-    y = -ENTITY_R;
+    x = rand(Config.entityRadius, State.W - Config.entityRadius);
+    y = -Config.entityRadius;
     vx = rand(-20, 20);
     vy = speed;
   } else {
-    // BOTTOM -> UP
-    x = rand(ENTITY_R, W - ENTITY_R);
-    y = H + ENTITY_R;
+    x = rand(Config.entityRadius, State.W - Config.entityRadius);
+    y = State.H + Config.entityRadius;
     vx = rand(-20, 20);
     vy = -speed;
   }
 
- entities.push({
-  x,
-  y,
-  vx,
-  vy,
-  r: ENTITY_R,
-  type: getRandomType(),
-  hit: false,
-  hitTimer: 0,
-  walkPhase: Math.random() * Math.PI * 2
-});
+  State.entities.push({
+    x, y, vx, vy,
+    r: Config.entityRadius,
+    type: getRandomType(),
+    hit: false,
+    hitTimer: 0,
+    walkPhase: Math.random() * Math.PI * 2
+  });
 }
 
-function resetEntities() {
-  entities.length = 0;
-}
-// Shop open / close logic
-shopBtn.addEventListener("click", () => {
-  renderShop();
-  shopOverlay.classList.remove("hidden");
-  shopPanel.classList.remove("hidden");
-});
+/* =====================================================
+   GAME LOOP
+===================================================== */
 
-closeShop.addEventListener("click", () => {
-  shopOverlay.classList.add("hidden");
-  shopPanel.classList.add("hidden");
-});
-
-shopOverlay.addEventListener("click", () => {
-  shopOverlay.classList.add("hidden");
-  shopPanel.classList.add("hidden");
-});
-
-// TOAST SYSTEM
-function showToast(text) {
-  const toast = document.createElement("div");
-  toast.className = "toast";
-  toast.textContent = text;
-  document.body.appendChild(toast);
-
-  setTimeout(() => toast.classList.add("show"), 10);
-
-  setTimeout(() => {
-    toast.classList.remove("show");
-    setTimeout(() => toast.remove(), 300);
-  }, 2000);
-}
-
-// Daily + Streak Logic
-function canClaimDailyReward() {
-  const lastClaim = localStorage.getItem(DAILY_REWARD_KEY);
-  if (!lastClaim) return true;
-
-  return Date.now() - parseInt(lastClaim) >= 24 * 60 * 60 * 1000;
-}
-
-function claimDailyReward() {
-  if (!canClaimDailyReward()) return;
-
-  let streak = parseInt(localStorage.getItem(STREAK_KEY)) || 0;
-
-  streak++;
-  if (streak > 7) streak = 1;
-
-  const reward = STREAK_REWARDS[streak - 1];
-
-  totalGems += reward;
-
-  localStorage.setItem("squeeze_gems", totalGems);
-  localStorage.setItem(DAILY_REWARD_KEY, Date.now());
-  localStorage.setItem(STREAK_KEY, streak);
-
-  showToast("Day " + streak + " Reward: +" + reward + " 💎");
-
-  renderShop();
-}
-
-// Rewarded Ad Simulation
-function watchAdReward() {
-  showToast("Watching Ad...");
-  
-  setTimeout(() => {
-    totalGems += AD_REWARD_AMOUNT;
-    localStorage.setItem("squeeze_gems", totalGems);
-    showToast("Ad Reward: +100 💎");
-    renderShop();
-  }, 1500);
-}
-
-// Render Shop
-function renderShop() {
-  gemCount.textContent = totalGems;
-  themeList.innerHTML = "";
-
-  // ===== DAILY + STREAK =====
-  const dailyDiv = document.createElement("div");
-  dailyDiv.className = "theme-item";
-
-  const streak = parseInt(localStorage.getItem(STREAK_KEY)) || 0;
-
-  const dailyText = document.createElement("strong");
-  dailyText.textContent = "Daily Reward (Day " + (streak || 1) + ")";
-
-  const dailyBtn = document.createElement("button");
-
-  if (canClaimDailyReward()) {
-    dailyBtn.textContent = "Claim 💎";
-    dailyBtn.onclick = claimDailyReward;
-  } else {
-    dailyBtn.textContent = "Come back tomorrow";
-    dailyBtn.disabled = true;
-  }
-
-  dailyDiv.appendChild(dailyText);
-  dailyDiv.appendChild(dailyBtn);
-  themeList.appendChild(dailyDiv);
-
-  // ===== AD REWARD =====
-  const adDiv = document.createElement("div");
-  adDiv.className = "theme-item";
-
-  const adText = document.createElement("strong");
-  adText.textContent = "Watch Ad";
-
-  const adBtn = document.createElement("button");
-  adBtn.textContent = "+100 💎";
-  adBtn.onclick = watchAdReward;
-
-  adDiv.appendChild(adText);
-  adDiv.appendChild(adBtn);
-  themeList.appendChild(adDiv);
-
-   // ===== THEMES =====
-  for (let key in themes) {
-    const theme = themes[key];
-
-    const item = document.createElement("div");
-    item.className = "theme-item";
-
-    const name = document.createElement("strong");
-    name.textContent = theme.name;
-
-    const btn = document.createElement("button");
-
-    if (!theme.unlocked) {
-      btn.textContent = "Buy (" + theme.price + " 💎)";
-      btn.onclick = () => {
-        buyTheme(key);
-        renderShop();
-      };
-    } else if (currentTheme.name === theme.name) {
-      btn.textContent = "Equipped";
-      btn.disabled = true;
-    } else {
-      btn.textContent = "Equip";
-      btn.onclick = () => {
-        equipTheme(key);
-        renderShop();
-      };
-    }
-
-    item.appendChild(name);
-    item.appendChild(btn);
-    themeList.appendChild(item);
-  }
-}
+let lastTs = 0;
 
 function update(dt) {
-  // ✅ Combo decay (μία φορά ανά frame)
-  if (combo > 0) {
-    comboTimer -= dt;
-    if (comboTimer <= 0) {
-      combo = 0;
-      comboTimer = 0;
+
+  if (State.combo > 0) {
+    State.comboTimer -= dt;
+    if (State.comboTimer <= 0) {
+      State.combo = 0;
+      State.comboTimer = 0;
     }
   }
 
-  // Κίνηση + removal
-  for (let i = entities.length - 1; i >= 0; i--) {
-    const e = entities[i];
+  for (let i = State.entities.length - 1; i >= 0; i--) {
+    const e = State.entities[i];
 
     if (e.hit) {
       e.hitTimer -= dt;
       if (e.hitTimer <= 0) {
-        entities.splice(i, 1);
+        State.entities.splice(i, 1);
         continue;
       }
     }
 
     e.x += e.vx * dt;
-    e.walkPhase += dt * 8;
     e.y += e.vy * dt;
+    e.walkPhase += dt * 8;
 
-    // ✅ Αφαίρεση αν βγει εκτός οθόνης
     if (
       e.x < -e.r - 20 ||
-      e.x > W + e.r + 20 ||
+      e.x > State.W + e.r + 20 ||
       e.y < -e.r - 20 ||
-      e.y > H + e.r + 20
+      e.y > State.H + e.r + 20
     ) {
-      entities.splice(i, 1);
-      continue;
+      State.entities.splice(i, 1);
     }
   }
 
-  // Spawn rhythm (με cap)
-  spawnTimer += dt * 1000;
-  if (spawnTimer >= spawnInterval) {
-    spawnTimer = 0;
-    if (entities.length < MAX_ENTITIES) spawnEntity();
-  }
+  State.spawnTimerMs += dt * 1000;
 
-  // Εγγύηση τουλάχιστον 1 normal (αγνοώντας όσα είναι ήδη hit)
-  const normalCount = entities.filter((e) => e.type === "normal" && !e.hit).length;
-  if (normalCount === 0 && entities.length > 0) {
-    const candidates = entities.filter((e) => !e.hit);
-    if (candidates.length > 0) {
-      const pick = candidates[Math.floor(Math.random() * candidates.length)];
-      pick.type = "normal";
-    }
-  }
-
-  // Hit ring effects update
-  for (let i = hitEffects.length - 1; i >= 0; i--) {
-    const h = hitEffects[i];
-    h.radius += 200 * dt;
-    h.alpha -= 2 * dt;
-    if (h.alpha <= 0) hitEffects.splice(i, 1);
-  }
-
-  // Floating texts update
-  for (let i = floatingTexts.length - 1; i >= 0; i--) {
-    const f = floatingTexts[i];
-    f.y -= 60 * dt;
-    f.alpha -= 1.5 * dt;
-    if (f.alpha <= 0) floatingTexts.splice(i, 1);
+  if (State.spawnTimerMs >= State.spawnIntervalMs) {
+    State.spawnTimerMs = 0;
+    if (State.entities.length < Config.maxEntities)
+      spawnEntity();
   }
 }
 
 function draw() {
-  ctx.clearRect(0, 0, W, H);
+  ctx.clearRect(0, 0, State.W, State.H);
+  ctx.fillStyle = "#151a22";
+  ctx.fillRect(0, 0, State.W, State.H);
 
-  // Φόντο
-  ctx.fillStyle = currentTheme.bg;
-  ctx.fillRect(0, 0, W, H);
-
-  // Entities
-  // Entities
-for (const e of entities) {
-
-  let scale = 1;
-  if (e.hit) scale = 1 + e.hitTimer * 6;
-
-  // fake walk bounce
-  const bounce = Math.sin(e.walkPhase) * 3;
-  const bodyColor = currentTheme[e.type];
-
-  // SHADOW
-  ctx.beginPath();
-  ctx.ellipse(e.x, e.y + e.r * 0.9, e.r * 0.7, e.r * 0.25, 0, 0, Math.PI * 2);
-  ctx.fillStyle = "rgba(0,0,0,0.25)";
-  ctx.fill();
-
-  ctx.save();
-  ctx.translate(e.x, e.y + bounce);
-  ctx.scale(scale, scale);
-
-  // BODY
-  ctx.fillStyle = bodyColor;
-  ctx.beginPath();
-  ctx.roundRect(-8, -2, 16, 20, 4);
-  ctx.fill();
-
-  // HEAD
-ctx.beginPath();
-ctx.arc(0, -10, 7, 0, Math.PI * 2);
-ctx.fill();
-
-// Zombie eyes
-if (currentTheme.name === "zombie") {
-  ctx.fillStyle = "black";
-  ctx.fillRect(-3, -12, 2, 2);
-  ctx.fillRect(1, -12, 2, 2);
-}
-
-  // LEGS
-  const legOffset = Math.sin(e.walkPhase) * 4;
-
-  ctx.beginPath();
-  ctx.rect(-5, 18, 4, 8 + legOffset);
-  ctx.rect(1, 18, 4, 8 - legOffset);
-  ctx.fill();
-
-  ctx.restore();
-}
-
-  // Hit rings
-  for (const h of hitEffects) {
+  for (const e of State.entities) {
     ctx.beginPath();
-    ctx.arc(h.x, h.y, h.radius, 0, Math.PI * 2);
-    ctx.strokeStyle = `rgba(255,255,255,${h.alpha})`;
-    ctx.lineWidth = 3;
-    ctx.stroke();
-  }
-
-  // Floating texts
-  ctx.textAlign = "center";
-  ctx.font = "bold 18px Arial";
-
-  for (const f of floatingTexts) {
-    ctx.globalAlpha = f.alpha;
-    ctx.fillStyle = f.color;
-    ctx.fillText(f.text, f.x, f.y);
-  }
-  ctx.globalAlpha = 1;
-}
-
-// --- Tap detection ---
-function getPointerPos(evt) {
-  const rect = canvas.getBoundingClientRect();
-  const clientX = evt.touches && evt.touches[0] ? evt.touches[0].clientX : evt.clientX;
-  const clientY = evt.touches && evt.touches[0] ? evt.touches[0].clientY : evt.clientY;
-  return { x: clientX - rect.left, y: clientY - rect.top };
-}
-
-function comboBreakFX() {
-  hitEffects.push({
-    x: W / 2,
-    y: 60,
-    radius: 20,
-    alpha: 0.6
-  });
-}
-
-function tryHit(x, y) {
-  if (playerFrozen) return;
-
-  for (let i = entities.length - 1; i >= 0; i--) {
-    const e = entities[i];
-
-    // ✅ μην ξαναχτυπάς κάτι που ήδη “φεύγει”
-    if (e.hit) continue;
-
-    const dx = x - e.x;
-    const dy = y - e.y;
-
-    if (dx * dx + dy * dy <= e.r * e.r) {
-      if (e.type === "normal") {
-        combo++;
-        comboTimer = comboTimeout;
-
-        let multiplier = 1;
-        if (combo >= 20) multiplier = 4;
-        else if (combo >= 10) multiplier = 3;
-        else if (combo >= 5) multiplier = 2;
-
-        const levelBonusMultiplier = 1 + (playerLevel - 1) * 0.01;
-        const gained = Math.floor(10 * multiplier * levelBonusMultiplier);
-
-        score += gained;
-        scoreEl.textContent = score;
-
-        floatingTexts.push({
-          x: e.x,
-          y: e.y,
-          text: multiplier > 1 ? `+${gained} x${multiplier}` : `+${gained}`,
-          alpha: 1,
-          color: multiplier > 1 ? "#00ffcc" : "#ffffff"
-        });
-
-        hitEffects.push({
-          x: e.x,
-          y: e.y,
-          radius: 10,
-          alpha: 1
-        });
-
-        e.hit = true;
-        e.hitTimer = 0.12;
-        return;
-      }
-
-      // SHIELD -> break combo
-      if (e.type === "shield") {
-        combo = 0;
-        comboTimer = 0;
-        comboBreakFX();
-        return;
-      }
-
-      // SPIKE -> break combo + freeze + -2 sec
-      if (e.type === "spike") {
-        combo = 0;
-        comboTimer = 0;
-        comboBreakFX();
-
-        activateFreeze();
-
-        timeLeft = Math.max(0, timeLeft - 2);
-        timeEl.textContent = timeLeft;
-
-        if (timeLeft <= 0) {
-          endRound();
-          return;
-        }
-        return;
-      }
-    }
+    ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2);
+    ctx.fillStyle = e.type === "normal"
+      ? "#ff3b30"
+      : e.type === "shield"
+      ? "#ffd60a"
+      : "#ff006e";
+    ctx.fill();
   }
 }
-
-function onPointerDown(evt) {
-  if (!gameRunning) return;
-  evt.preventDefault();
-  const p = getPointerPos(evt);
-  tryHit(p.x, p.y);
-}
-
-function activateFreeze() {
-  playerFrozen = true;
-  canvas.style.filter = "grayscale(1) blur(2px)";
-
-  if (freezeTimer) clearTimeout(freezeTimer);
-
-  freezeTimer = setTimeout(() => {
-    playerFrozen = false;
-    canvas.style.filter = "none";
-  }, 800);
-}
-
-canvas.addEventListener("mousedown", onPointerDown);
-canvas.addEventListener("touchstart", onPointerDown, { passive: false });
-
-// --- Game loop ---
-let lastTs = 0;
 
 function loop(ts) {
-  if (!gameRunning) return;
+  if (!State.gameRunning) return;
 
   const dt = Math.min(0.033, (ts - lastTs) / 1000 || 0);
   lastTs = ts;
@@ -720,202 +334,153 @@ function loop(ts) {
   update(dt);
   draw();
 
-  rafId = requestAnimationFrame(loop);
+  State.timers.rafId = requestAnimationFrame(loop);
 }
 
-// --- Start with 3..2..1 ---
-function startCountdownThenPlay() {
-  countdownEl.classList.remove("hidden");
-  let c = 3;
-  countdownEl.textContent = c;
-
-  const cd = setInterval(() => {
-    c--;
-    if (c <= 0) {
-      clearInterval(cd);
-      countdownEl.classList.add("hidden");
-      beginRound();
-      return;
-    }
-    countdownEl.textContent = c;
-  }, 700);
-}
+/* =====================================================
+   START / END ROUND
+===================================================== */
 
 function beginRound() {
-  score = 0;
-  timeLeft = 45;
 
-  combo = 0;
-  comboTimer = 0;
+  clearTimers();
 
-  spawnTimer = 0;
+  State.score = 0;
+  State.timeLeft = Config.roundSeconds;
+  State.combo = 0;
+  State.comboTimer = 0;
+  State.spawnTimerMs = 0;
+  State.entities = [];
 
-  scoreEl.textContent = score;
-  timeEl.textContent = timeLeft;
+  UI.setScore(State.score);
+  UI.setTime(State.timeLeft);
 
-  resetEntities();
-  hitEffects.length = 0;
-  floatingTexts.length = 0;
+  State.spawnIntervalMs =
+    Config.spawnIntervalMs[State.difficulty];
 
-  // difficulty spawn rate
-  if (difficulty === "easy") spawnInterval = 700;
-  if (difficulty === "medium") spawnInterval = 500;
-  if (difficulty === "hard") spawnInterval = 350;
-
-  gameRunning = true;
+  State.gameRunning = true;
 
   lastTs = 0;
-  if (rafId) cancelAnimationFrame(rafId);
-  rafId = requestAnimationFrame(loop);
+  State.timers.rafId = requestAnimationFrame(loop);
 
-  if (timeTimer) clearInterval(timeTimer);
-  timeTimer = setInterval(() => {
-    timeLeft--;
-    timeEl.textContent = timeLeft;
-    if (timeLeft <= 0) endRound();
+  State.timers.timeTimer = setInterval(() => {
+    State.timeLeft--;
+    UI.setTime(State.timeLeft);
+
+    if (State.timeLeft <= 0)
+      endRound();
   }, 1000);
 }
 
 function calculateGems(score) {
-  return Math.floor(score / 100);
+  return Math.floor(score / Config.gemsPerScore);
 }
 
 function endRound() {
-  gameRunning = false;
 
-  if (rafId) cancelAnimationFrame(rafId);
-  if (timeTimer) clearInterval(timeTimer);
+  clearTimers();
+  State.gameRunning = false;
 
-  earnedGems = calculateGems(score);
-  totalGems += earnedGems;
+  State.earnedGems = calculateGems(State.score);
+  State.totalGems += State.earnedGems;
 
-  localStorage.setItem("squeeze_gems", totalGems);
+  Storage.saveGems();
 
- let difficultyXPBonus = 1;
+  const bonus =
+    Config.xpDifficultyBonus[State.difficulty] || 1;
 
-if (difficulty === "easy") difficultyXPBonus = 0.7;
-if (difficulty === "medium") difficultyXPBonus = 1;
-if (difficulty === "hard") difficultyXPBonus = 1.4;
+  const xpEarned = Math.floor(
+    (State.score / Config.xpScoreDiv) * bonus
+  );
 
-const xpEarned = Math.floor((score / 10) * difficultyXPBonus);
-addXP(xpEarned);
-;
-  
+  addXP(xpEarned);
+
   startBtn.disabled = false;
-
-  showToast("Round End! +" + earnedGems + " 💎");
 }
 
-startBtn.addEventListener("click", () => {
-  if (!difficulty) return;
+/* =====================================================
+   INPUT
+===================================================== */
 
-  levelSelect.style.display = "none";
+function getPointerPos(evt) {
+  const rect = canvas.getBoundingClientRect();
+  const clientX =
+    evt.touches && evt.touches[0]
+      ? evt.touches[0].clientX
+      : evt.clientX;
+  const clientY =
+    evt.touches && evt.touches[0]
+      ? evt.touches[0].clientY
+      : evt.clientY;
 
+  return {
+    x: clientX - rect.left,
+    y: clientY - rect.top
+  };
+}
 
-  if (gameRunning) return;
-  startBtn.disabled = true;
-  startCountdownThenPlay();
+function tryHit(x, y) {
+  if (!State.gameRunning) return;
+
+  for (let i = State.entities.length - 1; i >= 0; i--) {
+    const e = State.entities[i];
+    const dx = x - e.x;
+    const dy = y - e.y;
+
+    if (dx * dx + dy * dy <= e.r * e.r) {
+
+      if (e.type === "normal") {
+        State.score += 10;
+        UI.setScore(State.score);
+      }
+
+      State.entities.splice(i, 1);
+      return;
+    }
+  }
+}
+
+canvas.addEventListener("mousedown", (evt) => {
+  const p = getPointerPos(evt);
+  tryHit(p.x, p.y);
 });
 
-function loadEquippedTheme() {
-  const saved = localStorage.getItem("squeeze_equipped_theme");
-  if (saved && themes[saved] && themes[saved].unlocked) {
-    currentTheme = themes[saved];
-  }
-}
+/* =====================================================
+   DIFFICULTY
+===================================================== */
 
-function generateMilestoneReward(level){
-  if(level < 25){
-    return { type:"gems", amount:100 + level*5 };
-  }
-  if(level < 75){
-    if(level % 10 === 0){
-      return { type:"skin", rarity:"rare" };
-    }
-    return { type:"gems", amount:150 + level*6 };
-  }
-  if(level < 150){
-    if(level % 15 === 0){
-      return { type:"skin", rarity:"epic" };
-    }
-    return { type:"gems", amount:200 + level*8 };
-  }
-  return { type:"gems", amount:300 + level*10 };
-}
+levelButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    State.difficulty = btn.dataset.level;
 
-function renderMilestones(){
-  console.log("Player level is:", playerLevel);
-  console.log("Rendering milestones. Player level:", playerLevel);
-  milestoneList.innerHTML = "";
-
-  const start = Math.max(5, playerLevel - 20);
-  const end = playerLevel + 50;
-
-  for(let lvl = start; lvl <= end; lvl++){
-    if(lvl % 5 !== 0) continue;
-
-    const reward = generateMilestoneReward(lvl);
-    const card = document.createElement("div");
-    card.className = "milestone-card";
-
-    if(claimedMilestones.includes(lvl)){
-      card.classList.add("completed");
-    }else if(playerLevel >= lvl){
-      card.classList.add("current");
-    }
-
-    const label = document.createElement("div");
-    label.innerHTML = `<strong>Level ${lvl}</strong>`;
-
-    const rewardText = document.createElement("div");
-    rewardText.className = "milestone-reward";
-
-    if(reward.type === "gems"){
-      rewardText.textContent = `+${reward.amount} 💎`;
-    }else{
-      rewardText.textContent = `${reward.rarity.toUpperCase()} Skin`;
-    }
-
-    const right = document.createElement("div");
-
-    if(playerLevel >= lvl && !claimedMilestones.includes(lvl)){
-      const btn = document.createElement("button");
-      btn.className = "claim-btn";
-      btn.textContent = "Claim";
-      btn.onclick = () => claimMilestone(lvl);
-      right.appendChild(btn);
-    }
-
-    card.appendChild(label);
-    card.appendChild(rewardText);
-    card.appendChild(right);
-    milestoneList.appendChild(card);
-  }
-}
-
-function claimMilestone(level){
-  if(claimedMilestones.includes(level)) return;
-
-  const reward = generateMilestoneReward(level);
-
-  if(reward.type === "gems"){
-    totalGems += reward.amount;
-    localStorage.setItem("squeeze_gems", totalGems);
-  }
-
-  claimedMilestones.push(level);
-  localStorage.setItem(CLAIMED_KEY, JSON.stringify(claimedMilestones));
-
-  showToast("Milestone Reward Claimed! 🎉");
-
-  renderMilestones();
-}
-
-// init
-updateXPUI();
-loadThemeUnlocks();
-loadEquippedTheme();
-resize();
-draw();  
+    levelButtons.forEach((b) =>
+      b.classList.remove("active")
+    );
+    btn.classList.add("active");
   });
+});
 
+/* =====================================================
+   START BUTTON
+===================================================== */
+
+startBtn.addEventListener("click", () => {
+
+  if (!State.difficulty) return;
+  if (State.gameRunning) return;
+
+  startBtn.disabled = true;
+  levelSelect.classList.add("hidden");
+
+  beginRound();
+});
+
+/* =====================================================
+   INIT
+===================================================== */
+
+updateXPUI();
+resize();
+draw();
+
+});
