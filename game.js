@@ -28,6 +28,38 @@ document.addEventListener("DOMContentLoaded", () => {
   const milestoneList = document.getElementById("milestoneList");
   const closeMilestones = document.getElementById("closeMilestones");
 
+    /* =====================================================
+     PARALLAX BACKGROUND (Visual Only)
+  ===================================================== */
+
+  const bgFar = document.querySelector(".bg-far");
+  const bgMid = document.querySelector(".bg-mid");
+  const bgNear = document.querySelector(".bg-near");
+
+  function applyParallax(normX, normY) {
+    if (!bgFar) return;
+
+    bgFar.style.transform  = `translate(${normX * 8}px, ${normY * 8}px)`;
+    bgMid.style.transform  = `translate(${normX * 16}px, ${normY * 16}px)`;
+    bgNear.style.transform = `translate(${normX * 28}px, ${normY * 28}px)`;
+  }
+
+  // Desktop mouse
+  document.addEventListener("mousemove", (e) => {
+    const x = (e.clientX / window.innerWidth - 0.5);
+    const y = (e.clientY / window.innerHeight - 0.5);
+    applyParallax(x, y);
+  });
+
+  // Mobile touch
+  document.addEventListener("touchmove", (e) => {
+    if (!e.touches || !e.touches[0]) return;
+    const touch = e.touches[0];
+    const x = (touch.clientX / window.innerWidth - 0.5);
+    const y = (touch.clientY / window.innerHeight - 0.5);
+    applyParallax(x, y);
+  }, { passive: true });
+
   /* =====================================================
      CONFIG
   ===================================================== */
