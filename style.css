@@ -414,3 +414,33 @@ canvas#game{
     opacity:1;
   }
 }
+
+/* ================= CLAIM EXPLOSION ================= */
+
+.claim-pop{
+  animation: claimPop 0.3s ease;
+}
+
+@keyframes claimPop{
+  0%{ transform: scale(1); }
+  50%{ transform: scale(1.1); }
+  100%{ transform: scale(1); }
+}
+
+.gem-float{
+  position: absolute;
+  font-size: 20px;
+  animation: gemFloat 0.8s ease forwards;
+  pointer-events: none;
+}
+
+@keyframes gemFloat{
+  0%{
+    opacity:1;
+    transform: translateY(0) scale(1);
+  }
+  100%{
+    opacity:0;
+    transform: translateY(-80px) scale(1.3);
+  }
+}
