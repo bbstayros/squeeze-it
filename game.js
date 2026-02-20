@@ -630,21 +630,43 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function claimMilestone(level) {
-    if (State.claimedMilestones.includes(level)) return;
+  if (State.claimedMilestones.includes(level)) return;
 
-    const reward = generateMilestoneReward(level);
+  const reward = generateMilestoneReward(level);
 
-    if (reward.type === "gems") {
-      State.totalGems += reward.amount;
-      Storage.saveGems();
-    }
-
-    State.claimedMilestones.push(level);
-    Storage.saveClaimedMilestones();
-
-    UI.toast("Milestone Reward Claimed! 🎉");
-    renderMilestones();
+  if (reward.type === "gems") {
+    State.totalGems += reward.amount;
+    Storage.saveGems();
   }
+
+  State.claimedMilestones.push(level);
+  Storage.saveClaimedMilestones();
+
+  // ===== EXPLOSION EFFECT =====
+  const cards = document.querySelectorAll(".milestone-card");
+  cards.forEach(card => {
+    if (card.textContent.includes("Level " + level)) {
+      card.classList.add("claim-pop");
+
+      // floating gems
+      const rect = card.getBoundingClientRect();
+
+      for (let i = 0; i < 5; i++) {
+        const gem = document.createElement("div");
+        gem.textContent = "💎";
+        gem.className = "gem-float";
+        gem.style.left = rect.left + rect.width / 2 + (Math.random()*40-20) + "px";
+        gem.style.top = rect.top + "px";
+        document.body.appendChild(gem);
+
+        setTimeout(() => gem.remove(), 800);
+      }
+    }
+  });
+
+  UI.toast("Milestone Reward Claimed! 🎉");
+  renderMilestones();
+}
 
   /* =====================================================
      VFX
