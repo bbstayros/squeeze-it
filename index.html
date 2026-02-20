@@ -9,63 +9,77 @@
 
 <body>
 
-<header class="topbar">
-  <div class="stat">Score: <span id="score">0</span></div>
-  <div class="stat">Time: <span id="time">45</span>s</div>
+<!-- ================= BACKGROUND WRAPPER ================= -->
+<div id="game-wrapper">
 
-  <div class="topbar-actions">
-    <button id="shopBtn" class="btn">Shop</button>
-    <button id="milestonesBtn" class="btn">Milestones</button>
-    <button id="startBtn" class="btn">Start</button>
-  </div>
-  <div class="xp-container">
-  <div class="xp-label">Level <span id="levelDisplay">1</span></div>
-  <div class="xp-bar">
-    <div id="xpFill" class="xp-fill"></div>
-  </div>
-</div>
-</header>
+  <!-- Background Layers -->
+  <div class="bg bg-far"></div>
+  <div class="bg bg-mid"></div>
+  <div class="bg bg-near"></div>
+  <div class="bg-overlay"></div>
 
-<!-- Overlay -->
-<div id="shopOverlay" class="hidden"></div>
+  <!-- ================= UI + GAME ================= -->
 
-<!-- Shop Panel -->
-<div id="shopPanel" class="hidden">
-  <h2>Shop</h2>
+  <header class="topbar">
+    <div class="stat">Score: <span id="score">0</span></div>
+    <div class="stat">Time: <span id="time">45</span>s</div>
 
-  <div class="shop-balance">
-    Gems: <span id="gemCount">0</span> 💎
-  </div>
-
-  <div id="themeList" class="theme-list"></div>
-
-  <button id="closeShop" class="btn close-btn">Close</button>
-</div>
-
-<main class="wrap">
-
-  <div id="levelSelect" class="level-select">
-    <h2>Select Difficulty</h2>
-    <div class="levels">
-      <button class="level-btn" data-level="easy">Easy</button>
-      <button class="level-btn" data-level="medium">Medium</button>
-      <button class="level-btn" data-level="hard">Hard</button>
+    <div class="topbar-actions">
+      <button id="shopBtn" class="btn">Shop</button>
+      <button id="milestonesBtn" class="btn">Milestones</button>
+      <button id="startBtn" class="btn">Start</button>
     </div>
+
+    <div class="xp-container">
+      <div class="xp-label">Level <span id="levelDisplay">1</span></div>
+      <div class="xp-bar">
+        <div id="xpFill" class="xp-fill"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Overlay -->
+  <div id="shopOverlay" class="hidden"></div>
+
+  <!-- Shop Panel -->
+  <div id="shopPanel" class="hidden">
+    <h2>Shop</h2>
+
+    <div class="shop-balance">
+      Gems: <span id="gemCount">0</span> 💎
+    </div>
+
+    <div id="themeList" class="theme-list"></div>
+
+    <button id="closeShop" class="btn close-btn">Close</button>
   </div>
 
-  <canvas id="game"></canvas>
-  <div id="countdown" class="countdown hidden">3</div>
+  <main class="wrap">
 
-</main>
-  
-<!-- Milestones Screen -->
-<div id="milestoneScreen" class="milestone-screen hidden">
-  <div class="milestone-header">
-    <h2>Milestones</h2>
-    <button id="closeMilestones" class="btn">Close</button>
+    <div id="levelSelect" class="level-select">
+      <h2>Select Difficulty</h2>
+      <div class="levels">
+        <button class="level-btn" data-level="easy">Easy</button>
+        <button class="level-btn" data-level="medium">Medium</button>
+        <button class="level-btn" data-level="hard">Hard</button>
+      </div>
+    </div>
+
+    <canvas id="game"></canvas>
+    <div id="countdown" class="countdown hidden">3</div>
+
+  </main>
+
+  <!-- Milestones Screen -->
+  <div id="milestoneScreen" class="milestone-screen hidden">
+    <div class="milestone-header">
+      <h2>Milestones</h2>
+      <button id="closeMilestones" class="btn">Close</button>
+    </div>
+    <div id="milestoneList" class="milestone-list"></div>
   </div>
-  <div id="milestoneList" class="milestone-list"></div>
-</div>
+
+</div> <!-- END WRAPPER -->
 
 <script src="game.js" defer></script>
 </body>
