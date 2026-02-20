@@ -394,7 +394,8 @@ document.addEventListener("DOMContentLoaded", () => {
       type: getRandomType(),
       hit: false,
       hitTimer: 0,
-      walkPhase: Math.random() * Math.PI * 2
+      walkPhase: Math.random() * Math.PI * 2,
+      spawnScale: 0,
     });
   }
 
@@ -692,6 +693,15 @@ document.addEventListener("DOMContentLoaded", () => {
       e.x += e.vx * dt;
       e.walkPhase += dt * 8;
       e.y += e.vy * dt;
+
+      // spawn scale animation
+      if (e.spawnScale < 1) {
+        let scale = e.spawnScale || 1;
+
+      if (e.hit) {
+        scale = 1 + e.hitTimer * 6;
+        }
+      }
 
       if (
         e.x < -e.r - 20 ||
