@@ -322,10 +322,10 @@ canvas#game{
 ===================================================== */
 
 #game-wrapper{
-  position: relative;
-  width: 100vw;
-  height: 100vh;
+  position: fixed;
+  inset: 0;
   overflow: hidden;
+  z-index: 0;
 }
 
 /* Base background layers */
@@ -339,19 +339,16 @@ canvas#game{
   will-change: transform;
 }
 
-/* Far layer */
 .bg-far{
   background: radial-gradient(circle at center, #1e293b 0%, #0f1115 70%);
-  z-index: 0;
+  z-index: -4;
 }
 
-/* Mid layer */
 .bg-mid{
   background: linear-gradient(to top, rgba(255,255,255,0.04), transparent);
-  z-index: 1;
+  z-index: -3;
 }
 
-/* Near subtle texture */
 .bg-near{
   background: repeating-radial-gradient(
     circle at 20% 30%,
@@ -359,25 +356,13 @@ canvas#game{
     transparent 3px,
     transparent 80px
   );
-  z-index: 2;
+  z-index: -2;
 }
 
-/* Vignette overlay */
 .bg-overlay{
   position: absolute;
   inset: 0;
   background: radial-gradient(circle, transparent 60%, rgba(0,0,0,0.65));
-  z-index: 3;
+  z-index: -1;
   pointer-events: none;
-}
-
-/* Make sure game content is above background */
-.topbar,
-.wrap,
-#shopOverlay,
-#shopPanel,
-.milestone-screen,
-.toast{
-  position: relative;
-  z-index: 10;
 }
