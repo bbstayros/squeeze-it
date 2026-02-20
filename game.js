@@ -101,6 +101,10 @@ document.addEventListener("DOMContentLoaded", () => {
     hitEffects: [],
     floatingTexts: [],
 
+    // screen shake
+    shakeTime: 0,
+    shakeStrength: 0,
+
     // economy
     totalGems: parseInt(localStorage.getItem("squeeze_gems")) || 0,
     earnedGems: 0,
@@ -700,13 +704,35 @@ document.addEventListener("DOMContentLoaded", () => {
       f.alpha -= 1.5 * dt;
       if (f.alpha <= 0) State.floatingTexts.splice(i, 1);
     }
+    // update screen shake
+if (State.shakeTime > 0) {
+  State.shakeTime -= dt;
+
+  // smooth decay
+  State.shakeStrength *= 0.92;
+
+  if (State.shakeTime <= 0) {
+    State.shakeTime = 0;
+    State.shakeStrength = 0;
+  }
+}
   }
 
   function draw() {
     const theme = getCurrentTheme();
 
     ctx.clearRect(0, 0, State.W, State.H);
+    // apply screen shake
+    let offsetX = 0;
+    let offsetY = 0;
 
+    if (State.shakeTime > 0) {
+      offsetX = (Math.random() - 0.5) * State.shakeStrength;
+      offsetY = (Math.random() - 0.5) * State.shakeStrength;
+}
+
+ctx.save();
+ctx.translate(offsetX, offsetY);
     // background
     ctx.fillStyle = theme.bg;
     ctx.fillRect(0, 0, State.W, State.H);
@@ -785,6 +811,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ctx.fillText(f.text, f.x, f.y);
     }
     ctx.globalAlpha = 1;
+    ctx.restore();
   }
 
   /* =====================================================
@@ -846,19 +873,29 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        // SHIELD -> break combo
+        // SHIELD -> break combo (no central effect)
         if (e.type === "shield") {
           State.combo = 0;
           State.comboTimer = 0;
-          comboBreakFX();
+
+        // μικρό hit flash μόνο στο entity
+          State.hitEffects.push({
+          x: e.x,
+          y: e.y,
+          radius: 12,
+          alpha: 0.8
+           });
           return;
         }
 
         // SPIKE -> break combo + freeze + -2 sec
-        if (e.type === "spike") {
+          if (e.type === "spike") {
           State.combo = 0;
           State.comboTimer = 0;
-          comboBreakFX();
+
+        // screen shake
+          State.shakeTime = 0.25;     // duration in seconds
+          State.shakeStrength = 14;   // intensity
 
           activateFreeze();
 
