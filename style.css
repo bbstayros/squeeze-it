@@ -1,4 +1,4 @@
-:root { --pad: 12px; }
+ω:root { --pad: 12px; }
 
 * { box-sizing: border-box; }
 
@@ -36,6 +36,12 @@ body {
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
+
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.btn:active{
+  transform: scale(0.95);
 }
 
 .btn:disabled{ opacity: 0.5; cursor: default; }
@@ -296,7 +302,19 @@ canvas#game{
 
 .milestone-card.current{
   border:2px solid #00ffcc;
-  box-shadow:0 0 12px rgba(0,255,204,0.4);
+  animation: milestonePulse 1.8s ease-in-out infinite;
+}
+
+@keyframes milestonePulse{
+  0%{
+    box-shadow:0 0 8px rgba(0,255,204,0.3);
+  }
+  50%{
+    box-shadow:0 0 18px rgba(0,255,204,0.7);
+  }
+  100%{
+    box-shadow:0 0 8px rgba(0,255,204,0.3);
+  }
 }
 
 .milestone-reward{
