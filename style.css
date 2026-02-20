@@ -13,16 +13,23 @@ body {
 
 .topbar{
   display:flex;
-  gap: 10px;
+  gap: 14px;
   align-items:center;
   justify-content: space-between;
-  padding: var(--pad);
+  padding: 14px 16px;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  background: rgba(15,17,21,0.9);
-  backdrop-filter: blur(8px);
+
+  background: linear-gradient(
+    to bottom,
+    rgba(20,24,32,0.95),
+    rgba(15,17,21,0.85)
+  );
+
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
   z-index: 10;
   flex-wrap: wrap;
 }
@@ -32,12 +39,26 @@ body {
 .btn{
   padding: 10px 14px;
   border: 0;
-  border-radius: 12px;
+  border-radius: 14px;
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
 
+  background: linear-gradient(180deg,#2b3242,#1f2532);
+  color: white;
+
+  box-shadow:
+    0 4px 10px rgba(0,0,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+
   transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.btn:active{
+  transform: scale(0.95);
+  box-shadow:
+    0 2px 6px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.05);
 }
 
 .btn:active{
@@ -77,7 +98,14 @@ canvas#game{
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  background: rgba(0,0,0,0.6);
+
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.75),
+    rgba(0,0,0,0.85)
+  );
+
+  backdrop-filter: blur(10px);
   z-index:5;
 }
 
@@ -247,12 +275,15 @@ canvas#game{
   overflow: hidden;
 }
 
-.xp-fill {
+.xp-fill{
   height: 100%;
   width: 0%;
   background: linear-gradient(90deg, #00ffcc, #00aaff);
-  box-shadow: 0 0 8px rgba(0,255,204,0.6);
-  transition: width 0.3s ease;
+  box-shadow:
+    0 0 8px rgba(0,255,204,0.6),
+    0 0 18px rgba(0,170,255,0.4);
+
+  transition: width 0.4s cubic-bezier(.4,2,.6,1);
 }
 
 .xp-container{
