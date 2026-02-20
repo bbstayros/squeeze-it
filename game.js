@@ -28,6 +28,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const milestoneList = document.getElementById("milestoneList");
   const closeMilestones = document.getElementById("closeMilestones");
 
+  const endPanel = document.getElementById("endPanel");
+  const endScore = document.getElementById("endScore");
+  const endGems = document.getElementById("endGems");
+  const endXP = document.getElementById("endXP");
+  const playAgainBtn = document.getElementById("playAgainBtn");
+  const backMenuBtn = document.getElementById("backMenuBtn");
+
     /* =====================================================
      PARALLAX BACKGROUND (Visual Only)
   ===================================================== */
@@ -1094,7 +1101,12 @@ const shadowAlpha = 0.25 * shadowScale;
 
     startBtn.disabled = false;
 
-    UI.toast("Round End! +" + State.earnedGems + " 💎");
+    // Fill summary panel
+    endScore.textContent = State.score;
+    endGems.textContent = State.earnedGems;
+    endXP.textContent = xpEarned;
+
+    UI.show(endPanel);
   }
 
   /* =====================================================
@@ -1157,7 +1169,20 @@ const shadowAlpha = 0.25 * shadowScale;
   closeMilestones.addEventListener("click", () => {
     UI.hide(milestoneScreen);
   });
+  /* =====================================================
+     EVENTS - END PANEL
+  ===================================================== */
+  playAgainBtn.addEventListener("click", () => {
+  UI.hide(endPanel);
+  startCountdownThenPlay();
+  });
 
+  backMenuBtn.addEventListener("click", () => {
+  UI.hide(endPanel);
+  levelSelect.classList.remove("hidden");
+  startBtn.disabled = false;
+  });
+  
   /* =====================================================
      DEBUG TOGGLE THEME
   ===================================================== */
