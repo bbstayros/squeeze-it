@@ -788,9 +788,21 @@ ctx.translate(offsetX, offsetY);
       const bodyColor = theme[e.type];
 
       // shadow
+     const shadowScale = scale;
+const shadowAlpha = 0.25 * shadowScale;
+
       ctx.beginPath();
-      ctx.ellipse(e.x, e.y + e.r * 0.9, e.r * 0.7, e.r * 0.25, 0, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(0,0,0,0.25)";
+      ctx.ellipse(
+      e.x,
+      e.y + e.r * 0.9,
+      e.r * 0.7 * shadowScale,
+      e.r * 0.25 * shadowScale,
+      0,
+      0,
+      Math.PI * 2
+      );
+
+      ctx.fillStyle = `rgba(0,0,0,${shadowAlpha})`;
       ctx.fill();
 
       ctx.save();
