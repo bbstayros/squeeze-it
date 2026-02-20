@@ -696,7 +696,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // spawn scale animation
       if (e.spawnScale < 1) {
-        let scale = e.spawnScale || 1;
+        let scale = e.spawnScale !== undefined ? e.spawnScale : 1;
 
       if (e.hit) {
         scale = 1 + e.hitTimer * 6;
