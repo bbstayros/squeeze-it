@@ -66,6 +66,7 @@ async function unlockAudio() {
   const endXP = document.getElementById("endXP");
   const playAgainBtn = document.getElementById("playAgainBtn");
   const backMenuBtn = document.getElementById("backMenuBtn");
+  const soundToggleBtn = document.getElementById("soundToggle");
 
     /* =====================================================
      PARALLAX BACKGROUND (Visual Only)
@@ -1246,7 +1247,26 @@ startCountdownThenPlay();
   levelSelect.classList.remove("hidden");
   startBtn.disabled = false;
   });
-  
+
+   /* =====================================================
+     EVENTS - SOUND
+  ===================================================== */ 
+  soundToggleBtn.addEventListener("click", async () => {
+  const newState = !sound.isEnabled();
+  sound.setEnabled(newState);
+
+  soundToggleBtn.textContent = newState ? "🔊" : "🔇";
+
+  if (newState) {
+    if (!sound.unlocked) {
+      await sound.unlock();
+    }
+    if (State.gameRunning) {
+      sound.startAmbient();
+    }
+  }
+});
+   
   /* =====================================================
      DEBUG TOGGLE THEME
   ===================================================== */
@@ -1267,6 +1287,16 @@ startCountdownThenPlay();
   UI.setGems(State.totalGems);
   updateXPUI();
 
+   // 🔊 RESTORE SOUND STATE
+const savedSound = localStorage.getItem("squeeze_sound");
+
+if (savedSound === "off") {
+  sound.setEnabled(false);
+  soundToggleBtn.textContent = "🔇";
+} else {
+  soundToggleBtn.textContent = "🔊";
+}
+   
   resize();
   draw();
 });
