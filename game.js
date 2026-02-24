@@ -30,10 +30,7 @@ async function unlockAudio() {
   await sound.unlock();
   sound.startAmbient();
 }
-
-window.addEventListener("pointerdown", unlockAudio, { once: true });
-window.addEventListener("touchstart", unlockAudio, { once: true });
-  
+   
   /* =====================================================
      DOM
   ===================================================== */
@@ -1188,15 +1185,20 @@ const shadowAlpha = 0.25 * shadowScale;
      EVENTS - START
   ===================================================== */
 
-  startBtn.addEventListener("click", () => {
+  startBtn.addEventListener("click", async () => {
     if (!State.difficulty) return;
-
     levelSelect.classList.add("hidden");
 
     if (State.gameRunning) return;
     startBtn.disabled = true;
 
-    startCountdownThenPlay();
+    if (!sound.unlocked) {
+    await sound.unlock();
+}
+
+sound.startAmbient();
+
+startCountdownThenPlay();
   });
 
   /* =====================================================
