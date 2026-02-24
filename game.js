@@ -683,6 +683,23 @@ function openMilestones() {
   milestonePageIndex = 0;
   renderMilestones();
 }
+   function claimMilestone(level) {
+  if (State.claimedMilestones.includes(level)) return;
+
+  const reward = milestoneReward(level);
+
+  State.totalGems += reward.gems;
+  addXP(reward.xp);
+
+  State.claimedMilestones.push(level);
+  Storage.saveGems();
+  Storage.saveClaimedMilestones();
+
+  sound._playBuffer("claim", { volume: 0.8 });
+  UI.toast("Milestone Claimed! 🎉");
+
+  renderMilestones();
+}
 
   /* =====================================================
      VFX
