@@ -1,4 +1,34 @@
+import { SoundManager } from "./sound.js";
 document.addEventListener("DOMContentLoaded", () => {
+
+/* =====================================================
+   SOUND SYSTEM
+===================================================== */
+
+const sound = new SoundManager();
+sound.init();
+
+const AUDIO_MANIFEST = [
+  { name: "tap", url: "assets/audio/tap.mp3" },
+  { name: "combo", url: "assets/audio/combo.mp3" },
+  { name: "shield", url: "assets/audio/shield.mp3" },
+  { name: "spike", url: "assets/audio/spike.mp3" },
+  { name: "claim", url: "assets/audio/claim.mp3" },
+  { name: "levelup", url: "assets/audio/levelup.mp3" },
+  { name: "ambient", url: "assets/audio/ambient.mp3" }
+];
+
+sound.loadAll(AUDIO_MANIFEST);
+
+// Mobile unlock
+async function unlockAudio() {
+  await sound.unlock();
+  sound.startAmbient();
+}
+
+window.addEventListener("pointerdown", unlockAudio, { once: true });
+window.addEventListener("touchstart", unlockAudio, { once: true });
+  
   /* =====================================================
      DOM
   ===================================================== */
@@ -332,6 +362,7 @@ document.addEventListener("DOMContentLoaded", () => {
     while (State.currentXP >= xpNeeded) {
       State.currentXP -= xpNeeded;
       State.playerLevel++;
+      sound._playBuffer("levelup", { volume: 1 });
       UI.toast("LEVEL UP! 🔥 Level " + State.playerLevel);
       xpNeeded = xpNeededForLevel(State.playerLevel);
     }
@@ -630,6 +661,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function claimMilestone(level) {
+  sound._playBuffer("claim", { volume: 0.8 });  
   if (State.claimedMilestones.includes(level)) return;
 
   const reward = generateMilestoneReward(level);
@@ -938,6 +970,8 @@ const shadowAlpha = 0.25 * shadowScale;
         // NORMAL
         if (e.type === "normal") {
           State.combo++;
+          sound.tap(Math.min(State.combo / 20, 1));
+          if (State.combo > 1) sound.combo(State.combo);
           State.comboTimer = Config.comboTimeoutSec;
 
           let multiplier = 1;
@@ -973,6 +1007,7 @@ const shadowAlpha = 0.25 * shadowScale;
 
         // SHIELD -> break combo (no central effect)
         if (e.type === "shield") {
+          sound._playBuffer("shield", { volume: 0.6 });
           State.combo = 0;
           State.comboTimer = 0;
 
@@ -988,6 +1023,7 @@ const shadowAlpha = 0.25 * shadowScale;
 
         // SPIKE -> break combo + freeze + -2 sec
           if (e.type === "spike") {
+          sound._playBuffer("spike", { volume: 0.8 });
           State.combo = 0;
           State.comboTimer = 0;
 
