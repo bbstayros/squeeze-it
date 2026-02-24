@@ -1281,4 +1281,13 @@ if (savedSound === "off") {
    
   resize();
   draw();
+
+   // DEBUG GLOBAL ACCESS
+window.__DEBUG = {
+  State,
+  xpNeededForLevel,
+  addXP,
+  openMilestones,
+  milestoneReward
+};
 });
