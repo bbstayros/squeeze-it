@@ -187,7 +187,7 @@ export class SoundManager {
     src.start();
 
     // gentle fade in
-    g.gain.setTargetAtTime(0.38, this.ctx.currentTime, 0.8);
+    g.gain.setTargetAtTime(0.48, this.ctx.currentTime, 0.8);
 
     this.activeAmbient = { src, gain: g };
   }
