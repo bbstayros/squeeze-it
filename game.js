@@ -20,8 +20,13 @@ const AUDIO_MANIFEST = [
 
 sound.loadAll(AUDIO_MANIFEST);
 
+let audioUnlocked = false;
+
 // Mobile unlock
 async function unlockAudio() {
+  if (audioUnlocked) return;
+  audioUnlocked = true;
+
   await sound.unlock();
   sound.startAmbient();
 }
@@ -453,7 +458,7 @@ window.addEventListener("touchstart", unlockAudio, { once: true });
 
   function claimDailyReward() {
     if (!canClaimDailyReward()) return;
-
+    sound._playBuffer("claim", { volume: 0.8 });
     let streak = parseInt(localStorage.getItem(Config.STREAK_KEY)) || 0;
     streak++;
     if (streak > 7) streak = 1;
@@ -661,9 +666,8 @@ window.addEventListener("touchstart", unlockAudio, { once: true });
   }
 
   function claimMilestone(level) {
-  sound._playBuffer("claim", { volume: 0.8 });  
-  if (State.claimedMilestones.includes(level)) return;
-
+    if (State.claimedMilestones.includes(level)) return;
+  sound._playBuffer("claim", { volume: 0.8 });   
   const reward = generateMilestoneReward(level);
 
   if (reward.type === "gems") {
