@@ -135,8 +135,8 @@ async function unlockAudio() {
     AD_REWARD_AMOUNT: 100,
     STREAK_REWARDS: [50, 60, 75, 90, 110, 150, 250],
 
-    // milestones
-    CLAIMED_KEY: "squeeze_milestones_claimed",
+    // ranks/rewards
+    CLAIMED_KEY: "squeeze_rank_rewards_claimed",
 
     // countdown
     countdownStart: 3,
@@ -185,9 +185,9 @@ async function unlockAudio() {
     playerLevel: parseInt(localStorage.getItem("squeeze_level")) || 1,
     currentXP: parseInt(localStorage.getItem("squeeze_xp")) || 0,
 
-    // milestones
-    claimedMilestones:
-      JSON.parse(localStorage.getItem(Config.CLAIMED_KEY)) || [],
+    // rank rewards claimed (store claimed reward levels)
+    claimedRankRewards:
+    JSON.parse(localStorage.getItem(Config.CLAIMED_KEY)) || [],
 
     // theme
     currentThemeKey: "classic",
@@ -241,12 +241,13 @@ async function unlockAudio() {
       localStorage.setItem("squeeze_level", State.playerLevel);
       localStorage.setItem("squeeze_xp", State.currentXP);
     },
-    saveClaimedMilestones() {
-      localStorage.setItem(
-        Config.CLAIMED_KEY,
-        JSON.stringify(State.claimedMilestones)
+    saveClaimedRankRewards() {
+    localStorage.setItem(
+     Config.CLAIMED_KEY,
+     JSON.stringify(State.claimedRankRewards)
       );
-    },
+     },
+     
     loadThemeUnlocks() {
       const saved = JSON.parse(localStorage.getItem("squeeze_theme_unlocks"));
       if (!saved) return;
@@ -596,81 +597,140 @@ function addXP(amount) {
     }
   }
 
-  /* =====================================================
-   MILESTONES – INFINITE PAGINATED SYSTEM
+/* =====================================================
+   RANKS + RANK REWARDS SYSTEM
 ===================================================== */
 
-const MILESTONE_PAGE_SIZE = 12;
-let milestonePageIndex = 0;
-let milestoneGeneratedList = [];
+const RANKS = [
+  { key: "lapiz",    name: "Lapiz Finger",    min: 1,    max: 50 },
+  { key: "iron",     name: "Iron Finger",     min: 50,   max: 120 },
+  { key: "bronze",   name: "Bronze Finger",   min: 120,  max: 250 },
+  { key: "silver",   name: "Silver Finger",   min: 250,  max: 450 },
+  { key: "gold",     name: "Gold Finger",     min: 450,  max: 700 },
+  { key: "platinum", name: "Platinum Finger", min: 700,  max: 1000 },
+  { key: "diamond",  name: "Diamond Finger",  min: 1000, max: 1500 },
+  { key: "emerald",  name: "Emerald Finger",  min: 1500, max: 2200 },
+  { key: "obsidian", name: "Obsidian Finger", min: 2200, max: Infinity }
+];
 
-function milestoneStepForLevel(level) {
-  if (level < 50) return 5;
-  if (level < 150) return 10;
-  if (level < 300) return 25;
-  if (level < 600) return 50;
-  if (level < 1200) return 100;
-  return 250;
+function getCurrentRank(level) {
+  return RANKS.find(r => level >= r.min && level < r.max) || RANKS[0];
 }
 
-function milestoneSnapDown(level, step) {
-  return Math.floor(level / step) * step;
+function getRankProgress(level) {
+  const r = getCurrentRank(level);
+  if (!isFinite(r.max)) return 1; // Obsidian: no "next"
+  const range = Math.max(1, r.max - r.min);
+  return Math.max(0, Math.min(1, (level - r.min) / range));
 }
 
-function generateMilestonesAroundLevel(anchorLevel, count = 72) {
-  const step = milestoneStepForLevel(anchorLevel);
-  const start = Math.max(step, milestoneSnapDown(anchorLevel - step * 30, step));
+function getNextRank(level) {
+  const r = getCurrentRank(level);
+  const idx = RANKS.findIndex(x => x.key === r.key);
+  return RANKS[idx + 1] || null;
+}
 
-  const list = [];
-  let L = start;
+// Generate a small set of reward checkpoints inside the current rank.
+// NOTE: We return "absolute levels" (real playerLevel), όχι stages.
+function generateRankRewards(rank) {
+  // Obsidian has no max -> choose a "window" of 250 levels for rewards
+  const effectiveMax = isFinite(rank.max) ? rank.max : (rank.min + 250);
+  const total = Math.max(1, effectiveMax - rank.min);
 
-  for (let i = 0; i < count; i++) {
-    list.push({ levelTarget: L });
-    L += milestoneStepForLevel(L);
+  // helper: turn % into absolute level (rounded) and clamp
+  const at = (p) => {
+    const lvl = rank.min + Math.floor(total * p);
+    // clamp within [min, effectiveMax]
+    return Math.max(rank.min, Math.min(effectiveMax, lvl));
+  };
+
+  return [
+    { level: at(0.10), type: "gems", amount: 10 },
+    { level: at(0.20), type: "gems", amount: 20 },
+    { level: at(0.35), type: "gems", amount: 30 },
+
+    { level: at(0.50), type: "humanoidSkin" },      // 1/3 idea (cosmetic)
+    { level: at(0.70), type: "backgroundSkin" },    // 2/3
+    { level: at(1.00), type: "fingerSkin" }         // 3/3 (prestige)
+  ];
+}
+
+function rewardLabel(reward) {
+  if (reward.type === "gems") return `+${reward.amount} 💎`;
+  if (reward.type === "humanoidSkin") return `Humanoid Skin (Rank)`;
+  if (reward.type === "backgroundSkin") return `Background Skin (Rank)`;
+  if (reward.type === "fingerSkin") return `Finger Skin (Rank)`;
+  return reward.type;
+}
+
+function claimRankReward(reward) {
+  const lvl = reward.level;
+  if (State.claimedRankRewards.includes(lvl)) return;
+  if (State.playerLevel < lvl) return;
+
+  // apply
+  if (reward.type === "gems") {
+    State.totalGems += reward.amount;
+    Storage.saveGems();
+  } else {
+    // TODO later: unlock cosmetics in your cosmetics system
+    // for now we just toast
   }
 
-  return list;
+  State.claimedRankRewards.push(lvl);
+  Storage.saveClaimedRankRewards();
+
+  sound._playBuffer("claim", { volume: 0.8 });
+  UI.toast("Reward Claimed! 🎉");
+
+  renderRankScreen(); // refresh
 }
 
-function milestoneReward(levelTarget) {
-  const baseGems = 8;
-  const scaled = Math.pow(levelTarget, 0.55);
-  const gems = Math.floor(baseGems + scaled);
-  const xp = Math.floor(xpNeededForLevel(levelTarget) * 0.35);
-  return { gems, xp };
-}
-
-function renderMilestones() {
+function renderRankScreen() {
   milestoneList.innerHTML = "";
 
-  const pageStart = milestonePageIndex * MILESTONE_PAGE_SIZE;
-  const pageEnd = pageStart + MILESTONE_PAGE_SIZE;
+  const rank = getCurrentRank(State.playerLevel);
+  const next = getNextRank(State.playerLevel);
+  const progress = getRankProgress(State.playerLevel);
 
-  const pageItems = milestoneGeneratedList.slice(pageStart, pageEnd);
+  // Header card (simple, using existing list container)
+  const header = document.createElement("div");
+  header.className = "milestone-card";
+  header.innerHTML = `
+    <div><strong>${rank.name}</strong></div>
+    <div>Level ${State.playerLevel}${next ? ` • Next: ${next.name}` : ""}</div>
+    <div style="margin-top:8px;">
+      <div style="opacity:.8;font-size:12px;">Progress to next rank</div>
+      <div style="height:10px;border-radius:999px;background:rgba(255,255,255,0.12);overflow:hidden;">
+        <div style="height:100%;width:${Math.floor(progress*100)}%;background:rgba(255,255,255,0.7);"></div>
+      </div>
+      <div style="margin-top:6px;opacity:.85;font-size:12px;">${Math.floor(progress*100)}%</div>
+    </div>
+  `;
+  milestoneList.appendChild(header);
 
-  pageItems.forEach(m => {
-    const lvl = m.levelTarget;
-    const reward = milestoneReward(lvl);
+  // Rewards list
+  const rewards = generateRankRewards(rank);
+
+  rewards.forEach(rw => {
+    const claimed = State.claimedRankRewards.includes(rw.level);
+    const unlocked = State.playerLevel >= rw.level;
 
     const card = document.createElement("div");
     card.className = "milestone-card";
-
-    const claimed = State.claimedMilestones.includes(lvl);
-    const unlocked = State.playerLevel >= lvl;
-
     if (claimed) card.classList.add("completed");
     else if (unlocked) card.classList.add("current");
 
     card.innerHTML = `
-      <div><strong>Level ${lvl}</strong></div>
-      <div>+${reward.gems} 💎 • +${reward.xp} XP</div>
+      <div><strong>Level ${rw.level}</strong></div>
+      <div class="milestone-reward">${rewardLabel(rw)}</div>
     `;
 
     if (unlocked && !claimed) {
       const btn = document.createElement("button");
       btn.className = "claim-btn";
       btn.textContent = "Claim";
-      btn.onclick = () => claimMilestone(lvl);
+      btn.onclick = () => claimRankReward(rw);
       card.appendChild(btn);
     }
 
@@ -678,27 +738,8 @@ function renderMilestones() {
   });
 }
 
-function openMilestones() {
-  milestoneGeneratedList = generateMilestonesAroundLevel(State.playerLevel);
-  milestonePageIndex = 0;
-  renderMilestones();
-}
-   function claimMilestone(level) {
-  if (State.claimedMilestones.includes(level)) return;
-
-  const reward = milestoneReward(level);
-
-  State.totalGems += reward.gems;
-  addXP(reward.xp);
-
-  State.claimedMilestones.push(level);
-  Storage.saveGems();
-  Storage.saveClaimedMilestones();
-
-  sound._playBuffer("claim", { volume: 0.8 });
-  UI.toast("Milestone Claimed! 🎉");
-
-  renderMilestones();
+function openRanks() {
+  renderRankScreen();
 }
 
   /* =====================================================
@@ -1181,6 +1222,8 @@ const shadowAlpha = 0.25 * shadowScale;
     });
   });
 
+   
+
   /* =====================================================
      EVENTS - START
   ===================================================== */
@@ -1226,9 +1269,9 @@ startCountdownThenPlay();
   ===================================================== */
 
   milestonesBtn.addEventListener("click", () => {
-    openMilestones();
-    UI.show(milestoneScreen);
-  });
+  openRanks();
+  UI.show(milestoneScreen);
+});
 
   closeMilestones.addEventListener("click", () => {
     UI.hide(milestoneScreen);
@@ -1304,7 +1347,8 @@ window.__DEBUG = {
   State,
   xpNeededForLevel,
   addXP,
-  openMilestones,
-  milestoneReward
+  openRanks,
+  getCurrentRank,
+  getRankProgress
 };
 });
