@@ -345,34 +345,40 @@ async function unlockAudio() {
   }
 
   /* =====================================================
-     XP
+   XP – INFINITE SCALING SYSTEM
   ===================================================== */
 
   function xpNeededForLevel(level) {
-    return 100 + level * 40;
+   const XP_BASE = 60;
+  const XP_LINEAR = 18;
+  const XP_POW = 1.35;
+  const XP_QUAD = 7;
+
+  const l = Math.max(1, level);
+  const powPart = Math.pow(l, XP_POW) * XP_QUAD;
+  return Math.floor(XP_BASE + (l * XP_LINEAR) + powPart);
+}
+
+function updateXPUI() {
+  levelDisplay.textContent = State.playerLevel;
+  const percent = State.currentXP / xpNeededForLevel(State.playerLevel);
+  xpFill.style.width = percent * 100 + "%";
+}
+
+function addXP(amount) {
+  State.currentXP += amount;
+
+  while (State.currentXP >= xpNeededForLevel(State.playerLevel)) {
+    State.currentXP -= xpNeededForLevel(State.playerLevel);
+    State.playerLevel++;
+
+    sound._playBuffer("levelup", { volume: 1 });
+    UI.toast("LEVEL UP! 🔥 Level " + State.playerLevel);
   }
 
-  function updateXPUI() {
-    levelDisplay.textContent = State.playerLevel;
-    const percent = State.currentXP / xpNeededForLevel(State.playerLevel);
-    xpFill.style.width = percent * 100 + "%";
-  }
-
-  function addXP(amount) {
-    State.currentXP += amount;
-
-    let xpNeeded = xpNeededForLevel(State.playerLevel);
-    while (State.currentXP >= xpNeeded) {
-      State.currentXP -= xpNeeded;
-      State.playerLevel++;
-      sound._playBuffer("levelup", { volume: 1 });
-      UI.toast("LEVEL UP! 🔥 Level " + State.playerLevel);
-      xpNeeded = xpNeededForLevel(State.playerLevel);
-    }
-
-    Storage.saveXP();
-    updateXPUI();
-  }
+  Storage.saveXP();
+  updateXPUI();
+}
 
   /* =====================================================
      RANDOM / SPAWN
@@ -591,114 +597,90 @@ async function unlockAudio() {
   }
 
   /* =====================================================
-     MILESTONES
-  ===================================================== */
+   MILESTONES – INFINITE PAGINATED SYSTEM
+===================================================== */
 
-  function generateMilestoneReward(level) {
-    if (level < 25) {
-      return { type: "gems", amount: 100 + level * 5 };
-    }
-    if (level < 75) {
-      if (level % 10 === 0) {
-        return { type: "skin", rarity: "rare" };
-      }
-      return { type: "gems", amount: 150 + level * 6 };
-    }
-    if (level < 150) {
-      if (level % 15 === 0) {
-        return { type: "skin", rarity: "epic" };
-      }
-      return { type: "gems", amount: 200 + level * 8 };
-    }
-    return { type: "gems", amount: 300 + level * 10 };
+const MILESTONE_PAGE_SIZE = 12;
+let milestonePageIndex = 0;
+let milestoneGeneratedList = [];
+
+function milestoneStepForLevel(level) {
+  if (level < 50) return 5;
+  if (level < 150) return 10;
+  if (level < 300) return 25;
+  if (level < 600) return 50;
+  if (level < 1200) return 100;
+  return 250;
+}
+
+function milestoneSnapDown(level, step) {
+  return Math.floor(level / step) * step;
+}
+
+function generateMilestonesAroundLevel(anchorLevel, count = 72) {
+  const step = milestoneStepForLevel(anchorLevel);
+  const start = Math.max(step, milestoneSnapDown(anchorLevel - step * 30, step));
+
+  const list = [];
+  let L = start;
+
+  for (let i = 0; i < count; i++) {
+    list.push({ levelTarget: L });
+    L += milestoneStepForLevel(L);
   }
 
-  function renderMilestones() {
-    milestoneList.innerHTML = "";
+  return list;
+}
 
-    const start = Math.max(5, State.playerLevel - 20);
-    const end = State.playerLevel + 50;
+function milestoneReward(levelTarget) {
+  const baseGems = 8;
+  const scaled = Math.pow(levelTarget, 0.55);
+  const gems = Math.floor(baseGems + scaled);
+  const xp = Math.floor(xpNeededForLevel(levelTarget) * 0.35);
+  return { gems, xp };
+}
 
-    for (let lvl = start; lvl <= end; lvl++) {
-      if (lvl % 5 !== 0) continue;
+function renderMilestones() {
+  milestoneList.innerHTML = "";
 
-      const reward = generateMilestoneReward(lvl);
+  const pageStart = milestonePageIndex * MILESTONE_PAGE_SIZE;
+  const pageEnd = pageStart + MILESTONE_PAGE_SIZE;
 
-      const card = document.createElement("div");
-      card.className = "milestone-card";
+  const pageItems = milestoneGeneratedList.slice(pageStart, pageEnd);
 
-      if (State.claimedMilestones.includes(lvl)) {
-        card.classList.add("completed");
-      } else if (State.playerLevel >= lvl) {
-        card.classList.add("current");
-      }
+  pageItems.forEach(m => {
+    const lvl = m.levelTarget;
+    const reward = milestoneReward(lvl);
 
-      const label = document.createElement("div");
-      label.innerHTML = `<strong>Level ${lvl}</strong>`;
+    const card = document.createElement("div");
+    card.className = "milestone-card";
 
-      const rewardText = document.createElement("div");
-      rewardText.className = "milestone-reward";
+    const claimed = State.claimedMilestones.includes(lvl);
+    const unlocked = State.playerLevel >= lvl;
 
-      if (reward.type === "gems") {
-        rewardText.textContent = `+${reward.amount} 💎`;
-      } else {
-        rewardText.textContent = `${reward.rarity.toUpperCase()} Skin`;
-      }
+    if (claimed) card.classList.add("completed");
+    else if (unlocked) card.classList.add("current");
 
-      const right = document.createElement("div");
+    card.innerHTML = `
+      <div><strong>Level ${lvl}</strong></div>
+      <div>+${reward.gems} 💎 • +${reward.xp} XP</div>
+    `;
 
-      if (State.playerLevel >= lvl && !State.claimedMilestones.includes(lvl)) {
-        const btn = document.createElement("button");
-        btn.className = "claim-btn";
-        btn.textContent = "Claim";
-        btn.onclick = () => claimMilestone(lvl);
-        right.appendChild(btn);
-      }
-
-      card.appendChild(label);
-      card.appendChild(rewardText);
-      card.appendChild(right);
-
-      milestoneList.appendChild(card);
+    if (unlocked && !claimed) {
+      const btn = document.createElement("button");
+      btn.className = "claim-btn";
+      btn.textContent = "Claim";
+      btn.onclick = () => claimMilestone(lvl);
+      card.appendChild(btn);
     }
-  }
 
-  function claimMilestone(level) {
-    if (State.claimedMilestones.includes(level)) return;
-  sound._playBuffer("claim", { volume: 0.8 });   
-  const reward = generateMilestoneReward(level);
-
-  if (reward.type === "gems") {
-    State.totalGems += reward.amount;
-    Storage.saveGems();
-  }
-
-  State.claimedMilestones.push(level);
-  Storage.saveClaimedMilestones();
-
-  // ===== EXPLOSION EFFECT =====
-  const cards = document.querySelectorAll(".milestone-card");
-  cards.forEach(card => {
-    if (card.textContent.includes("Level " + level)) {
-      card.classList.add("claim-pop");
-
-      // floating gems
-      const rect = card.getBoundingClientRect();
-
-      for (let i = 0; i < 5; i++) {
-        const gem = document.createElement("div");
-        gem.textContent = "💎";
-        gem.className = "gem-float";
-        gem.style.left = rect.left + rect.width / 2 + (Math.random()*40-20) + "px";
-        gem.style.top = rect.top + "px";
-        document.body.appendChild(gem);
-
-        setTimeout(() => gem.remove(), 800);
-      }
-    }
+    milestoneList.appendChild(card);
   });
+}
 
-  UI.toast("Milestone Reward Claimed! 🎉");
+function openMilestones() {
+  milestoneGeneratedList = generateMilestonesAroundLevel(State.playerLevel);
+  milestonePageIndex = 0;
   renderMilestones();
 }
 
@@ -1227,7 +1209,7 @@ startCountdownThenPlay();
   ===================================================== */
 
   milestonesBtn.addEventListener("click", () => {
-    renderMilestones();
+    openMilestones();
     UI.show(milestoneScreen);
   });
 
