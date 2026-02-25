@@ -493,3 +493,109 @@ canvas#game{
     transform: translateY(-80px) scale(1.3);
   }
 }
+
+/* =========================
+   RANK CAROUSEL
+========================= */
+.rank-panel{
+  margin: 14px 16px 10px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.rank-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom: 10px;
+}
+
+.rank-title{ display:flex; flex-direction:column; gap:4px; }
+.rank-name{ font-weight:800; font-size:18px; }
+.rank-next{ opacity:0.75; font-size:13px; }
+
+.rank-progress{ min-width: 220px; text-align:right; }
+.rank-progress-label{ opacity:0.75; font-size:12px; margin-bottom:6px; }
+.rank-progress-bar{
+  height:10px;
+  border-radius:999px;
+  background: rgba(255,255,255,0.06);
+  overflow:hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.rank-progress-fill{
+  height:100%;
+  width:0%;
+  border-radius:999px;
+  background: rgba(0,255,204,0.9);
+  box-shadow: 0 0 18px rgba(0,255,204,0.35);
+  transition: width 240ms ease;
+}
+.rank-progress-text{ margin-top:6px; opacity:0.85; font-size:12px; }
+
+.rank-carousel{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  padding: 10px 6px 6px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+.rank-carousel::-webkit-scrollbar{ height: 8px; }
+.rank-carousel::-webkit-scrollbar-thumb{
+  background: rgba(255,255,255,0.12);
+  border-radius: 999px;
+}
+
+.rank-card{
+  flex: 0 0 auto;
+  width: 132px;
+  scroll-snap-align: center;
+  border-radius: 16px;
+  padding: 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  text-align:center;
+  position:relative;
+  transform: translateZ(0);
+}
+
+.rank-card.locked{
+  opacity:0.35;
+  filter: grayscale(1);
+}
+
+.rank-card .rank-card-name{
+  margin-top:8px;
+  font-size:12px;
+  opacity:0.85;
+  font-weight:700;
+}
+
+.rank-card.current{
+  transform: scale(1.06);
+  border-color: rgba(0,255,204,0.45);
+  box-shadow: 0 0 0 2px rgba(0,255,204,0.10), 0 0 28px rgba(0,255,204,0.18);
+  animation: rankPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes rankPulse{
+  0%,100%{ box-shadow: 0 0 0 2px rgba(0,255,204,0.10), 0 0 26px rgba(0,255,204,0.14); }
+  50%{ box-shadow: 0 0 0 2px rgba(0,255,204,0.16), 0 0 34px rgba(0,255,204,0.22); }
+}
+
+.rank-lock{
+  position:absolute;
+  top:8px; right:10px;
+  font-size:14px;
+  opacity:0.9;
+}
+.rank-badge{
+  width: 76px;
+  height: 76px;
+  margin: 0 auto;
+  display:block;
+}
