@@ -735,30 +735,10 @@ function renderRankCarousel() {
 }
    
 function renderRankScreen() {
-  renderRankCarousel(); 
+  renderRankCarousel();
   milestoneList.innerHTML = "";
 
   const rank = getCurrentRank(State.playerLevel);
-  const next = getNextRank(State.playerLevel);
-  const progress = getRankProgress(State.playerLevel);
-
-  // Header card (simple, using existing list container)
-  const header = document.createElement("div");
-  header.className = "milestone-card";
-  header.innerHTML = `
-    <div><strong>${rank.name}</strong></div>
-    <div>Level ${State.playerLevel}${next ? ` • Next: ${next.name}` : ""}</div>
-    <div style="margin-top:8px;">
-      <div style="opacity:.8;font-size:12px;">Progress to next rank</div>
-      <div style="height:10px;border-radius:999px;background:rgba(255,255,255,0.12);overflow:hidden;">
-        <div style="height:100%;width:${Math.floor(progress*100)}%;background:rgba(255,255,255,0.7);"></div>
-      </div>
-      <div style="margin-top:6px;opacity:.85;font-size:12px;">${Math.floor(progress*100)}%</div>
-    </div>
-  `;
-  milestoneList.appendChild(header);
-
-  // Rewards list
   const rewards = generateRankRewards(rank);
 
   rewards.forEach(rw => {
@@ -767,6 +747,7 @@ function renderRankScreen() {
 
     const card = document.createElement("div");
     card.className = "milestone-card";
+
     if (claimed) card.classList.add("completed");
     else if (unlocked) card.classList.add("current");
 
