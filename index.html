@@ -73,12 +73,33 @@
 
   <!-- Milestones Screen -->
   <div id="milestoneScreen" class="milestone-screen hidden">
-    <div class="milestone-header">
-      <h2>Milestones</h2>
-      <button id="closeMilestones" class="btn">Close</button>
-    </div>
-    <div id="milestoneList" class="milestone-list"></div>
+  <div class="milestone-header">
+    <h2>Milestones</h2>
+    <button id="closeMilestones" class="btn">Close</button>
   </div>
+
+  <!-- RANK CAROUSEL -->
+  <div class="rank-panel">
+    <div class="rank-top">
+      <div class="rank-title">
+        <div id="rankName" class="rank-name">—</div>
+        <div id="rankNext" class="rank-next">Next: —</div>
+      </div>
+
+      <div class="rank-progress">
+        <div class="rank-progress-label">Progress to next rank</div>
+        <div class="rank-progress-bar">
+          <div id="rankProgressFill" class="rank-progress-fill"></div>
+        </div>
+        <div id="rankProgressText" class="rank-progress-text">0%</div>
+      </div>
+    </div>
+
+    <div id="rankCarousel" class="rank-carousel" aria-label="Rank carousel"></div>
+  </div>
+
+  <div id="milestoneList" class="milestone-list"></div>
+</div>
 
 
   <div id="endPanel" class="end-panel hidden">
