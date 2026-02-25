@@ -58,8 +58,12 @@ async function unlockAudio() {
   const milestonesBtn = document.getElementById("milestonesBtn");
   const milestoneScreen = document.getElementById("milestoneScreen");
   const milestoneList = document.getElementById("milestoneList");
+  const rankCarousel = document.getElementById("rankCarousel");
+  const rankNameEl = document.getElementById("rankName");
+  const rankNextEl = document.getElementById("rankNext");
+  const rankProgressFill = document.getElementById("rankProgressFill");
+  const rankProgressText = document.getElementById("rankProgressText");
   const closeMilestones = document.getElementById("closeMilestones");
-
   const endPanel = document.getElementById("endPanel");
   const endScore = document.getElementById("endScore");
   const endGems = document.getElementById("endGems");
@@ -685,8 +689,53 @@ function claimRankReward(reward) {
 
   renderRankScreen(); // refresh
 }
+function renderRankCarousel() {
+  const carousel = document.getElementById("rankCarousel");
+  if (!carousel) return;
 
+  carousel.innerHTML = "";
+
+  const currentRank = getCurrentRank(State.playerLevel);
+  const progress = getRankProgress(State.playerLevel);
+
+  RANKS.forEach(rank => {
+    const card = document.createElement("div");
+    card.className = "rank-card";
+
+    if (rank.key === currentRank.key) {
+      card.classList.add("current");
+    }
+
+    if (State.playerLevel < rank.min) {
+      card.classList.add("locked");
+    }
+
+    card.innerHTML = `
+      <div style="font-weight:700">${rank.name}</div>
+      <div style="font-size:12px;opacity:.7">
+        ${rank.min}${isFinite(rank.max) ? " - " + rank.max : "+"}
+      </div>
+    `;
+
+    carousel.appendChild(card);
+
+    if (rank.key === currentRank.key) {
+      setTimeout(() => {
+        card.scrollIntoView({ behavior:"smooth", inline:"center" });
+      }, 50);
+    }
+  });
+
+  const fill = document.getElementById("rankProgressFill");
+  const text = document.getElementById("rankProgressText");
+
+  const percent = Math.floor(progress * 100);
+  fill.style.width = percent + "%";
+  text.textContent = percent + "%";
+}
+   
 function renderRankScreen() {
+  renderRankCarousel(); 
   milestoneList.innerHTML = "";
 
   const rank = getCurrentRank(State.playerLevel);
