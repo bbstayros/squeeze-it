@@ -136,7 +136,10 @@ async function unlockAudio() {
     // daily/ad reward
     DAILY_REWARD_KEY: "squeeze_daily_last_claim",
     STREAK_KEY: "squeeze_daily_streak",
-    AD_REWARD_AMOUNT: 100,
+    AD_REWARD_AMOUNT: 60,
+    AD_DAILY_KEY: "squeeze_ad_daily_count",
+    AD_DAILY_DATE_KEY: "squeeze_ad_daily_date",
+    AD_DAILY_LIMIT: 5,
     STREAK_REWARDS: [50, 60, 75, 90, 110, 150, 250],
 
     // ranks/rewards
@@ -476,6 +479,36 @@ function addXP(amount) {
      SHOP / ECONOMY
   ===================================================== */
 
+   /* =====================================================
+   AD DAILY CAP SYSTEM
+===================================================== */
+
+function getTodayDateString() {
+  const d = new Date();
+  return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+}
+
+function getAdWatchCount() {
+  const today = getTodayDateString();
+  const savedDate = localStorage.getItem(Config.AD_DAILY_DATE_KEY);
+
+  if (savedDate !== today) {
+    localStorage.setItem(Config.AD_DAILY_DATE_KEY, today);
+    localStorage.setItem(Config.AD_DAILY_KEY, "0");
+    return 0;
+  }
+
+  return parseInt(localStorage.getItem(Config.AD_DAILY_KEY)) || 0;
+}
+
+function incrementAdWatchCount() {
+  const today = getTodayDateString();
+  localStorage.setItem(Config.AD_DAILY_DATE_KEY, today);
+
+  let count = getAdWatchCount();
+  count++;
+  localStorage.setItem(Config.AD_DAILY_KEY, count);
+}
   function canClaimDailyReward() {
     const lastClaim = localStorage.getItem(Config.DAILY_REWARD_KEY);
     if (!lastClaim) return true;
@@ -500,15 +533,26 @@ function addXP(amount) {
     renderShop();
   }
 
-  function watchAdReward() {
-    UI.toast("Watching Ad...");
-    setTimeout(() => {
-      State.totalGems += Config.AD_REWARD_AMOUNT;
-      Storage.saveGems();
-      UI.toast("Ad Reward: +" + Config.AD_REWARD_AMOUNT + " 💎");
-      renderShop();
-    }, 1500);
+ function watchAdReward() {
+  const count = getAdWatchCount();
+
+  if (count >= Config.AD_DAILY_LIMIT) {
+    UI.toast("Daily Ad Limit Reached 🚫");
+    return;
   }
+
+  UI.toast("Watching Ad...");
+
+  setTimeout(() => {
+    State.totalGems += Config.AD_REWARD_AMOUNT;
+    Storage.saveGems();
+
+    incrementAdWatchCount();
+
+    UI.toast("Ad Reward: +" + Config.AD_REWARD_AMOUNT + " 💎");
+    renderShop();
+  }, 1500);
+}
 
   function buyTheme(themeKey) {
     const theme = themes[themeKey];
@@ -576,8 +620,17 @@ function addXP(amount) {
     adText.textContent = "Watch Ad";
 
     const adBtn = document.createElement("button");
-    adBtn.textContent = "+" + Config.AD_REWARD_AMOUNT + " 💎";
-    adBtn.onclick = watchAdReward;
+
+const adCount = getAdWatchCount();
+const remaining = Config.AD_DAILY_LIMIT - adCount;
+
+if (remaining > 0) {
+  adBtn.textContent = "+" + Config.AD_REWARD_AMOUNT + " 💎 (" + remaining + " left)";
+  adBtn.onclick = watchAdReward;
+} else {
+  adBtn.textContent = "No Ads Left Today";
+  adBtn.disabled = true;
+}
 
     adDiv.appendChild(adText);
     adDiv.appendChild(adBtn);
