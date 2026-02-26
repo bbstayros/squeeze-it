@@ -69,6 +69,7 @@ async function unlockAudio() {
   const endGems = document.getElementById("endGems");
   const endXP = document.getElementById("endXP");
   const playAgainBtn = document.getElementById("playAgainBtn");
+  const doubleBtn = document.getElementById("doubleBtn");
   const backMenuBtn = document.getElementById("backMenuBtn");
   const soundToggleBtn = document.getElementById("soundToggle");
 
@@ -200,6 +201,9 @@ async function unlockAudio() {
     currentThemeKey: "classic",
 
     timers: {
+     // double reward system
+      roundsSinceDouble: 0,
+      doubleReady: false, 
       rafId: null,
       timeTimer: null,
       freezeTimer: null,
@@ -1293,7 +1297,14 @@ const shadowAlpha = 0.25 * shadowScale;
 
     State.timers.rafId = null;
     State.timers.timeTimer = null;
+    // ===== Double Reward Progress Logic =====
+    if (!State.doubleReady) {
+    State.roundsSinceDouble++;
 
+    if (State.roundsSinceDouble >= 8) {
+    State.doubleReady = true;
+     }
+    }
     State.earnedGems = calculateGems(State.score);
     State.totalGems += State.earnedGems;
     Storage.saveGems();
@@ -1312,8 +1323,21 @@ const shadowAlpha = 0.25 * shadowScale;
     endScore.textContent = State.score;
     endGems.textContent = State.earnedGems;
     endXP.textContent = xpEarned;
-
+    if (!State.doubleReady) {
+  const remaining = 8 - State.roundsSinceDouble;
+  console.log("Rounds to x2:", remaining);
+}
     UI.show(endPanel);
+     // ===== Double Button UI Logic =====
+const adCount = getAdWatchCount();
+const adsRemaining = Config.AD_DAILY_LIMIT - adCount;
+
+if (State.doubleReady && adsRemaining > 0) {
+  doubleBtn.classList.remove("hidden");
+  doubleBtn.textContent = "x2 Gems (" + adsRemaining + " left)";
+} else {
+  doubleBtn.classList.add("hidden");
+}
   }
 
   /* =====================================================
@@ -1387,6 +1411,33 @@ startCountdownThenPlay();
      EVENTS - END PANEL
   ===================================================== */
   playAgainBtn.addEventListener("click", () => {
+  doubleBtn.addEventListener("click", () => {
+  const adCount = getAdWatchCount();
+
+  if (adCount >= Config.AD_DAILY_LIMIT) {
+    UI.toast("Daily Ad Limit Reached 🚫");
+    return;
+  }
+
+  UI.toast("Watching Ad...");
+
+  setTimeout(() => {
+    // give extra gems
+    State.totalGems += State.earnedGems;
+    Storage.saveGems();
+
+    incrementAdWatchCount();
+
+    // reset double system
+    State.doubleReady = false;
+    State.roundsSinceDouble = 0;
+
+    UI.toast("Double Reward Applied! 💎💎");
+    doubleBtn.classList.add("hidden");
+    UI.setGems(State.totalGems);
+
+  }, 1500);
+});   
   UI.hide(endPanel);
   startCountdownThenPlay();
   });
