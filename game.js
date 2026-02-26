@@ -1329,11 +1329,13 @@ const shadowAlpha = 0.25 * shadowScale;
   const remaining = 8 - State.roundsSinceDouble;
   console.log("Rounds to x2:", remaining);
 }
-     if (!State.doubleReady) {
-  const current = Math.min(State.roundsSinceDouble, 8);
-  doubleProgress.textContent = "Rounds for Double: " + current + " / 8";
-} else {
-  doubleProgress.textContent = "🔥 Double Gems Ready!";
+     if (doubleProgress) {
+  if (!State.doubleReady) {
+    const current = Math.min(State.roundsSinceDouble, 8);
+    doubleProgress.textContent = "Rounds for Double: " + current + " / 8";
+  } else {
+    doubleProgress.textContent = "🔥 Double Gems Ready!";
+  }
 }
      
     UI.show(endPanel);
