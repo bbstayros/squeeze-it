@@ -354,14 +354,14 @@ async function unlockAudio() {
   ===================================================== */
 
   function xpNeededForLevel(level) {
-  const MAX_LEVEL = 10000;
-  const l = Math.min(level, MAX_LEVEL);
   const XP_BASE = 60;
   const XP_LINEAR = 18;
   const XP_POW = 1.35;
   const XP_QUAD = 7;
 
-  const l = Math.max(1, level);
+  const MAX_LEVEL = 10000;
+  const l = Math.max(1, Math.min(level, MAX_LEVEL));
+
   const powPart = Math.pow(l, XP_POW) * XP_QUAD;
   return Math.floor(XP_BASE + (l * XP_LINEAR) + powPart);
 }
