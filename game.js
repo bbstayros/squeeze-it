@@ -200,10 +200,11 @@ async function unlockAudio() {
     // theme
     currentThemeKey: "classic",
 
-    timers: {
-     // double reward system
-      roundsSinceDouble: 0,
-      doubleReady: false, 
+    // double reward system
+    roundsSinceDouble: 0,
+    doubleReady: false, 
+   
+     timers: {
       rafId: null,
       timeTimer: null,
       freezeTimer: null,
