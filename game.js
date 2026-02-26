@@ -1410,7 +1410,6 @@ startCountdownThenPlay();
   /* =====================================================
      EVENTS - END PANEL
   ===================================================== */
-  playAgainBtn.addEventListener("click", () => {
   doubleBtn.addEventListener("click", () => {
   const adCount = getAdWatchCount();
 
@@ -1422,13 +1421,11 @@ startCountdownThenPlay();
   UI.toast("Watching Ad...");
 
   setTimeout(() => {
-    // give extra gems
     State.totalGems += State.earnedGems;
     Storage.saveGems();
 
     incrementAdWatchCount();
 
-    // reset double system
     State.doubleReady = false;
     State.roundsSinceDouble = 0;
 
@@ -1437,8 +1434,10 @@ startCountdownThenPlay();
     UI.setGems(State.totalGems);
 
   }, 1500);
-});   
-  UI.hide(endPanel);
+});
+   
+   playAgainBtn.addEventListener("click", () => {
+     UI.hide(endPanel);
   startCountdownThenPlay();
   });
 
