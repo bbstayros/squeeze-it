@@ -354,7 +354,9 @@ async function unlockAudio() {
   ===================================================== */
 
   function xpNeededForLevel(level) {
-   const XP_BASE = 60;
+  const MAX_LEVEL = 10000;
+  const l = Math.min(level, MAX_LEVEL);
+  const XP_BASE = 60;
   const XP_LINEAR = 18;
   const XP_POW = 1.35;
   const XP_QUAD = 7;
@@ -366,20 +368,35 @@ async function unlockAudio() {
 
 function updateXPUI() {
   levelDisplay.textContent = State.playerLevel;
-  const percent = State.currentXP / xpNeededForLevel(State.playerLevel);
+  const percent = Math.min(
+  1,
+  State.currentXP / xpNeededForLevel(State.playerLevel)
+);
   xpFill.style.width = percent * 100 + "%";
 }
 
 function addXP(amount) {
   State.currentXP += amount;
 
-  while (State.currentXP >= xpNeededForLevel(State.playerLevel)) {
+  let safetyCounter = 0;
+  const MAX_LEVEL_UPS_PER_CALL = 50; // cap ασφαλείας
+
+  while (
+    State.currentXP >= xpNeededForLevel(State.playerLevel) &&
+    safetyCounter < MAX_LEVEL_UPS_PER_CALL
+  ) {
     State.currentXP -= xpNeededForLevel(State.playerLevel);
     State.playerLevel++;
+    safetyCounter++;
 
     sound._playBuffer("levelup", { volume: 1 });
-    UI.toast("LEVEL UP! 🔥 Level " + State.playerLevel);
   }
+
+  if (safetyCounter >= MAX_LEVEL_UPS_PER_CALL) {
+    console.warn("XP loop safety cap triggered");
+  }
+
+  UI.toast("LEVEL UP! 🔥 Level " + State.playerLevel);
 
   Storage.saveXP();
   updateXPUI();
@@ -729,7 +746,7 @@ function renderRankCarousel() {
   const fill = document.getElementById("rankProgressFill");
   const text = document.getElementById("rankProgressText");
 
-  const percent = Math.floor(progress * 100);
+  const percent = Math.max(0, Math.min(100, Math.floor(progress * 100)));
   fill.style.width = percent + "%";
   text.textContent = percent + "%";
 }
@@ -1205,8 +1222,15 @@ const shadowAlpha = 0.25 * shadowScale;
   }
 
   function calculateGems(score) {
-    return Math.floor(score / Config.gemsPerScore);
-  }
+  let base = Math.floor(score / Config.gemsPerScore);
+
+  let difficultyMultiplier = 1;
+  if (State.difficulty === "easy") difficultyMultiplier = 0.9;
+  if (State.difficulty === "medium") difficultyMultiplier = 1.0;
+  if (State.difficulty === "hard") difficultyMultiplier = 1.25;
+
+  return Math.floor(base * difficultyMultiplier);
+}
 
   function endRound() {
     State.gameRunning = false;
