@@ -152,6 +152,40 @@ async function unlockAudio() {
     countdownStepMs: 700
   };
 
+   /* =====================================================
+     SPRITE SYSTEM
+  ===================================================== */
+const Sprites = {};
+const SpriteManifest = {
+  caveman: {
+    normal: "assets/sprites/caveman/caveman_normal.png",
+    shield: "assets/sprites/caveman/caveman_shield.png",
+    spike:  "assets/sprites/caveman/caveman_spike.png"
+  }
+};
+
+async function loadSprites(manifest) {
+  const entries = [];
+
+  Object.values(manifest).forEach(theme => {
+    Object.entries(theme).forEach(([key, path]) => {
+      entries.push(
+        new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => {
+            Sprites[key] = img;
+            resolve();
+          };
+          img.onerror = reject;
+          img.src = path;
+        })
+      );
+    });
+  });
+
+  await Promise.all(entries);
+}
+   
   /* =====================================================
      STATE
   ===================================================== */
@@ -979,86 +1013,22 @@ ctx.translate(offsetX, offsetY);
     ctx.fillStyle = theme.bg;
     ctx.fillRect(0, 0, State.W, State.H);
 
-    // entities (CAVEMAN STYLE)
+    / entities (humanoid)
 for (const e of State.entities) {
 
   let scale = 1;
   if (e.hit) scale = 1 + e.hitTimer * 6;
 
-  const bounce = Math.sin(e.walkPhase) * 3;
+  const bounce = Math.sin(e.walkPhase) * 4;
 
   ctx.save();
   ctx.translate(e.x, e.y + bounce);
   ctx.scale(scale, scale);
 
-  // ===== SHADOW =====
-  ctx.beginPath();
-  ctx.ellipse(0, e.r + 10, e.r * 0.8, e.r * 0.3, 0, 0, Math.PI * 2);
-  ctx.fillStyle = "rgba(0,0,0,0.35)";
-  ctx.fill();
+  const img = Sprites[e.type] || Sprites.normal;
 
-  // ===== BODY =====
-  ctx.fillStyle = "#d2a679"; // skin tone
-  ctx.beginPath();
-  ctx.roundRect(-10, -2, 20, 22, 6);
-  ctx.fill();
-
-  // ===== HEAD =====
-  ctx.beginPath();
-  ctx.arc(0, -12, 9, 0, Math.PI * 2);
-  ctx.fill();
-
-  // ===== HAIR =====
-  ctx.fillStyle = "#3b2a1a";
-  ctx.beginPath();
-  ctx.arc(0, -15, 9, Math.PI, 0);
-  ctx.fill();
-
-  // ===== EYES (GLOSSY OVAL BLACK) =====
-  ctx.fillStyle = "#000";
-  ctx.beginPath();
-  ctx.ellipse(-3, -13, 2, 3, 0, 0, Math.PI * 2);
-  ctx.ellipse(3, -13, 2, 3, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  // glossy reflection
-  ctx.fillStyle = "white";
-  ctx.beginPath();
-  ctx.arc(-2.5, -14, 0.8, 0, Math.PI * 2);
-  ctx.arc(3.5, -14, 0.8, 0, Math.PI * 2);
-  ctx.fill();
-
-  // ===== FUR CLOTHING =====
-  ctx.fillStyle = "#8b5a2b";
-  ctx.beginPath();
-  ctx.roundRect(-9, 5, 18, 12, 4);
-  ctx.fill();
-
-  // ===== LEGS =====
-  const legOffset = Math.sin(e.walkPhase) * 3;
-  ctx.fillStyle = "#d2a679";
-  ctx.fillRect(-6, 20, 4, 8 + legOffset);
-  ctx.fillRect(2, 20, 4, 8 - legOffset);
-
-  // ===== TYPE EFFECTS =====
-
-  if (e.type === "shield") {
-    ctx.strokeStyle = "#f4a83a";
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.arc(0, -4, 18, 0, Math.PI * 2);
-    ctx.stroke();
-  }
-
-  if (e.type === "spike") {
-    ctx.fillStyle = "#3b2a1a";
-    ctx.beginPath();
-    ctx.moveTo(-12, -2);
-    ctx.lineTo(0, -22);
-    ctx.lineTo(12, -2);
-    ctx.closePath();
-    ctx.fill();
-  }
+  const size = e.r * 3.2;
+  ctx.drawImage(img, -size/2, -size/2, size, size);
 
   ctx.restore();
 }
@@ -1499,7 +1469,8 @@ if (savedSound === "off") {
 } else {
   soundToggleBtn.textContent = "🔊";
 }
-   
+
+  await loadSprites(SpriteManifest); 
   resize();
   draw();
 
