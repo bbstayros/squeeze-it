@@ -1,5 +1,5 @@
 import { SoundManager } from "./sound.js";
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
 /* =====================================================
    SOUND SYSTEM
@@ -1013,7 +1013,7 @@ ctx.translate(offsetX, offsetY);
     ctx.fillStyle = theme.bg;
     ctx.fillRect(0, 0, State.W, State.H);
 
-    / entities (humanoid)
+    // entities (humanoid)
 for (const e of State.entities) {
 
   let scale = 1;
@@ -1026,6 +1026,7 @@ for (const e of State.entities) {
   ctx.scale(scale, scale);
 
   const img = Sprites[e.type] || Sprites.normal;
+if (!img) return;
 
   const size = e.r * 3.2;
   ctx.drawImage(img, -size/2, -size/2, size, size);
