@@ -903,15 +903,6 @@ function openRanks() {
       e.walkPhase += dt * 8;
       e.y += e.vy * dt;
 
-      // spawn scale animation
-      if (e.spawnScale < 1) {
-        let scale = e.spawnScale !== undefined ? e.spawnScale : 1;
-
-      if (e.hit) {
-        scale = 1 + e.hitTimer * 6;
-        }
-      }
-
       if (
         e.x < -e.r - 20 ||
         e.x > State.W + e.r + 20 ||
@@ -988,87 +979,89 @@ ctx.translate(offsetX, offsetY);
     ctx.fillStyle = theme.bg;
     ctx.fillRect(0, 0, State.W, State.H);
 
-    // entities (humanoid)
-    for (const e of State.entities) {
-      let scale = 1;
-      if (e.hit) scale = 1 + e.hitTimer * 6;
+    // entities (CAVEMAN STYLE)
+for (const e of State.entities) {
 
-      const bounce = Math.sin(e.walkPhase) * 3;
-      const bodyColor = theme[e.type];
+  let scale = 1;
+  if (e.hit) scale = 1 + e.hitTimer * 6;
 
-      // shadow
-     const shadowScale = scale;
-const shadowAlpha = 0.25 * shadowScale;
+  const bounce = Math.sin(e.walkPhase) * 3;
 
-      ctx.beginPath();
-      ctx.ellipse(
-      e.x,
-      e.y + e.r * 0.9,
-      e.r * 0.7 * shadowScale,
-      e.r * 0.25 * shadowScale,
-      0,
-      0,
-      Math.PI * 2
-      );
+  ctx.save();
+  ctx.translate(e.x, e.y + bounce);
+  ctx.scale(scale, scale);
 
-      ctx.fillStyle = `rgba(0,0,0,${shadowAlpha})`;
-      ctx.fill();
+  // ===== SHADOW =====
+  ctx.beginPath();
+  ctx.ellipse(0, e.r + 10, e.r * 0.8, e.r * 0.3, 0, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(0,0,0,0.35)";
+  ctx.fill();
 
-      ctx.save();
-      ctx.translate(e.x, e.y + bounce);
-      ctx.scale(scale, scale);
+  // ===== BODY =====
+  ctx.fillStyle = "#d2a679"; // skin tone
+  ctx.beginPath();
+  ctx.roundRect(-10, -2, 20, 22, 6);
+  ctx.fill();
 
-      // ===== Glow Effect =====
-      if (e.type === "shield") {
-      ctx.shadowColor = "#ffd60a";
-      ctx.shadowBlur = 15;
-      } 
-      else if (e.type === "spike") {
-      ctx.shadowColor = "#ff0033";
-      ctx.shadowBlur = 18;
-      }
-      else {
-      ctx.shadowColor = "rgba(255,255,255,0.15)";
-      ctx.shadowBlur = 6;
-      }
+  // ===== HEAD =====
+  ctx.beginPath();
+  ctx.arc(0, -12, 9, 0, Math.PI * 2);
+  ctx.fill();
 
-      // body
-      ctx.fillStyle = bodyColor;
-      ctx.beginPath();
+  // ===== HAIR =====
+  ctx.fillStyle = "#3b2a1a";
+  ctx.beginPath();
+  ctx.arc(0, -15, 9, Math.PI, 0);
+  ctx.fill();
 
-      // roundRect fallback if needed
-      if (typeof ctx.roundRect === "function") {
-        ctx.roundRect(-8, -2, 16, 20, 4);
-      } else {
-        // simple fallback: draw rounded-ish rect
-        ctx.rect(-8, -2, 16, 20);
-      }
-      ctx.fill();
+  // ===== EYES (GLOSSY OVAL BLACK) =====
+  ctx.fillStyle = "#000";
+  ctx.beginPath();
+  ctx.ellipse(-3, -13, 2, 3, 0, 0, Math.PI * 2);
+  ctx.ellipse(3, -13, 2, 3, 0, 0, Math.PI * 2);
+  ctx.fill();
 
-      // head
-      ctx.beginPath();
-      ctx.arc(0, -10, 7, 0, Math.PI * 2);
-      ctx.fill();
+  // glossy reflection
+  ctx.fillStyle = "white";
+  ctx.beginPath();
+  ctx.arc(-2.5, -14, 0.8, 0, Math.PI * 2);
+  ctx.arc(3.5, -14, 0.8, 0, Math.PI * 2);
+  ctx.fill();
 
-      // zombie eyes
-      if (theme.name === "zombie") {
-        ctx.fillStyle = "black";
-        ctx.fillRect(-3, -12, 2, 2);
-        ctx.fillRect(1, -12, 2, 2);
-      }
+  // ===== FUR CLOTHING =====
+  ctx.fillStyle = "#8b5a2b";
+  ctx.beginPath();
+  ctx.roundRect(-9, 5, 18, 12, 4);
+  ctx.fill();
 
-      // legs
-      ctx.fillStyle = bodyColor;
-      const legOffset = Math.sin(e.walkPhase) * 4;
+  // ===== LEGS =====
+  const legOffset = Math.sin(e.walkPhase) * 3;
+  ctx.fillStyle = "#d2a679";
+  ctx.fillRect(-6, 20, 4, 8 + legOffset);
+  ctx.fillRect(2, 20, 4, 8 - legOffset);
 
-      ctx.beginPath();
-      ctx.rect(-5, 18, 4, 8 + legOffset);
-      ctx.rect(1, 18, 4, 8 - legOffset);
-      ctx.fill();
+  // ===== TYPE EFFECTS =====
 
-      ctx.shadowBlur = 0;
-      ctx.restore();
-    }
+  if (e.type === "shield") {
+    ctx.strokeStyle = "#f4a83a";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(0, -4, 18, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  if (e.type === "spike") {
+    ctx.fillStyle = "#3b2a1a";
+    ctx.beginPath();
+    ctx.moveTo(-12, -2);
+    ctx.lineTo(0, -22);
+    ctx.lineTo(12, -2);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
 
     // hit rings
     for (const h of State.hitEffects) {
