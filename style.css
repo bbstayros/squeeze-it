@@ -1,4 +1,4 @@
-ω:root { --pad: 12px; }
+:root { --pad: 12px; }
 
 * { box-sizing: border-box; }
 
@@ -598,4 +598,63 @@ canvas#game{
   height: 76px;
   margin: 0 auto;
   display:block;
+}
+
+/* =====================================================
+   CAVEMAN VISUAL POLISH OVERRIDES
+===================================================== */
+
+/* Slight warmer overall tone */
+body{
+  background: #0c0e12;
+}
+
+/* Make topbar feel more “stone” */
+.topbar{
+  background: linear-gradient(
+    to bottom,
+    rgba(35,28,20,0.95),
+    rgba(20,16,12,0.90)
+  );
+  border-bottom: 1px solid rgba(255,200,120,0.08);
+}
+
+/* Buttons slightly warmer */
+.btn{
+  background: linear-gradient(180deg,#3a2c1c,#241a12);
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+/* XP bar more “amber” prehistoric */
+.xp-fill{
+  background: linear-gradient(90deg, #ffb347, #ff7b00);
+  box-shadow:
+    0 0 8px rgba(255,140,0,0.6),
+    0 0 18px rgba(255,100,0,0.4);
+}
+
+/* Rank progress prehistoric tone */
+.rank-progress-fill{
+  background: linear-gradient(90deg, #ffb347, #ff7b00);
+  box-shadow: 0 0 18px rgba(255,140,0,0.35);
+}
+
+/* Milestone highlight less neon sci-fi */
+.milestone-card.current{
+  border:2px solid #ffb347;
+  animation: milestonePulseCave 1.8s ease-in-out infinite;
+}
+
+@keyframes milestonePulseCave{
+  0%{
+    box-shadow:0 0 8px rgba(255,140,0,0.3);
+  }
+  50%{
+    box-shadow:0 0 18px rgba(255,140,0,0.7);
+  }
+  100%{
+    box-shadow:0 0 8px rgba(255,140,0,0.3);
+  }
 }
