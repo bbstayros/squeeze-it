@@ -1043,7 +1043,6 @@ for (const e of State.entities) {
 
   const bounce = Math.sin(e.walkPhase) * 4;
 
-  // direction detect
   let direction;
   if (Math.abs(e.vx) > Math.abs(e.vy)) {
     direction = "east";
@@ -1060,7 +1059,6 @@ for (const e of State.entities) {
   ctx.translate(e.x, e.y + bounce);
   ctx.scale(scale, scale);
 
-  // flip for west
   if (e.vx < 0 && Math.abs(e.vx) > Math.abs(e.vy)) {
     ctx.scale(-1, 1);
   }
