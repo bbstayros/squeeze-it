@@ -168,6 +168,19 @@ const Directions = ["east", "north", "south"];
 const FRAME_COUNT = 6;
 const FRAME_SIZE = 48;
 
+   /* =====================================================
+   BACKGROUND TILE SYSTEM
+===================================================== */
+
+const bgImage = new Image();
+bgImage.src = "assets/backgrounds/dirt_tile.png";
+
+let bgPattern = null;
+
+bgImage.onload = () => {
+  bgPattern = ctx.createPattern(bgImage, "repeat");
+};
+
 async function loadSprites() {
   const promises = [];
 
@@ -231,7 +244,10 @@ async function loadSprites() {
     // screen shake
     shakeTime: 0,
     shakeStrength: 0,
-
+// background drift
+bgOffsetX: 0,
+bgOffsetY: 0,
+     
     // economy
     totalGems: parseInt(localStorage.getItem("squeeze_gems")) || 0,
     earnedGems: 0,
@@ -1012,8 +1028,11 @@ if (State.shakeTime > 0) {
   if (State.shakeTime <= 0) {
     State.shakeTime = 0;
     State.shakeStrength = 0;
-  }
-}
+    }
+   }
+   // subtle background drift
+State.bgOffsetX += 5 * dt;
+State.bgOffsetY += 3 * dt;
   }
 
   function draw() {
@@ -1032,8 +1051,16 @@ if (State.shakeTime > 0) {
 ctx.save();
 ctx.translate(offsetX, offsetY);
     // background
-    ctx.fillStyle = theme.bg;
-    ctx.fillRect(0, 0, State.W, State.H);
+if (bgPattern) {
+  ctx.save();
+  ctx.translate(State.bgOffsetX, State.bgOffsetY);
+  ctx.fillStyle = bgPattern;
+  ctx.fillRect(-State.bgOffsetX, -State.bgOffsetY, State.W + 200, State.H + 200);
+  ctx.restore();
+} else {
+  ctx.fillStyle = theme.bg;
+  ctx.fillRect(0, 0, State.W, State.H);
+}
 
     // entities (humanoid)
 for (const e of State.entities) {
