@@ -683,3 +683,23 @@ body::after{
     box-shadow:0 0 8px rgba(255,140,0,0.3);
   }
 }
+
+.topbar-left,
+.topbar-right{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+
+.topbar-center{
+  display:flex;
+  justify-content:center;
+}
+
+.btn-sound{
+  background:none;
+  border:none;
+  font-size:20px;
+  cursor:pointer;
+  color:#fff;
+}
