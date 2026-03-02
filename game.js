@@ -1043,35 +1043,29 @@ for (const e of State.entities) {
 
   const bounce = Math.sin(e.walkPhase) * 4;
 
+  // direction detect
+  let direction;
+  if (Math.abs(e.vx) > Math.abs(e.vy)) {
+    direction = "east";
+  } else {
+    direction = e.vy >= 0 ? "south" : "north";
+  }
+
+  const frames = SpriteManifest.caveman[e.type][direction];
+  const img = frames[e.frameIndex];
+
+  const size = e.r * 3.2;
+
   ctx.save();
   ctx.translate(e.x, e.y + bounce);
   ctx.scale(scale, scale);
 
- // direction detect
-let direction;
+  // flip for west
+  if (e.vx < 0 && Math.abs(e.vx) > Math.abs(e.vy)) {
+    ctx.scale(-1, 1);
+  }
 
-if (Math.abs(e.vx) > Math.abs(e.vy)) {
-  direction = "east";
-} else {
-  direction = e.vy >= 0 ? "south" : "north";
-}
-
-const frames = SpriteManifest.caveman[e.type][direction];
-const img = frames[e.frameIndex];
-
-const size = e.r * 3.2;
-const bounce = Math.sin(e.walkPhase) * 4;
-
-ctx.save();
-ctx.translate(e.x, e.y + bounce);
-
-if (e.vx < 0 && Math.abs(e.vx) > Math.abs(e.vy)) {
-  ctx.scale(-1, 1);
-}
-
-ctx.drawImage(img, -size/2, -size/2, size, size);
-
-ctx.restore();
+  ctx.drawImage(img, -size/2, -size/2, size, size);
 
   ctx.restore();
 }
