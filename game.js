@@ -152,38 +152,50 @@ async function unlockAudio() {
     countdownStepMs: 700
   };
 
-   /* =====================================================
-     SPRITE SYSTEM
-  ===================================================== */
-const Sprites = {};
+/* =====================================================
+   SPRITE SYSTEM (ENGINE STYLE)
+===================================================== */
+
 const SpriteManifest = {
   caveman: {
-    normal: "assets/sprites/caveman/caveman_normal.png",
-    shield: "assets/sprites/caveman/caveman_shield.png",
-    spike:  "assets/sprites/caveman/caveman_spike.png"
+    normal: {},
+    shield: {},
+    spike: {}
   }
 };
 
-async function loadSprites(manifest) {
-  const entries = [];
+const Directions = ["east", "north", "south"];
+const FRAME_COUNT = 6;
+const FRAME_SIZE = 48;
 
-  Object.values(manifest).forEach(theme => {
-    Object.entries(theme).forEach(([key, path]) => {
-      entries.push(
-        new Promise((resolve, reject) => {
+async function loadSprites() {
+  const promises = [];
+
+  for (let type of Object.keys(SpriteManifest.caveman)) {
+    SpriteManifest.caveman[type] = {};
+
+    for (let dir of Directions) {
+      SpriteManifest.caveman[type][dir] = [];
+
+      for (let i = 0; i < FRAME_COUNT; i++) {
+        const path = `assets/sprites/caveman/${type}/${dir}/frame_00${i}.png`;
+
+        const p = new Promise((resolve, reject) => {
           const img = new Image();
           img.onload = () => {
-            Sprites[key] = img;
+            SpriteManifest.caveman[type][dir].push(img);
             resolve();
           };
           img.onerror = reject;
           img.src = path;
-        })
-      );
-    });
-  });
+        });
 
-  await Promise.all(entries);
+        promises.push(p);
+      }
+    }
+  }
+
+  await Promise.all(promises);
 }
    
   /* =====================================================
@@ -508,6 +520,8 @@ function addXP(amount) {
       hitTimer: 0,
       walkPhase: Math.random() * Math.PI * 2,
       spawnScale: 0,
+      frameIndex: 0,
+      frameTimer: 0, 
     });
   }
 
@@ -937,6 +951,14 @@ function openRanks() {
       e.walkPhase += dt * 8;
       e.y += e.vy * dt;
 
+       // animation update
+e.frameTimer += dt;
+
+if (e.frameTimer > 0.1) {
+  e.frameIndex = (e.frameIndex + 1) % FRAME_COUNT;
+  e.frameTimer = 0;
+}
+
       if (
         e.x < -e.r - 20 ||
         e.x > State.W + e.r + 20 ||
@@ -1025,11 +1047,30 @@ for (const e of State.entities) {
   ctx.translate(e.x, e.y + bounce);
   ctx.scale(scale, scale);
 
-  const img = Sprites[e.type] || Sprites.normal;
-if (!img) return;
+  // direction detect
+let direction;
 
-  const size = e.r * 3.2;
-  ctx.drawImage(img, -size/2, -size/2, size, size);
+if (Math.abs(e.vx) > Math.abs(e.vy)) {
+  direction = "east";
+} else {
+  direction = e.vy >= 0 ? "south" : "north";
+}
+
+const frames = SpriteManifest.caveman[e.type][direction];
+const img = frames[e.frameIndex];
+
+const size = FRAME_SIZE;
+
+ctx.save();
+ctx.translate(e.x, e.y);
+
+if (e.vx < 0 && Math.abs(e.vx) > Math.abs(e.vy)) {
+  ctx.scale(-1, 1);
+}
+
+ctx.drawImage(img, -size/2, -size/2, size, size);
+
+ctx.restore();
 
   ctx.restore();
 }
@@ -1471,7 +1512,7 @@ if (savedSound === "off") {
   soundToggleBtn.textContent = "🔊";
 }
 
-  await loadSprites(SpriteManifest); 
+  await loadSprites();
   resize();
   draw();
 
