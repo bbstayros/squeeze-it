@@ -113,7 +113,7 @@ async function unlockAudio() {
   const Config = {
     roundSeconds: 45,
 
-    entityRadius: 22,
+    entityRadius: 30,
     baseSpeed: 140,
     maxEntities: 8,
 
@@ -1050,6 +1050,8 @@ State.bgOffsetY += 3 * dt;
 
 ctx.save();
 ctx.translate(offsetX, offsetY);
+ctx.filter = "brightness(0.9) contrast(0.9) saturate(0.85)";
+     
     // background
 if (bgPattern) {
   ctx.save();
@@ -1061,7 +1063,9 @@ if (bgPattern) {
   ctx.fillStyle = theme.bg;
   ctx.fillRect(0, 0, State.W, State.H);
 }
-
+// RESET FILTER HERE
+ctx.filter = "none";
+     
     // entities (humanoid)
 for (const e of State.entities) {
 
@@ -1080,7 +1084,7 @@ for (const e of State.entities) {
   const frames = SpriteManifest.caveman[e.type][direction];
   const img = frames[e.frameIndex];
 
-  const size = e.r * 3.2;
+  const size = e.r * 4.6;
 
   ctx.save();
   ctx.translate(e.x, e.y + bounce);
@@ -1090,6 +1094,11 @@ for (const e of State.entities) {
     ctx.scale(-1, 1);
   }
 
+   ctx.beginPath();
+ctx.ellipse(0, size * 0.38, size * 0.22, size * 0.10, 0, 0, Math.PI * 2);
+ctx.fillStyle = "rgba(0,0,0,0.25)";
+ctx.fill();
+   
   ctx.drawImage(img, -size/2, -size/2, size, size);
 
   ctx.restore();
