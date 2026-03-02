@@ -20,24 +20,31 @@
 
   <!-- ================= UI + GAME ================= -->
 
-  <header class="topbar">
+<header class="topbar">
+
+  <div class="topbar-left">
     <div class="stat">Score: <span id="score">0</span></div>
     <div class="stat">Time: <span id="time">45</span>s</div>
+  </div>
 
-    <div class="topbar-actions">
-      <button id="shopBtn" class="btn">Shop</button>
-      <button id="milestonesBtn" class="btn">Milestones</button>
-      <button id="startBtn" class="btn">Start</button>
-      <button id="soundToggle" class="btn-sound" aria-label="Sound toggle">🔊</button>
-    </div>
+  <div class="topbar-center">
+    <button id="startBtn" class="btn">Start</button>
+  </div>
 
-    <div class="xp-container">
-      <div class="xp-label">Level <span id="levelDisplay">1</span></div>
-      <div class="xp-bar">
-        <div id="xpFill" class="xp-fill"></div>
-      </div>
+  <div class="topbar-right">
+    <button id="shopBtn" class="btn">Shop</button>
+    <button id="milestonesBtn" class="btn">Milestones</button>
+    <button id="soundToggle" class="btn-sound" aria-label="Sound toggle">🔊</button>
+  </div>
+
+  <div class="xp-container">
+    <div class="xp-label">Level <span id="levelDisplay">1</span></div>
+    <div class="xp-bar">
+      <div id="xpFill" class="xp-fill"></div>
     </div>
-  </header>
+  </div>
+
+</header>
 
   <!-- Overlay -->
   <div id="shopOverlay" class="hidden"></div>
