@@ -1047,7 +1047,7 @@ for (const e of State.entities) {
   ctx.translate(e.x, e.y + bounce);
   ctx.scale(scale, scale);
 
-  // direction detect
+ // direction detect
 let direction;
 
 if (Math.abs(e.vx) > Math.abs(e.vy)) {
@@ -1059,10 +1059,11 @@ if (Math.abs(e.vx) > Math.abs(e.vy)) {
 const frames = SpriteManifest.caveman[e.type][direction];
 const img = frames[e.frameIndex];
 
-const size = FRAME_SIZE;
+const size = e.r * 3.2;
+const bounce = Math.sin(e.walkPhase) * 4;
 
 ctx.save();
-ctx.translate(e.x, e.y);
+ctx.translate(e.x, e.y + bounce);
 
 if (e.vx < 0 && Math.abs(e.vx) > Math.abs(e.vy)) {
   ctx.scale(-1, 1);
