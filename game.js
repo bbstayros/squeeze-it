@@ -114,8 +114,8 @@ async function unlockAudio() {
     roundSeconds: 45,
 
     entityRadius: 30,
-    baseSpeed: 140,
-    maxEntities: 8,
+    baseSpeed: 165,
+    maxEntities: 23,
 
     comboTimeoutSec: 1.2,
 
