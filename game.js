@@ -830,7 +830,7 @@ function claimRankReward(reward) {
   renderRankScreen(); // refresh
 }
 function renderRankCarousel() {
-  const carousel = document.getElementById("rankCarousel");
+  const carousel = rankCarousel;
   if (!carousel) return;
 
   carousel.innerHTML = "";
@@ -841,6 +841,7 @@ function renderRankCarousel() {
   RANKS.forEach(rank => {
     const card = document.createElement("div");
     card.className = "rank-card";
+    card.dataset.rank = rank.key;
 
     if (rank.key === currentRank.key) {
       card.classList.add("current");
@@ -864,11 +865,25 @@ function renderRankCarousel() {
 
     carousel.appendChild(card);
 
-    if (rank.key === currentRank.key) {
-      setTimeout(() => {
-        card.scrollIntoView({ behavior:"smooth", inline:"center" });
-      }, 50);
-    }
+   if (rank.key === currentRank.key) {
+  setTimeout(() => {
+
+    const carouselRect = carousel.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+
+    const offset =
+      cardRect.left -
+      carouselRect.left -
+      carouselRect.width / 2 +
+      cardRect.width / 2;
+
+    carousel.scrollBy({
+      left: offset,
+      behavior: "smooth"
+    });
+
+  }, 50);
+}
   });
 
   const fill = document.getElementById("rankProgressFill");
