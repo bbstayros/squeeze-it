@@ -515,7 +515,6 @@ canvas#game{
   margin-bottom: 10px;
 }
 
-.rank-title{ display:flex; flex-direction:column; gap:4px; }
 .rank-name{ font-weight:800; font-size:18px; }
 .rank-next{ opacity:0.75; font-size:13px; }
 
@@ -546,6 +545,8 @@ canvas#game{
   padding: 12px 6px 10px;
 
   scroll-snap-type: x mandatory;
+  scroll-padding-left: 50%;
+  scroll-padding-right: 50%;
   -webkit-overflow-scrolling: touch;
 
   align-items:flex-start;
@@ -579,12 +580,34 @@ canvas#game{
   justify-content:flex-start;
 }
 
+.rank-carousel .rank-card{
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.rank-carousel .rank-card:not(.current){
+  transform: scale(0.92);
+  opacity: 0.75;
+}
+
+.rank-carousel .rank-card.current{
+  transform: scale(1.12);
+  z-index: 2;
+
+  border-color: rgba(255,180,80,0.6);
+
+  box-shadow:
+    0 0 0 2px rgba(255,180,80,0.12),
+    0 0 28px rgba(255,140,0,0.25);
+
+  animation: rankPulseCave 1.6s ease-in-out infinite;
+}
+
 .rank-card.locked{
   opacity:0.35;
   filter: grayscale(1);
 }
 
-.rank-title{
+.rank-card .rank-title{
   font-size:13px;
   font-weight:700;
   margin-top:6px;
@@ -593,15 +616,6 @@ canvas#game{
 .rank-range{
   font-size:11px;
   opacity:0.6;
-}
-
-.rank-card.current{
-  transform: scale(1.06);
-  border-color: rgba(255,180,80,0.6);
-  box-shadow:
-    0 0 0 2px rgba(255,180,80,0.12),
-    0 0 28px rgba(255,140,0,0.25);
-  animation: rankPulseCave 1.6s ease-in-out infinite;
 }
 
 @keyframes rankPulseCave{
@@ -748,4 +762,65 @@ body::after{
 
 .rank-card.locked .rank-image{
   filter: grayscale(1) brightness(0.6);
+}
+
+.rank-carousel-wrapper{
+  position: relative;
+}
+
+.rank-carousel-wrapper::before,
+.rank-carousel-wrapper::after{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:40px;
+  pointer-events:none;
+  z-index:3;
+}
+
+.rank-carousel-wrapper::before{
+  left:0;
+  background: linear-gradient(to right, #0f1115, transparent);
+}
+
+.rank-carousel-wrapper::after{
+  right:0;
+  background: linear-gradient(to left, #0f1115, transparent);
+}
+
+.rank-card[data-rank="lapiz"] { border-color:#3ea6ff; }
+
+.rank-card[data-rank="iron"] { border-color:#8a8a8a; }
+
+.rank-card[data-rank="bronze"] { border-color:#b87333; }
+
+.rank-card[data-rank="silver"] { border-color:#c0c0c0; }
+
+.rank-card[data-rank="gold"] {
+  border-color:#ffd700;
+  box-shadow:0 0 18px rgba(255,215,0,0.35);
+}
+
+.rank-card[data-rank="diamond"] {
+  border-color:#00e5ff;
+  box-shadow:0 0 18px rgba(0,229,255,0.35);
+}
+
+.rank-card[data-rank="emerald"] {
+  border-color:#00e676;
+  box-shadow:0 0 18px rgba(0,230,118,0.35);
+}
+
+.rank-card[data-rank="obsidian"] {
+  border-color:#9c27b0;
+  box-shadow:0 0 20px rgba(156,39,176,0.45);
+}
+
+.rank-carousel{
+  scrollbar-width:none;
+}
+
+.rank-carousel::-webkit-scrollbar{
+  display:none;
 }
