@@ -394,41 +394,53 @@ bgOffsetY: 0,
     t.rafId = t.timeTimer = t.freezeTimer = t.countdownTimer = null;
   }
 
-  /* =====================================================
-     RESIZE
-  ===================================================== */
+/* =====================================================
+   SCREEN MANAGER
+===================================================== */
 
+function closeAllScreens() {
+  UI.hide(shopPanel);
+  UI.hide(shopOverlay);
+  UI.hide(milestoneScreen);
+  UI.hide(endPanel);
+
+  levelSelect.classList.add("hidden");
+}
+
+function goToMainMenu() {
+  closeAllScreens();
+  mainMenu.classList.remove("hidden");
+}
+   
+/* =====================================================
+     RESIZE
+===================================================== */
   function resize() {
     const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
     const rect = canvas.getBoundingClientRect();
     State.W = Math.floor(rect.width);
     State.H = Math.floor(rect.height);
-
     canvas.width = Math.floor(State.W * dpr);
     canvas.height = Math.floor(State.H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-
   window.addEventListener("resize", resize);
 
   /* =====================================================
      TOAST
   ===================================================== */
-
   function showToast(text) {
     const toast = document.createElement("div");
     toast.className = "toast";
     toast.textContent = text;
     document.body.appendChild(toast);
-
     setTimeout(() => toast.classList.add("show"), 10);
-
     setTimeout(() => {
       toast.classList.remove("show");
       setTimeout(() => toast.remove(), 300);
     }, 2000);
   }
-
+   
   /* =====================================================
    XP – INFINITE SCALING SYSTEM
   ===================================================== */
