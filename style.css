@@ -540,11 +540,16 @@ canvas#game{
 
 .rank-carousel{
   display:flex;
-  gap:10px;
+  gap:12px;
   overflow-x:auto;
-  padding: 10px 6px 6px;
+
+  padding: 12px 6px 10px;
+
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
+
+  align-items:flex-start;
+  height: 170px;
 }
 .rank-carousel::-webkit-scrollbar{ height: 8px; }
 .rank-carousel::-webkit-scrollbar-thumb{
@@ -553,16 +558,25 @@ canvas#game{
 }
 
 .rank-card{
-  flex: 0 0 auto;
-  width: 132px;
+  flex: 0 0 120px;
+
+  height: 150px;
+
   scroll-snap-align: center;
+
   border-radius: 16px;
-  padding: 10px;
+  padding: 10px 8px;
+
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(255,255,255,0.06);
+
   text-align:center;
   position:relative;
-  transform: translateZ(0);
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
 }
 
 .rank-card.locked{
@@ -713,11 +727,14 @@ body::after{
 ========================= */
 
 .rank-image{
-  width: 80px;
-  height: 120px;
+  width: 70px;
+  height: 90px;
+
   object-fit: contain;
+
   display:block;
-  margin: 0 auto 6px auto;
+  margin: 0 auto 4px auto;
+
   filter: drop-shadow(0 6px 10px rgba(0,0,0,0.5));
   transition: transform 0.25s ease;
 }
