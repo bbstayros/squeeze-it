@@ -54,6 +54,7 @@ async function unlockAudio() {
   const gemCount = document.getElementById("gemCount");
 
   const levelDisplay = document.getElementById("levelDisplay");
+  const menuLevelDisplay = document.getElementById("menuLevelDisplay"); 
   const xpFill = document.getElementById("xpFill");
 
   const milestonesBtn = document.getElementById("milestonesBtn");
@@ -463,11 +464,18 @@ function goToMainMenu() {
 }
 
 function updateXPUI() {
+
   levelDisplay.textContent = State.playerLevel;
+
+  if (menuLevelDisplay) {
+    menuLevelDisplay.textContent = State.playerLevel;
+  }
+
   const percent = Math.min(
-  1,
-  State.currentXP / xpNeededForLevel(State.playerLevel)
-);
+    1,
+    State.currentXP / xpNeededForLevel(State.playerLevel)
+  );
+
   xpFill.style.width = percent * 100 + "%";
 }
 
@@ -1444,13 +1452,24 @@ if (State.doubleReady && adsRemaining > 0) {
   ===================================================== */
 
   levelButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      State.difficulty = btn.dataset.level;
+  btn.addEventListener("click", async () => {
 
-      levelButtons.forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-    });
+    State.difficulty = btn.dataset.level;
+
+    levelButtons.forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    levelSelect.classList.add("hidden");
+
+    if (!sound.unlocked) {
+      await sound.unlock();
+    }
+
+    sound.startAmbient();
+
+    startCountdownThenPlay();
   });
+});
 
 /* =====================================================
    MAIN MENU EVENTS
@@ -1465,7 +1484,7 @@ menuPlay.addEventListener("click", () => {
 });
 
 menuShop.addEventListener("click", () => {
-  mainMenu.classList.add("hidden");
+  closeAllScreens();
   renderShop();
   UI.show(shopOverlay);
   UI.show(shopPanel);
@@ -1478,7 +1497,7 @@ menuRanks.addEventListener("click", () => {
 });
 
 menuRewards.addEventListener("click", () => {
-  mainMenu.classList.add("hidden");
+  closeAllScreens();
   renderShop();
   UI.show(shopOverlay);
   UI.show(shopPanel);
