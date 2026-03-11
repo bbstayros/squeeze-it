@@ -851,11 +851,16 @@ function renderRankCarousel() {
     }
 
     card.innerHTML = `
-      <div style="font-weight:700">${rank.name}</div>
-      <div style="font-size:12px;opacity:.7">
-        ${rank.min}${isFinite(rank.max) ? " - " + rank.max : "+"}
-      </div>
-    `;
+  <img class="rank-image" src="assets/ranks/${rank.key}.png">
+
+  <div class="rank-title">
+    ${rank.name}
+  </div>
+
+  <div class="rank-range">
+    ${rank.min}${isFinite(rank.max) ? " - " + rank.max : "+"}
+  </div>
+`;
 
     carousel.appendChild(card);
 
