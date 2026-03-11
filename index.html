@@ -9,35 +9,36 @@
 
 <body translate="no">
 
-  <!-- ================= MAIN MENU ================= -->
-
+<!-- ================= MAIN MENU ================= -->
 <div id="mainMenu" class="main-menu">
-
-  <div class="menu-card">
-
-    <h1 class="menu-title">SQUEEZE IT</h1>
-
-    <div class="menu-buttons">
-
-      <button id="menuPlay" class="menu-btn">PLAY</button>
-
-      <button id="menuShop" class="menu-btn">SHOP</button>
-
-      <button id="menuRanks" class="menu-btn">RANKS</button>
-
-      <button id="menuRewards" class="menu-btn">REWARDS</button>
-
-      <button id="menuSettings" class="menu-btn">SETTINGS</button>
-
+  <!-- TOP INFO BAR -->
+  <div class="menu-topbar">
+    <div class="menu-stats">
+      <div>Last Score: <span id="lastScore">0</span></div>
+      <div class="menu-level">
+        Level <span id="menuLevel">1</span>
+        <div class="menu-xp-bar">
+          <div id="menuXpFill"></div>
+        </div>
+      </div>
     </div>
-
+    <button id="menuSettings" class="menu-settings">⚙ Settings</button>
   </div>
-
+  <!-- MAIN CARD -->
+  <div class="menu-card">
+    <h1 class="menu-title">SQUEEZE IT</h1>
+    <div class="menu-buttons">
+      <button id="menuPlay" class="menu-btn">PLAY</button>
+      <button id="menuShop" class="menu-btn">SHOP</button>
+      <button id="menuRanks" class="menu-btn">RANKS</button>
+      <button id="menuRewards" class="menu-btn">REWARDS</button>
+      <button id="menuInfo" class="menu-btn">INFORMATION</button>
+    </div>
+  </div>
 </div>
 
 <!-- ================= BACKGROUND WRAPPER ================= -->
 <div id="game-wrapper">
-
   <!-- Background Layers -->
   <div class="bg bg-far"></div>
   <div class="bg bg-mid"></div>
@@ -47,29 +48,25 @@
   <!-- ================= UI + GAME ================= -->
 
 <header class="topbar">
-
   <div class="topbar-left">
     <div class="stat">Score: <span id="score">0</span></div>
     <div class="stat">Time: <span id="time">45</span>s</div>
   </div>
-
   <div class="topbar-center">
     <button id="startBtn" class="btn">Start</button>
   </div>
-
   <div class="topbar-right">
     <button id="shopBtn" class="btn">Shop</button>
     <button id="milestonesBtn" class="btn">Milestones</button>
     <button id="soundToggle" class="btn-sound" aria-label="Sound toggle">🔊</button>
   </div>
-
   <div class="xp-container">
     <div class="xp-label">Level <span id="levelDisplay">1</span></div>
     <div class="xp-bar">
       <div id="xpFill" class="xp-fill"></div>
     </div>
   </div>
-
+  
 </header>
 
   <!-- Overlay -->
