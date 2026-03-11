@@ -37,6 +37,74 @@
   </div>
 </div>
 
+<!-- ================= Missions Panel ================= -->
+ <div id="missionsPanel" class="hidden missions-panel">
+  <div class="missions-header">
+    <h2>Daily Missions</h2>
+    <button id="closeMissions" class="btn">Back</button>
+  </div>
+  <div class="missions-content">
+    <!-- Daily Reward -->
+    <div class="mission-card">
+      <div class="mission-title">Daily Reward</div>
+      <div class="mission-desc">Login bonus</div>
+      <button id="dailyRewardBtn" class="btn">Claim</button>
+    </div>
+    <!-- Watch Ad -->
+    <div class="mission-card">
+      <div class="mission-title">Watch Ad</div>
+      <div class="mission-desc">Get free gems</div>
+      <button id="watchAdBtn" class="btn">+60 💎</button>
+    </div>
+    <!-- MISSIONS -->
+    <div id="dailyMissionList"></div>
+  </div>
+</div> 
+
+<!-- ================= Info Panel ================= -->
+  <div id="infoPanel" class="hidden missions-panel">
+  <div class="missions-header">
+    <h2>How To Play</h2>
+    <button id="closeInfo" class="btn">Back</button>
+  </div>
+  <div class="missions-content info-text">
+    <p>Tap the cavemen to score points.</p>
+    <p>
+    Red cavemen give points.<br>
+    Yellow cavemen break your combo.<br>
+    Spikes freeze you and remove time.
+    </p>
+    <p>
+    Build combos to earn more points and level up faster.
+    </p>
+    <p>
+    Complete missions and daily rewards to earn gems.
+    </p>
+  </div>
+</div>
+
+<!-- ================= SETTINGS PANEL ================= -->
+  <div id="settingsPanel" class="hidden missions-panel">
+  <div class="missions-header">
+    <h2>Settings</h2>
+    <button id="closeSettings" class="btn">Back</button>
+  </div>
+  <div class="missions-content">
+    <div class="mission-card">
+      <div>Sound</div>
+      <button id="toggleSoundBtn" class="btn">ON</button>
+    </div>
+    <div class="mission-card">
+      <div>Vibration</div>
+      <button id="toggleVibrationBtn" class="btn">OFF</button>
+    </div>
+    <div class="mission-card">
+      <div>Reset Progress</div>
+      <button id="resetProgressBtn" class="btn">Reset</button>
+    </div>
+  </div>
+</div>
+  
 <!-- ================= BACKGROUND WRAPPER ================= -->
 <div id="game-wrapper">
   <!-- Background Layers -->
@@ -69,24 +137,20 @@
   
 </header>
 
-  <!-- Overlay -->
+<!-- ================= Overlay ================= -->
   <div id="shopOverlay" class="hidden"></div>
 
-  <!-- Shop Panel -->
+<!-- ================= Shop Panel ================= -->
   <div id="shopPanel" class="hidden">
     <h2>Shop</h2>
-
     <div class="shop-balance">
       Gems: <span id="gemCount">0</span> 💎
     </div>
-
     <div id="themeList" class="theme-list"></div>
-
     <button id="closeShop" class="btn close-btn">Close</button>
   </div>
-
+  
   <main class="wrap">
-
     <div id="levelSelect" class="level-select">
       <h2>Select Difficulty</h2>
       <div class="levels">
@@ -95,15 +159,13 @@
         <button class="level-btn" data-level="hard">Hard</button>
       </div>
     </div>
-
     <canvas id="game">
 Your browser does not support the HTML5 canvas.
 </canvas>
     <div id="countdown" class="countdown hidden">3</div>
-
   </main>
 
-  <!-- Milestones Screen -->
+<!-- ================= Milestones Screen ================= -->
   <div id="milestoneScreen" class="milestone-screen hidden">
   <div class="milestone-header">
     <h2>Rank & Rewards</h2>
@@ -117,7 +179,6 @@ Your browser does not support the HTML5 canvas.
         <div id="rankName" class="rank-name">—</div>
         <div id="rankNext" class="rank-next">Next: —</div>
       </div>
-
       <div class="rank-progress">
         <div class="rank-progress-label">Progress to next rank</div>
         <div class="rank-progress-bar">
@@ -126,7 +187,6 @@ Your browser does not support the HTML5 canvas.
         <div id="rankProgressText" class="rank-progress-text">0%</div>
       </div>
     </div>
-
     <div class="rank-carousel-wrapper">
       <div id="rankCarousel" class="rank-carousel" aria-label="Rank carousel" role="region"></div>
     </div>
@@ -135,7 +195,6 @@ Your browser does not support the HTML5 canvas.
   <div id="milestoneList" class="milestone-list"></div>
 </div>
 
-
   <div id="endPanel" class="end-panel hidden">
   <div class="end-card">
     <h2>Round Summary</h2>
@@ -143,7 +202,6 @@ Your browser does not support the HTML5 canvas.
     <div class="end-stat">Score: <span id="endScore">0</span></div>
     <div class="end-stat">Gems: +<span id="endGems">0</span> 💎</div>
     <div class="end-stat">XP: +<span id="endXP">0</span></div>
-
     <div class="end-buttons">
       <button id="doubleBtn" class="btn hidden">x2 Gems</button>
       <button id="playAgainBtn" class="btn">Play Again</button>
