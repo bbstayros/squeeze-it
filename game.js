@@ -838,6 +838,12 @@ function renderRankCarousel() {
   const currentRank = getCurrentRank(State.playerLevel);
   const progress = getRankProgress(State.playerLevel);
 
+   rankNameEl.textContent = currentRank.name;
+   const nextRank = getNextRank(State.playerLevel);
+   rankNextEl.textContent = nextRank
+    ? "Next: " + nextRank.name
+    : "Max Rank";
+   
   RANKS.forEach(rank => {
     const card = document.createElement("div");
     card.className = "rank-card";
