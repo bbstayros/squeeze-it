@@ -176,7 +176,7 @@ canvas#game{
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.45);
-  z-index: 50;
+  z-index: 550;
 }
 
 /* panel */
@@ -190,7 +190,7 @@ canvas#game{
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 18px;
   padding: 14px;
-  z-index: 60;
+  z-index: 600;
   backdrop-filter: blur(10px);
 }
 
@@ -832,7 +832,7 @@ body::after{
 .main-menu{
   position: fixed;
   inset: 0;
-  z-index: 500;
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -927,15 +927,14 @@ body::after{
 
 /* LEVEL BLOCK */
 .menu-level{
-  font-size:14px;
   display:flex;
-  flex-direction: column;
-  gap:4px;
+  align-items:center;
+  gap:10px;
 }
 
 /* XP BAR */
 .menu-xp-bar{
-  width:160px;
+  width:140px;
   height:8px;
 
   border-radius:999px;
