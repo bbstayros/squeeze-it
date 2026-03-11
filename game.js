@@ -205,7 +205,10 @@ async function loadSprites() {
             SpriteManifest.caveman[type][dir].push(img);
             resolve();
           };
-          img.onerror = reject;
+          img.onerror = () => {
+           console.warn("Missing sprite:", path);
+           resolve();
+          };
           img.src = path;
         });
 
