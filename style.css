@@ -898,3 +898,85 @@ body::after{
   transform: translateY(-2px);
   box-shadow:0 10px 25px rgba(0,0,0,0.4);
 }
+
+/* =====================================================
+   MENU TOP BAR (HOME SCREEN)
+===================================================== */
+
+.menu-topbar{
+  position: absolute;
+  top: 18px;
+  left: 22px;
+  right: 22px;
+
+  display:flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  z-index: 20;
+}
+
+/* LEFT SIDE */
+.menu-stats{
+  display:flex;
+  flex-direction: column;
+  gap:6px;
+  font-size:14px;
+  opacity:0.9;
+}
+
+/* LEVEL BLOCK */
+.menu-level{
+  font-size:14px;
+  display:flex;
+  flex-direction: column;
+  gap:4px;
+}
+
+/* XP BAR */
+.menu-xp-bar{
+  width:160px;
+  height:8px;
+
+  border-radius:999px;
+
+  background: rgba(255,255,255,0.08);
+
+  overflow:hidden;
+}
+
+#menuXpFill{
+  height:100%;
+  width:40%;
+
+  background: linear-gradient(90deg,#ffb347,#ff7b00);
+
+  box-shadow:
+    0 0 8px rgba(255,140,0,0.6),
+    0 0 18px rgba(255,100,0,0.4);
+}
+
+/* SETTINGS BUTTON */
+.menu-settings{
+
+  padding:10px 16px;
+
+  border-radius:14px;
+
+  border:1px solid rgba(255,200,120,0.1);
+
+  background: linear-gradient(180deg,#3a2c1c,#241a12);
+
+  color:white;
+
+  font-weight:700;
+
+  cursor:pointer;
+
+  transition: all 0.15s ease;
+}
+
+.menu-settings:hover{
+  transform: translateY(-2px);
+  box-shadow:0 10px 25px rgba(0,0,0,0.4);
+}
