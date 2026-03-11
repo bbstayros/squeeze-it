@@ -570,11 +570,15 @@ canvas#game{
   filter: grayscale(1);
 }
 
-.rank-card .rank-card-name{
-  margin-top:8px;
-  font-size:12px;
-  opacity:0.85;
+.rank-title{
+  font-size:13px;
   font-weight:700;
+  margin-top:6px;
+}
+
+.rank-range{
+  font-size:11px;
+  opacity:0.6;
 }
 
 .rank-card.current{
@@ -702,4 +706,29 @@ body::after{
   font-size:20px;
   cursor:pointer;
   color:#fff;
+}
+
+/* =========================
+   RANK IMAGE
+========================= */
+
+.rank-image{
+  width: 80px;
+  height: 120px;
+  object-fit: contain;
+  display:block;
+  margin: 0 auto 6px auto;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.5));
+  transition: transform 0.25s ease;
+}
+
+.rank-card.current .rank-image{
+  transform: scale(1.08);
+  filter:
+    drop-shadow(0 10px 18px rgba(0,0,0,0.6))
+    drop-shadow(0 0 18px rgba(255,140,0,0.35));
+}
+
+.rank-card.locked .rank-image{
+  filter: grayscale(1) brightness(0.6);
 }
