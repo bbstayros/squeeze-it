@@ -73,7 +73,13 @@ async function unlockAudio() {
   const backMenuBtn = document.getElementById("backMenuBtn");
   const soundToggleBtn = document.getElementById("soundToggle");
   const doubleProgress = document.getElementById("doubleProgress");
-
+  const mainMenu = document.getElementById("mainMenu");
+  const menuPlay = document.getElementById("menuPlay");
+  const menuShop = document.getElementById("menuShop");
+  const menuRanks = document.getElementById("menuRanks");
+  const menuRewards = document.getElementById("menuRewards");
+  const menuSettings = document.getElementById("menuSettings");
+   
     /* =====================================================
      PARALLAX BACKGROUND (Visual Only)
   ===================================================== */
@@ -1424,7 +1430,38 @@ if (State.doubleReady && adsRemaining > 0) {
     });
   });
 
-   
+/* =====================================================
+   MAIN MENU EVENTS
+===================================================== */
+
+menuPlay.addEventListener("click", () => {
+  mainMenu.classList.add("hidden");
+  levelSelect.classList.remove("hidden");
+});
+
+menuShop.addEventListener("click", () => {
+  mainMenu.classList.add("hidden");
+  renderShop();
+  UI.show(shopOverlay);
+  UI.show(shopPanel);
+});
+
+menuRanks.addEventListener("click", () => {
+  mainMenu.classList.add("hidden");
+  openRanks();
+  UI.show(milestoneScreen);
+});
+
+menuRewards.addEventListener("click", () => {
+  mainMenu.classList.add("hidden");
+  renderShop();
+  UI.show(shopOverlay);
+  UI.show(shopPanel);
+});
+
+menuSettings.addEventListener("click", () => {
+  UI.toast("Settings coming soon ⚙️");
+}); 
 
   /* =====================================================
      EVENTS - START
@@ -1514,8 +1551,7 @@ startCountdownThenPlay();
 
   backMenuBtn.addEventListener("click", () => {
   UI.hide(endPanel);
-  levelSelect.classList.remove("hidden");
-  startBtn.disabled = false;
+  mainMenu.classList.remove("hidden");
   });
 
    /* =====================================================
