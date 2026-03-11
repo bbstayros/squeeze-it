@@ -55,6 +55,7 @@ async function unlockAudio() {
 
   const levelDisplay = document.getElementById("levelDisplay");
   const menuLevelDisplay = document.getElementById("menuLevelDisplay"); 
+  const menuXpFill = document.getElementById("menuXpFill");
   const xpFill = document.getElementById("xpFill");
 
   const milestonesBtn = document.getElementById("milestonesBtn");
@@ -464,19 +465,18 @@ function goToMainMenu() {
 }
 
 function updateXPUI() {
-
   levelDisplay.textContent = State.playerLevel;
-
   if (menuLevelDisplay) {
     menuLevelDisplay.textContent = State.playerLevel;
   }
-
   const percent = Math.min(
     1,
     State.currentXP / xpNeededForLevel(State.playerLevel)
   );
-
   xpFill.style.width = percent * 100 + "%";
+  if (menuXpFill) {
+    menuXpFill.style.width = percent * 100 + "%";
+  }
 }
 
 function addXP(amount) {
