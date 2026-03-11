@@ -979,3 +979,63 @@ body::after{
   transform: translateY(-2px);
   box-shadow:0 10px 25px rgba(0,0,0,0.4);
 }
+
+/* =========================
+   MISSIONS / INFO / SETTINGS PANELS
+========================= */
+
+.missions-panel{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 400;
+
+  display:flex;
+  flex-direction: column;
+}
+
+.missions-header{
+  display:flex;
+  justify-content: space-between;
+  align-items:center;
+
+  padding:20px;
+  border-bottom:1px solid rgba(255,255,255,0.1);
+}
+
+.missions-content{
+  flex:1;
+  padding:20px;
+
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+
+  overflow-y:auto;
+}
+
+.mission-card{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  padding:16px;
+
+  border-radius:14px;
+
+  background:rgba(255,255,255,0.05);
+}
+
+.mission-title{
+  font-weight:800;
+}
+
+.mission-desc{
+  font-size:13px;
+  opacity:0.7;
+}
+
+.info-text{
+  font-size:16px;
+  line-height:1.6;
+}
