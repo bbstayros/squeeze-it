@@ -82,8 +82,24 @@ async function unlockAudio() {
   const menuRanks = document.getElementById("menuRanks");
   const menuRewards = document.getElementById("menuRewards");
   const menuSettings = document.getElementById("menuSettings");
-   
-    /* =====================================================
+  const missionsPanel = document.getElementById("missionsPanel");
+  const closeMissions = document.getElementById("closeMissions");
+  const dailyMissionList = document.getElementById("dailyMissionList");
+
+  const infoPanel = document.getElementById("infoPanel");
+  const closeInfo = document.getElementById("closeInfo");
+
+  const settingsPanel = document.getElementById("settingsPanel");
+  const closeSettings = document.getElementById("closeSettings");
+
+  const toggleSoundBtn = document.getElementById("toggleSoundBtn");
+  const toggleVibrationBtn = document.getElementById("toggleVibrationBtn");
+  const resetProgressBtn = document.getElementById("resetProgressBtn");
+
+  const dailyRewardBtn = document.getElementById("dailyRewardBtn");
+  const watchAdBtn = document.getElementById("watchAdBtn"); 
+  const menuInformation = document.getElementById("menuInfo");
+   /* =====================================================
      PARALLAX BACKGROUND (Visual Only)
   ===================================================== */
 
@@ -256,13 +272,21 @@ async function loadSprites() {
     // screen shake
     shakeTime: 0,
     shakeStrength: 0,
-// background drift
-bgOffsetX: 0,
-bgOffsetY: 0,
+    
+     // background drift
+    bgOffsetX: 0,
+    bgOffsetY: 0,
      
     // economy
     totalGems: parseInt(localStorage.getItem("squeeze_gems")) || 0,
     earnedGems: 0,
+
+    // dailyMissions
+    dailyMissions: {
+    rounds: 0,
+    hits: 0,
+    combo5: false
+    }, 
 
     // xp
     playerLevel: parseInt(localStorage.getItem("squeeze_level")) || 1,
@@ -279,11 +303,11 @@ bgOffsetY: 0,
     roundsSinceDouble: 0,
     doubleReady: false, 
    
-     timers: {
-      rafId: null,
-      timeTimer: null,
-      freezeTimer: null,
-      countdownTimer: null
+    timers: {
+    rafId: null,
+    timeTimer: null,
+    freezeTimer: null,
+    countdownTimer: null
     }
   };
 
@@ -506,6 +530,21 @@ function addXP(amount) {
   updateXPUI();
 }
 
+  function updateDailyMissions(type, value = 1) {
+
+  if (type === "round") {
+    State.dailyMissions.rounds += value;
+  }
+
+  if (type === "hit") {
+    State.dailyMissions.hits += value;
+  }
+
+  if (type === "combo5") {
+    State.dailyMissions.combo5 = true;
+  }
+
+} 
   /* =====================================================
      RANDOM / SPAWN
   ===================================================== */
@@ -578,9 +617,30 @@ function addXP(amount) {
     State.entities.length = 0;
   }
 
-  /* =====================================================
-     SHOP / ECONOMY
-  ===================================================== */
+/* =====================================================
+   DAILY MISSIONS RESET (00:00)
+===================================================== */
+
+function getTodayKey() {
+  const d = new Date();
+  return d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();
+}
+
+function resetDailyMissionsIfNeeded(){
+  const today = getTodayKey();
+  const saved = localStorage.getItem("squeeze_mission_date");
+  if(saved !== today){
+    State.dailyMissions = {
+      rounds:0,
+      hits:0,
+      combo5:false
+    };
+    localStorage.removeItem("mission_claim_Finish 3 rounds");
+    localStorage.removeItem("mission_claim_Hit 50 targets");
+    localStorage.removeItem("mission_claim_Reach combo x5");
+    localStorage.setItem("squeeze_mission_date",today);
+  }
+}
 
    /* =====================================================
    AD DAILY CAP SYSTEM
@@ -773,7 +833,74 @@ if (remaining > 0) {
       themeList.appendChild(item);
     }
   }
+function renderDailyMissions() {
 
+  dailyMissionList.innerHTML = "";
+
+  const missions = [
+
+    {
+      title:"Finish 3 rounds",
+      progress: State.dailyMissions.rounds,
+      target:3,
+      reward:50
+    },
+
+    {
+      title:"Hit 50 targets",
+      progress: State.dailyMissions.hits,
+      target:50,
+      reward:40
+    },
+
+    {
+      title:"Reach combo x5",
+      progress: State.dailyMissions.combo5 ? 1 : 0,
+      target:1,
+      reward:30
+    }
+
+  ];
+
+  missions.forEach(m => {
+
+    const done = m.progress >= m.target;
+
+    const card = document.createElement("div");
+    card.className="mission-card";
+
+    const left = document.createElement("div");
+    left.innerHTML = `<strong>${m.title}</strong><br>${m.progress}/${m.target}`;
+
+    const btn = document.createElement("button");
+    btn.className="btn";
+
+    if(done){
+      btn.textContent="Claim +" + m.reward + " 💎";
+      btn.onclick=()=>{
+      const key = "mission_claim_" + m.title;
+      if(localStorage.getItem(key)) return;
+       State.totalGems+=m.reward;
+       Storage.saveGems();
+       UI.setGems(State.totalGems);
+       localStorage.setItem(key,"claimed");
+       btn.disabled=true;
+       btn.textContent="Claimed";
+      }
+    }
+    else{
+      btn.textContent="In progress";
+      btn.disabled=true;
+    }
+
+    card.appendChild(left);
+    card.appendChild(btn);
+
+    dailyMissionList.appendChild(card);
+
+  });
+
+}
 /* =====================================================
    RANKS + RANK REWARDS SYSTEM
 ===================================================== */
@@ -1210,6 +1337,7 @@ ctx.fill();
       if (dx * dx + dy * dy <= e.r * e.r) {
         // NORMAL
         if (e.type === "normal") {
+          updateDailyMissions("hit",1); 
           State.combo++;
           sound.tap(Math.min(State.combo / 20, 1));
           if (State.combo > 1) sound.combo(State.combo);
@@ -1218,7 +1346,10 @@ ctx.fill();
           let multiplier = 1;
           if (State.combo >= 20) multiplier = 4;
           else if (State.combo >= 10) multiplier = 3;
-          else if (State.combo >= 5) multiplier = 2;
+          else if (State.combo >= 5) {
+            multiplier = 2;
+            updateDailyMissions("combo5");
+          }
 
           const levelBonusMultiplier = 1 + (State.playerLevel - 1) * 0.01;
           const gained = Math.floor(10 * multiplier * levelBonusMultiplier);
@@ -1388,6 +1519,7 @@ ctx.fill();
 }
 
   function endRound() {
+    updateDailyMissions("round",1); 
     State.gameRunning = false;
 
     if (State.timers.rafId) cancelAnimationFrame(State.timers.rafId);
@@ -1483,6 +1615,20 @@ menuPlay.addEventListener("click", () => {
   }
 });
 
+menuInformation.addEventListener("click", () => {
+
+  UI.hide(mainMenu);
+  UI.show(infoPanel);
+
+});
+
+closeInfo.addEventListener("click", () => {
+
+  UI.hide(infoPanel);
+  goToMainMenu();
+
+});
+   
 menuShop.addEventListener("click", () => {
   UI.hide(mainMenu);
   renderShop();
@@ -1498,14 +1644,15 @@ menuRanks.addEventListener("click", () => {
 
 menuRewards.addEventListener("click", () => {
   UI.hide(mainMenu);
-  renderShop();
-  UI.show(shopOverlay);
-  UI.show(shopPanel);
+  resetDailyMissionsIfNeeded();
+  renderDailyMissions();
+  UI.show(missionsPanel);
 });
 
 menuSettings.addEventListener("click", () => {
-  UI.toast("Settings coming soon ⚙️");
-}); 
+  UI.hide(mainMenu);
+  UI.show(settingsPanel);
+});
 
   /* =====================================================
      EVENTS - START
@@ -1537,7 +1684,7 @@ startCountdownThenPlay();
     UI.show(shopPanel);
   });
 
-closeShop.addEventListener("click", () => {
+shopOverlay.addEventListener("click", () => {
   UI.hide(shopOverlay);
   UI.hide(shopPanel);
   goToMainMenu();
@@ -1607,9 +1754,7 @@ shopOverlay.addEventListener("click", () => {
   soundToggleBtn.addEventListener("click", async () => {
   const newState = !sound.isEnabled();
   sound.setEnabled(newState);
-
   soundToggleBtn.textContent = newState ? "🔊" : "🔇";
-
   if (newState) {
     if (!sound.unlocked) {
       await sound.unlock();
@@ -1618,6 +1763,51 @@ shopOverlay.addEventListener("click", () => {
       sound.startAmbient();
     }
   }
+});
+
+   toggleSoundBtn.addEventListener("click",()=>{
+
+  const enabled = !sound.isEnabled();
+  sound.setEnabled(enabled);
+
+  toggleSoundBtn.textContent = enabled ? "ON" : "OFF";
+
+});
+
+   toggleVibrationBtn.addEventListener("click",()=>{
+
+  const current = localStorage.getItem("squeeze_vibration") === "on";
+
+  const next = !current;
+
+  localStorage.setItem("squeeze_vibration", next ? "on":"off");
+
+  toggleVibrationBtn.textContent = next ? "ON":"OFF";
+
+});
+
+   resetProgressBtn.addEventListener("click",()=>{
+
+  if(!confirm("Reset ALL progress?")) return;
+
+  localStorage.clear();
+  location.reload();
+
+});
+
+   /* =====================================================
+     EVENTS - Missions
+  ===================================================== */ 
+   closeMissions.addEventListener("click", () => {
+  UI.hide(missionsPanel);
+  goToMainMenu();
+});
+
+   closeSettings.addEventListener("click",()=>{
+
+  UI.hide(settingsPanel);
+  goToMainMenu();
+
 });
    
   /* =====================================================
@@ -1639,9 +1829,6 @@ shopOverlay.addEventListener("click", () => {
 
   UI.setGems(State.totalGems);
   updateXPUI();
-  menuLevelDisplay.textContent = State.playerLevel;
-  menuXpFill.style.width =
-  (State.currentXP / xpNeededForLevel(State.playerLevel)) * 100 + "%";
 
    // 🔊 RESTORE SOUND STATE
 const savedSound = localStorage.getItem("squeeze_sound");
