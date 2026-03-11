@@ -1484,7 +1484,7 @@ menuPlay.addEventListener("click", () => {
 });
 
 menuShop.addEventListener("click", () => {
-  mainMenu.classList.add("hidden");
+  UI.hide(mainMenu);
   renderShop();
   UI.show(shopOverlay);
   UI.show(shopPanel);
@@ -1497,7 +1497,7 @@ menuRanks.addEventListener("click", () => {
 });
 
 menuRewards.addEventListener("click", () => {
-  mainMenu.classList.add("hidden");
+  UI.hide(mainMenu);
   renderShop();
   UI.show(shopOverlay);
   UI.show(shopPanel);
@@ -1540,7 +1540,7 @@ startCountdownThenPlay();
 closeShop.addEventListener("click", () => {
   UI.hide(shopOverlay);
   UI.hide(shopPanel);
-  mainMenu.classList.remove("hidden");
+  goToMainMenu();
 });
 
 shopOverlay.addEventListener("click", () => {
@@ -1639,6 +1639,9 @@ shopOverlay.addEventListener("click", () => {
 
   UI.setGems(State.totalGems);
   updateXPUI();
+  menuLevelDisplay.textContent = State.playerLevel;
+  menuXpFill.style.width =
+  (State.currentXP / xpNeededForLevel(State.playerLevel)) * 100 + "%";
 
    // 🔊 RESTORE SOUND STATE
 const savedSound = localStorage.getItem("squeeze_sound");
