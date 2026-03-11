@@ -95,10 +95,11 @@ async function unlockAudio() {
   const toggleSoundBtn = document.getElementById("toggleSoundBtn");
   const toggleVibrationBtn = document.getElementById("toggleVibrationBtn");
   const resetProgressBtn = document.getElementById("resetProgressBtn");
-
+  const backFromDifficulty = document.getElementById("backFromDifficulty");
   const dailyRewardBtn = document.getElementById("dailyRewardBtn");
   const watchAdBtn = document.getElementById("watchAdBtn"); 
   const menuInformation = document.getElementById("menuInfo");
+  const lastScoreEl = document.getElementById("lastScore");
    /* =====================================================
      PARALLAX BACKGROUND (Visual Only)
   ===================================================== */
@@ -531,20 +532,20 @@ function addXP(amount) {
 }
 
   function updateDailyMissions(type, value = 1) {
-
   if (type === "round") {
     State.dailyMissions.rounds += value;
   }
-
   if (type === "hit") {
     State.dailyMissions.hits += value;
   }
-
   if (type === "combo5") {
     State.dailyMissions.combo5 = true;
   }
-
-} 
+  localStorage.setItem(
+    "squeeze_daily_missions",
+    JSON.stringify(State.dailyMissions)
+  );
+}
   /* =====================================================
      RANDOM / SPAWN
   ===================================================== */
@@ -878,15 +879,17 @@ function renderDailyMissions() {
     if(done){
       btn.textContent="Claim +" + m.reward + " 💎";
       btn.onclick=()=>{
-      const key = "mission_claim_" + m.title;
-      if(localStorage.getItem(key)) return;
-       State.totalGems+=m.reward;
-       Storage.saveGems();
-       UI.setGems(State.totalGems);
-       localStorage.setItem(key,"claimed");
-       btn.disabled=true;
-       btn.textContent="Claimed";
-      }
+  const key = "mission_claim_" + m.title;
+  if(localStorage.getItem(key)) return;
+  State.totalGems+=m.reward;
+  Storage.saveGems();
+  UI.setGems(State.totalGems);
+  localStorage.setItem(key,"claimed");
+  btn.disabled=true;
+  btn.textContent="Claimed";
+  renderDailyMissions();
+
+}
     }
     else{
       btn.textContent="In progress";
@@ -1551,6 +1554,10 @@ ctx.fill();
 
     // Fill summary panel
     endScore.textContent = State.score;
+    localStorage.setItem("squeeze_last_score", State.score); 
+    if(lastScoreEl){
+  lastScoreEl.textContent = State.score;
+} 
     endGems.textContent = State.earnedGems;
     endXP.textContent = xpEarned;
     if (!State.doubleReady) {
@@ -1603,6 +1610,12 @@ if (State.doubleReady && adsRemaining > 0) {
   });
 });
 
+   backFromDifficulty.addEventListener("click", () => {
+
+  levelSelect.classList.add("hidden");
+  goToMainMenu();
+
+});
 /* =====================================================
    MAIN MENU EVENTS
 ===================================================== */
@@ -1829,6 +1842,10 @@ shopOverlay.addEventListener("click", () => {
 
   UI.setGems(State.totalGems);
   updateXPUI();
+  const savedLastScore = localStorage.getItem("squeeze_last_score");
+if(savedLastScore && lastScoreEl){
+  lastScoreEl.textContent = savedLastScore;
+} 
 
    // 🔊 RESTORE SOUND STATE
 const savedSound = localStorage.getItem("squeeze_sound");
