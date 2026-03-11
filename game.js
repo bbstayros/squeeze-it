@@ -1684,16 +1684,16 @@ startCountdownThenPlay();
     UI.show(shopPanel);
   });
 
-shopOverlay.addEventListener("click", () => {
+   closeShop.addEventListener("click", () => {
   UI.hide(shopOverlay);
   UI.hide(shopPanel);
   goToMainMenu();
 });
-
+   
 shopOverlay.addEventListener("click", () => {
   UI.hide(shopOverlay);
   UI.hide(shopPanel);
-  mainMenu.classList.remove("hidden");
+  goToMainMenu();
 });
 
   /* =====================================================
