@@ -54,7 +54,7 @@ async function unlockAudio() {
   const gemCount = document.getElementById("gemCount");
 
   const levelDisplay = document.getElementById("levelDisplay");
-  const menuLevelDisplay = document.getElementById("menuLevelDisplay"); 
+  const menuLevelDisplay = document.getElementById("menuLevel"); 
   const menuXpFill = document.getElementById("menuXpFill");
   const xpFill = document.getElementById("xpFill");
 
@@ -1484,7 +1484,7 @@ menuPlay.addEventListener("click", () => {
 });
 
 menuShop.addEventListener("click", () => {
-  closeAllScreens();
+  mainMenu.classList.add("hidden");
   renderShop();
   UI.show(shopOverlay);
   UI.show(shopPanel);
@@ -1497,7 +1497,7 @@ menuRanks.addEventListener("click", () => {
 });
 
 menuRewards.addEventListener("click", () => {
-  closeAllScreens();
+  mainMenu.classList.add("hidden");
   renderShop();
   UI.show(shopOverlay);
   UI.show(shopPanel);
@@ -1537,16 +1537,17 @@ startCountdownThenPlay();
     UI.show(shopPanel);
   });
 
-  closeShop.addEventListener("click", () => {
+closeShop.addEventListener("click", () => {
   UI.hide(shopOverlay);
   UI.hide(shopPanel);
-  goToMainMenu();
-  });
+  mainMenu.classList.remove("hidden");
+});
 
-  shopOverlay.addEventListener("click", () => {
-    UI.hide(shopOverlay);
-    UI.hide(shopPanel);
-  });
+shopOverlay.addEventListener("click", () => {
+  UI.hide(shopOverlay);
+  UI.hide(shopPanel);
+  mainMenu.classList.remove("hidden");
+});
 
   /* =====================================================
      EVENTS - MILESTONES
