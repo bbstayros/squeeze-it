@@ -39,6 +39,7 @@ async function unlockAudio() {
   const ctx = canvas.getContext("2d");
 
   const scoreEl = document.getElementById("score");
+  const topbar = document.querySelector(".topbar");
   const timeEl = document.getElementById("time");
   const startBtn = document.getElementById("startBtn");
   const countdownEl = document.getElementById("countdown");
@@ -410,6 +411,9 @@ function closeAllScreens() {
 function goToMainMenu() {
   closeAllScreens();
   mainMenu.classList.remove("hidden");
+  if (topbar) {
+    topbar.style.display = "none";
+  }
 }
    
 /* =====================================================
@@ -1294,7 +1298,7 @@ ctx.fill();
   function loop(ts) {
     if (!State.gameRunning) return;
 
-    const dt = Math.min(0.033, (ts - lastTs) / 1000 || 0);
+    const dt = Math.min(0.028, (ts - lastTs) / 1000 || 0);
     lastTs = ts;
 
     update(dt);
@@ -1329,6 +1333,9 @@ ctx.fill();
   }
 
   function beginRound() {
+    if (topbar) {
+      topbar.style.display = "grid";
+    } 
     State.score = 0;
     State.timeLeft = Config.roundSeconds;
 
@@ -1452,6 +1459,9 @@ if (State.doubleReady && adsRemaining > 0) {
 menuPlay.addEventListener("click", () => {
   mainMenu.classList.add("hidden");
   levelSelect.classList.remove("hidden");
+  if (topbar) {
+    topbar.style.display = "none";
+  }
 });
 
 menuShop.addEventListener("click", () => {
@@ -1509,8 +1519,9 @@ startCountdownThenPlay();
   });
 
   closeShop.addEventListener("click", () => {
-    UI.hide(shopOverlay);
-    UI.hide(shopPanel);
+  UI.hide(shopOverlay);
+  UI.hide(shopPanel);
+  goToMainMenu();
   });
 
   shopOverlay.addEventListener("click", () => {
@@ -1528,7 +1539,8 @@ startCountdownThenPlay();
 });
 
   closeMilestones.addEventListener("click", () => {
-    UI.hide(milestoneScreen);
+  UI.hide(milestoneScreen);
+  goToMainMenu();
   });
   /* =====================================================
      EVENTS - END PANEL
@@ -1566,7 +1578,7 @@ startCountdownThenPlay();
 
   backMenuBtn.addEventListener("click", () => {
   UI.hide(endPanel);
-  mainMenu.classList.remove("hidden");
+  goToMainMenu();
   });
 
    /* =====================================================
