@@ -186,7 +186,8 @@ const SpriteManifest = {
   caveman: {
     normal: {},
     shield: {},
-    spike: {}
+    spike: {},
+    bonus: {}
   }
 };
 
@@ -1199,7 +1200,7 @@ function openRanks() {
       }
 
       e.x += e.vx * dt;
-      if(Math.random() < 0.15){
+      if(Math.random() < 0.35){
        State.footprints.push({
        x:e.x,
        y:e.y,
@@ -1240,7 +1241,7 @@ if (e.frameTimer > 0.1) {
 }
      // BONUS SPAWN
 if(
-  State.timeLeft < 8 &&
+  State.timeLeft < 15 &&
   State.combo >= 3 &&
   !State.bonusSpawned &&
   Math.random() < 0.03
@@ -1341,8 +1342,8 @@ ctx.filter = "none";
 for(const f of State.footprints){
   ctx.globalAlpha = f.alpha;
   ctx.beginPath();
-  ctx.ellipse(f.x, f.y, 14, 7, 0, 0, Math.PI*2);
-  ctx.fillStyle="rgba(0,0,0,0.35)";
+  ctx.ellipse(f.x, f.y, 6, 3, 0, 0, Math.PI*2);
+  ctx.fillStyle="rgba(0,0,0,0.45)";
   ctx.fill();
   ctx.globalAlpha = 1;
 }
