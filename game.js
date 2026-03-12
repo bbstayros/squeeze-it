@@ -1302,25 +1302,15 @@ State.bgOffsetY += 12 * dt;
       offsetX = (Math.random() - 0.5) * State.shakeStrength;
       offsetY = (Math.random() - 0.5) * State.shakeStrength;
 }
-
-ctx.save();
-ctx.translate(offsetX, offsetY);
-ctx.filter = "brightness(0.9) contrast(0.9) saturate(0.85)";
-     
+    
 // background
 if (bgPattern) {
-
   const tileSize = 512;
-
   const ox = State.bgOffsetX % tileSize;
   const oy = State.bgOffsetY % tileSize;
-
   ctx.save();
-
   ctx.translate(-ox, -oy);
-
   ctx.fillStyle = bgPattern;
-
   ctx.fillRect(
     -tileSize,
     -tileSize,
@@ -1336,6 +1326,9 @@ if (bgPattern) {
   ctx.fillRect(0, 0, State.W, State.H);
 
 }
+ctx.save();
+ctx.translate(offsetX, offsetY);
+ctx.filter = "brightness(0.9) contrast(0.9) saturate(0.85)";
 // RESET FILTER HERE
 ctx.filter = "none";
      
