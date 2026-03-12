@@ -664,7 +664,18 @@ function spawnBonus(){
 /* =====================================================
    DAILY MISSIONS RESET (00:00)
 ===================================================== */
-
+function updateDailyMissions(type, value = 1){
+  if(type === "round"){
+    State.dailyMissions.rounds += value;
+  }
+  if(type === "hit"){
+    State.dailyMissions.hits += value;
+  }
+  if(type === "combo5"){
+    State.dailyMissions.combo5 = true;
+  }
+}
+   
 function getTodayKey() {
   const d = new Date();
   return d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();
