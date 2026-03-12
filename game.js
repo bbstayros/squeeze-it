@@ -1332,6 +1332,33 @@ ctx.filter = "brightness(0.9) contrast(0.9) saturate(0.85)";
 // RESET FILTER HERE
 ctx.filter = "none";
 
+// DRAW ENTITIES (cavemen)
+
+for (const e of State.entities) {
+
+  if (e.hit) continue;
+
+  let type = e.type;
+  if (!SpriteManifest.caveman[type]) type = "normal";
+
+  const dir =
+    Math.abs(e.vx) > Math.abs(e.vy)
+      ? (e.vx > 0 ? "east" : "west")
+      : (e.vy > 0 ? "south" : "north");
+
+  const frames = SpriteManifest.caveman[type][dir];
+  if (!frames || frames.length === 0) continue;
+
+  const frame = frames[e.frameIndex % frames.length];
+
+  ctx.drawImage(
+    frame,
+    e.x - e.r,
+    e.y - e.r,
+    e.r * 2,
+    e.r * 2
+  );
+}     
 /* =====================================================
    DRAW ENTITIES (CAVEMAN SPRITES)
 ===================================================== */
