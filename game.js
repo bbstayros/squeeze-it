@@ -193,7 +193,12 @@ const SpriteManifest = {
 const Directions = ["east", "north", "south"];
 const FRAME_COUNT = 6;
 const FRAME_SIZE = 48;
+/* =====================================================
+   FINGER TAP SPRITE
+===================================================== */
 
+const fingerImg = new Image();
+fingerImg.src = "assets/sprites/caveman/caveman-finger.png";
    /* =====================================================
    BACKGROUND TILE SYSTEM
 ===================================================== */
@@ -1279,9 +1284,10 @@ if(
     for (let i = State.tapEffects.length - 1; i >= 0; i--) {
     const t = State.tapEffects[i];
     t.life -= dt;
-      if (t.life <= 0) {
+    t.age += dt;
+     if (t.life <= 0) {
       State.tapEffects.splice(i,1);
-      }
+     }
     } 
     // update screen shake
 if (State.shakeTime > 0) {
@@ -1388,21 +1394,36 @@ ctx.fill();
       ctx.stroke();
     }
 
-    // TAP EFFECTS
-  for(const t of State.tapEffects){
+// TAP EFFECTS
+for(const t of State.tapEffects){
+  const progress = t.age / 0.22;
+  const push = progress * 14;        // downward push
+  const rotation = progress * 0.25;  // μικρό rotate
   const alpha = Math.max(t.life * 4,0);
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.translate(t.x, t.y + push);
+  ctx.rotate(rotation);
+  ctx.drawImage(
+    fingerImg,
+    -28,
+    -28,
+    56,
+    56
+  );
+  ctx.restore();
+  // ripple circle
   ctx.globalAlpha = alpha;
   ctx.beginPath();
-  ctx.arc(t.x, t.y, 18, 0, Math.PI*2);
+  ctx.arc(t.x, t.y, 18 + progress * 10, 0, Math.PI*2);
   ctx.strokeStyle = "white";
   ctx.lineWidth = 3;
   ctx.stroke();
   ctx.globalAlpha = 1;
-  } 
+} 
     // floating texts
     ctx.textAlign = "center";
     ctx.font = "bold 18px Arial";
-
     for (const f of State.floatingTexts) {
       ctx.globalAlpha = f.alpha;
       ctx.fillStyle = f.color;
@@ -1540,9 +1561,10 @@ State.hitEffects.push({
     evt.preventDefault();
     const p = getPointerPos(evt);
     State.tapEffects.push({
-     x:p.x,
-     y:p.y,
-     life:0.18
+     x: p.x,
+     y: p.y,
+     life: 0.22,
+     age: 0
     }); 
     tryHit(p.x, p.y);
   }
