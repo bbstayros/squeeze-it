@@ -1335,8 +1335,8 @@ ctx.filter = "none";
 for(const f of State.footprints){
   ctx.globalAlpha = f.alpha;
   ctx.beginPath();
-  ctx.ellipse(f.x, f.y, 10, 5, 0, 0, Math.PI*2);
-  ctx.fillStyle="rgba(0,0,0,0.6)";
+  ctx.ellipse(f.x, f.y, 14, 7, 0, 0, Math.PI*2);
+  ctx.fillStyle="rgba(0,0,0,0.10)";
   ctx.fill();
   ctx.globalAlpha = 1;
 }
