@@ -504,21 +504,22 @@ function goToMainMenu() {
     }, 2000);
   }
    
-  /* =====================================================
+/* =====================================================
    XP – INFINITE SCALING SYSTEM
-  ===================================================== */
-  function xpNeededForLevel(level) {
+===================================================== */
+
+function xpNeededForLevel(level) {
   return 100 + level * 40;
-  }
-  
-   function updateXPUI() {
+}
+
+function updateXPUI() {
   const needed = xpNeededForLevel(State.playerLevel);
   levelDisplay.textContent = "Level " + State.playerLevel;
   menuLevelDisplay.textContent = State.playerLevel;
   const percent = Math.min(1, State.currentXP / needed);
   xpFill.style.width = (percent * 100) + "%";
   menuXpFill.style.width = (percent * 100) + "%";
-} 
+}
    
   function addXP(amount) {
   State.currentXP += amount;
