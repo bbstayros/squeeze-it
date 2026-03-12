@@ -1238,7 +1238,7 @@ if(
   State.timeLeft < 8 &&
   State.combo >= 4 &&
   !State.bonusSpawned &&
-  Math.random() < 0.01
+  Math.random() < 0.03
 ){
   spawnBonus();
   State.bonusSpawned = true;
@@ -1335,8 +1335,8 @@ ctx.filter = "none";
 for(const f of State.footprints){
   ctx.globalAlpha = f.alpha;
   ctx.beginPath();
-  ctx.ellipse(f.x, f.y, 6, 3, 0, 0, Math.PI*2);
-  ctx.fillStyle="rgba(0,0,0,0.4)";
+  ctx.ellipse(f.x, f.y, 10, 5, 0, 0, Math.PI*2);
+  ctx.fillStyle="rgba(0,0,0,0.6)";
   ctx.fill();
   ctx.globalAlpha = 1;
 }
