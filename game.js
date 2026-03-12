@@ -1286,8 +1286,8 @@ if (State.shakeTime > 0) {
     }
    }
    // subtle background drift
-State.bgOffsetX += 5 * dt;
-State.bgOffsetY += 3 * dt;
+State.bgOffsetX += 20 * dt;
+State.bgOffsetY += 12 * dt;
   }
 
   function draw() {
@@ -1309,11 +1309,14 @@ ctx.filter = "brightness(0.9) contrast(0.9) saturate(0.85)";
      
     // background
 if (bgPattern) {
-  ctx.save();
-  ctx.translate(State.bgOffsetX, State.bgOffsetY);
-  ctx.fillStyle = bgPattern;
-  ctx.fillRect(-State.bgOffsetX, -State.bgOffsetY, State.W + 200, State.H + 200);
-  ctx.restore();
+const tileSize = 512; // περίπου μέγεθος texture
+const ox = State.bgOffsetX % tileSize;
+const oy = State.bgOffsetY % tileSize;
+ctx.save();
+ctx.translate(-ox, -oy);
+ctx.fillStyle = bgPattern;
+ctx.fillRect(0, 0, State.W + tileSize, State.H + tileSize);
+ctx.restore();
 } else {
   ctx.fillStyle = theme.bg;
   ctx.fillRect(0, 0, State.W, State.H);
