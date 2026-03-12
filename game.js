@@ -507,7 +507,16 @@ function goToMainMenu() {
   /* =====================================================
    XP – INFINITE SCALING SYSTEM
   ===================================================== */
-function addXP(amount) {
+  function updateXPUI() {
+  const needed = xpNeededForLevel(State.playerLevel);
+  levelDisplay.textContent = "Level " + State.playerLevel;
+  menuLevelDisplay.textContent = State.playerLevel;
+  const percent = Math.min(1, State.currentXP / needed);
+  xpFill.style.width = (percent * 100) + "%";
+  menuXpFill.style.width = (percent * 100) + "%";
+} 
+   
+  function addXP(amount) {
   State.currentXP += amount;
   let safetyCounter = 0;
   const MAX_LEVEL_UPS_PER_CALL = 50;
@@ -1988,20 +1997,6 @@ shopOverlay.addEventListener("click", () => {
       State.currentThemeKey = State.currentThemeKey === "classic" ? "zombie" : "classic";
     }
   });
-
-  function updateXPUI() {
-
-  const needed = xpNeededForLevel(State.playerLevel);
-
-  levelDisplay.textContent = "Level " + State.playerLevel;
-  menuLevelDisplay.textContent = State.playerLevel;
-
-  const percent = Math.min(1, State.currentXP / needed);
-
-  xpFill.style.width = (percent * 100) + "%";
-  menuXpFill.style.width = (percent * 100) + "%";
-
-} 
   /* =====================================================
      INIT
   ===================================================== */
