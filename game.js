@@ -507,7 +507,11 @@ function goToMainMenu() {
   /* =====================================================
    XP – INFINITE SCALING SYSTEM
   ===================================================== */
-  function updateXPUI() {
+  function xpNeededForLevel(level) {
+  return 100 + level * 40;
+  }
+  
+   function updateXPUI() {
   const needed = xpNeededForLevel(State.playerLevel);
   levelDisplay.textContent = "Level " + State.playerLevel;
   menuLevelDisplay.textContent = State.playerLevel;
