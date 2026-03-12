@@ -1332,35 +1332,8 @@ ctx.filter = "brightness(0.9) contrast(0.9) saturate(0.85)";
 // RESET FILTER HERE
 ctx.filter = "none";
 
-// DRAW ENTITIES (cavemen)
-
-for (const e of State.entities) {
-
-  if (e.hit) continue;
-
-  let type = e.type;
-  if (!SpriteManifest.caveman[type]) type = "normal";
-
-  const dir =
-    Math.abs(e.vx) > Math.abs(e.vy)
-      ? (e.vx > 0 ? "east" : "west")
-      : (e.vy > 0 ? "south" : "north");
-
-  const frames = SpriteManifest.caveman[type][dir];
-  if (!frames || frames.length === 0) continue;
-
-  const frame = frames[e.frameIndex % frames.length];
-
-  ctx.drawImage(
-    frame,
-    e.x - e.r,
-    e.y - e.r,
-    e.r * 2,
-    e.r * 2
-  );
-}     
 /* =====================================================
-   DRAW ENTITIES (CAVEMAN SPRITES)
+   DRAW ENTITIES (SPRITES)
 ===================================================== */
 
 for (const e of State.entities) {
@@ -1375,19 +1348,42 @@ for (const e of State.entities) {
       ? (e.vx > 0 ? "east" : "west")
       : (e.vy > 0 ? "south" : "north");
 
-  const frames = SpriteManifest.caveman[type][dir];
+  let drawDir = dir;
+  let flip = false;
+
+  if (dir === "west") {
+    drawDir = "east";
+    flip = true;
+  }
+
+  const frames = SpriteManifest.caveman[type][drawDir];
   if (!frames || frames.length === 0) continue;
 
   const frame = frames[e.frameIndex % frames.length];
 
-  ctx.drawImage(
-    frame,
-    e.x - e.r,
-    e.y - e.r,
-    e.r * 2,
-    e.r * 2
-  );
-}     
+  ctx.save();
+
+  if (flip) {
+    ctx.scale(-1, 1);
+    ctx.drawImage(
+      frame,
+      -(e.x + e.r),
+      e.y - e.r,
+      e.r * 2,
+      e.r * 2
+    );
+  } else {
+    ctx.drawImage(
+      frame,
+      e.x - e.r,
+      e.y - e.r,
+      e.r * 2,
+      e.r * 2
+    );
+  }
+
+  ctx.restore();
+}    
 // FOOTPRINTS
 ctx.globalCompositeOperation = "multiply";
 for(const f of State.footprints){
