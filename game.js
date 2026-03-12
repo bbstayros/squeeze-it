@@ -646,12 +646,14 @@ function addXP(amount) {
     });
   }
   
-   function spawnBonus(){
+function spawnBonus(){
+  const speed = Config.baseSpeed * 0.6;
+  const angle = Math.random() * Math.PI * 2;
   State.entities.push({
     x: rand(100, State.W-100),
     y: rand(100, State.H-100),
-    vx:0,
-    vy:0,
+    vx: Math.cos(angle) * speed,
+    vy: Math.sin(angle) * speed,
     r:Config.entityRadius,
     type:"bonus",
     hit:false,
@@ -1202,9 +1204,9 @@ function openRanks() {
       e.x += e.vx * dt;
       if(Math.random() < 0.35){
        State.footprints.push({
-       x:e.x,
-       y:e.y,
-       alpha:0.7
+        x:e.x,
+        y:e.y + e.r * 1.1,
+        alpha:0.7
        });
         if(State.footprints.length > 20){
          State.footprints.shift();
