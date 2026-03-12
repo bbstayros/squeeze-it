@@ -1307,19 +1307,34 @@ ctx.save();
 ctx.translate(offsetX, offsetY);
 ctx.filter = "brightness(0.9) contrast(0.9) saturate(0.85)";
      
-    // background
+// background
 if (bgPattern) {
-const tileSize = 512; // περίπου μέγεθος texture
-const ox = State.bgOffsetX % tileSize;
-const oy = State.bgOffsetY % tileSize;
-ctx.save();
-ctx.translate(-ox, -oy);
-ctx.fillStyle = bgPattern;
-ctx.fillRect(0, 0, State.W + tileSize, State.H + tileSize);
-ctx.restore();
+
+  const tileSize = 512;
+
+  const ox = State.bgOffsetX % tileSize;
+  const oy = State.bgOffsetY % tileSize;
+
+  ctx.save();
+
+  ctx.translate(-ox, -oy);
+
+  ctx.fillStyle = bgPattern;
+
+  ctx.fillRect(
+    -tileSize,
+    -tileSize,
+    State.W + tileSize * 2,
+    State.H + tileSize * 2
+  );
+
+  ctx.restore();
+
 } else {
+
   ctx.fillStyle = theme.bg;
   ctx.fillRect(0, 0, State.W, State.H);
+
 }
 // RESET FILTER HERE
 ctx.filter = "none";
