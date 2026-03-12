@@ -1342,7 +1342,7 @@ for(const f of State.footprints){
   ctx.globalAlpha = f.alpha;
   ctx.beginPath();
   ctx.ellipse(f.x, f.y, 14, 7, 0, 0, Math.PI*2);
-  ctx.fillStyle="rgba(0,0,0,0.10)";
+  ctx.fillStyle="rgba(0,0,0,0.35)";
   ctx.fill();
   ctx.globalAlpha = 1;
 }
@@ -1350,13 +1350,6 @@ for(const f of State.footprints){
     // entities (humanoid)
 for (const e of State.entities) {
 // BONUS draw
-if(e.type === "bonus"){
-  ctx.beginPath();
-  ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2);
-  ctx.fillStyle = "#FFD700";
-  ctx.fill();
-  continue;
-}
   let scale = 1;
   if (e.hit) scale = 1 + e.hitTimer * 6;
 
@@ -1413,10 +1406,10 @@ for(const t of State.tapEffects){
   ctx.rotate(rotation);
   ctx.drawImage(
     fingerImg,
-    -60,
-    -60,
-    120,
-    120
+    -70,
+    -110,
+    140,
+    140
   );
   ctx.restore();
   // ripple circle
