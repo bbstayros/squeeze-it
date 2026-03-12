@@ -1203,7 +1203,7 @@ function openRanks() {
        State.footprints.push({
        x:e.x,
        y:e.y,
-       alpha:0.4
+       alpha:0.7
        });
         if(State.footprints.length > 20){
          State.footprints.shift();
@@ -1232,7 +1232,7 @@ if (e.frameTimer > 0.1) {
     }
  for(let i = State.footprints.length-1; i>=0;i--){
   const f = State.footprints[i];
-  f.alpha -= dt*1.5;
+  f.alpha -= dt*0.6;
 
   if(f.alpha <=0){
     State.footprints.splice(i,1);
@@ -1241,7 +1241,7 @@ if (e.frameTimer > 0.1) {
      // BONUS SPAWN
 if(
   State.timeLeft < 8 &&
-  State.combo >= 4 &&
+  State.combo >= 3 &&
   !State.bonusSpawned &&
   Math.random() < 0.03
 ){
@@ -1349,7 +1349,14 @@ for(const f of State.footprints){
      
     // entities (humanoid)
 for (const e of State.entities) {
-
+// BONUS draw
+if(e.type === "bonus"){
+  ctx.beginPath();
+  ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2);
+  ctx.fillStyle = "#FFD700";
+  ctx.fill();
+  continue;
+}
   let scale = 1;
   if (e.hit) scale = 1 + e.hitTimer * 6;
 
@@ -1397,7 +1404,7 @@ ctx.fill();
 // TAP EFFECTS
 for(const t of State.tapEffects){
   const progress = t.age / 0.22;
-  const push = progress * 14;        // downward push
+  const push = progress * 22;        // downward push
   const rotation = progress * 0.25;  // μικρό rotate
   const alpha = Math.max(t.life * 4,0);
   ctx.save();
@@ -1406,10 +1413,10 @@ for(const t of State.tapEffects){
   ctx.rotate(rotation);
   ctx.drawImage(
     fingerImg,
-    -28,
-    -28,
-    56,
-    56
+    -60,
+    -60,
+    120,
+    120
   );
   ctx.restore();
   // ripple circle
