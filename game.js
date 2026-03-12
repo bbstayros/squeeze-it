@@ -191,7 +191,7 @@ const SpriteManifest = {
 };
 
 const Directions = ["east", "north", "south"];
-const FRAME_COUNT = 6;
+const FRAME_COUNT = 4;
 const FRAME_SIZE = 48;
 /* =====================================================
    FINGER TAP SPRITE
