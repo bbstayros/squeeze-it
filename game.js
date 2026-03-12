@@ -507,76 +507,25 @@ function goToMainMenu() {
   /* =====================================================
    XP – INFINITE SCALING SYSTEM
   ===================================================== */
-
-  function xpNeededForLevel(level) {
-  const XP_BASE = 60;
-  const XP_LINEAR = 18;
-  const XP_POW = 1.35;
-  const XP_QUAD = 7;
-
-  const MAX_LEVEL = 10000;
-  const l = Math.max(1, Math.min(level, MAX_LEVEL));
-
-  const powPart = Math.pow(l, XP_POW) * XP_QUAD;
-  return Math.floor(XP_BASE + (l * XP_LINEAR) + powPart);
-}
-
-function updateXPUI() {
-  levelDisplay.textContent = State.playerLevel;
-  if (menuLevelDisplay) {
-    menuLevelDisplay.textContent = State.playerLevel;
-  }
-  const percent = Math.min(
-    1,
-    State.currentXP / xpNeededForLevel(State.playerLevel)
-  );
-  xpFill.style.width = percent * 100 + "%";
-  if (menuXpFill) {
-    menuXpFill.style.width = percent * 100 + "%";
-  }
-}
-
 function addXP(amount) {
   State.currentXP += amount;
-
   let safetyCounter = 0;
-  const MAX_LEVEL_UPS_PER_CALL = 50; // cap ασφαλείας
-
-  while (
-    State.currentXP >= xpNeededForLevel(State.playerLevel) &&
-    safetyCounter < MAX_LEVEL_UPS_PER_CALL
-  ) {
-    State.currentXP -= xpNeededForLevel(State.playerLevel);
+  const MAX_LEVEL_UPS_PER_CALL = 50;
+  while (true) {
+    const needed = xpNeededForLevel(State.playerLevel);
+    if (State.currentXP < needed) break;
+    State.currentXP -= needed;
     State.playerLevel++;
     safetyCounter++;
-
     sound._playBuffer("levelup", { volume: 1 });
+    if (safetyCounter >= MAX_LEVEL_UPS_PER_CALL) {
+      console.warn("XP loop safety cap triggered");
+      break;
+    }
   }
-
-  if (safetyCounter >= MAX_LEVEL_UPS_PER_CALL) {
-    console.warn("XP loop safety cap triggered");
-  }
-
   UI.toast("LEVEL UP! 🔥 Level " + State.playerLevel);
-
   Storage.saveXP();
   updateXPUI();
-}
-
-  function updateDailyMissions(type, value = 1) {
-  if (type === "round") {
-    State.dailyMissions.rounds += value;
-  }
-  if (type === "hit") {
-    State.dailyMissions.hits += value;
-  }
-  if (type === "combo5") {
-    State.dailyMissions.combo5 = true;
-  }
-  localStorage.setItem(
-    "squeeze_daily_missions",
-    JSON.stringify(State.dailyMissions)
-  );
 }
   /* =====================================================
      RANDOM / SPAWN
@@ -647,13 +596,43 @@ function addXP(amount) {
   }
   
 function spawnBonus(){
-  const speed = Config.baseSpeed * 0.6;
-  const angle = Math.random() * Math.PI * 2;
+
+  const side = Math.floor(Math.random()*4);
+  const speed = Config.baseSpeed * 0.9;
+
+  let x,y,vx,vy;
+  const R = Config.entityRadius;
+
+  if(side===0){
+    x = -R;
+    y = rand(R, State.H-R);
+    vx = speed;
+    vy = 0;
+  }
+  else if(side===1){
+    x = State.W + R;
+    y = rand(R, State.H-R);
+    vx = -speed;
+    vy = 0;
+  }
+  else if(side===2){
+    x = rand(R, State.W-R);
+    y = -R;
+    vx = 0;
+    vy = speed;
+  }
+  else{
+    x = rand(R, State.W-R);
+    y = State.H + R;
+    vx = 0;
+    vy = -speed;
+  }
+
   State.entities.push({
-    x: rand(100, State.W-100),
-    y: rand(100, State.H-100),
-    vx: Math.cos(angle) * speed,
-    vy: Math.sin(angle) * speed,
+    x,
+    y,
+    vx,
+    vy,
     r:Config.entityRadius,
     type:"bonus",
     hit:false,
@@ -662,6 +641,7 @@ function spawnBonus(){
     frameIndex:0,
     frameTimer:0
   });
+
 }
   function resetEntities() {
     State.entities.length = 0;
@@ -1202,12 +1182,13 @@ function openRanks() {
       }
 
       e.x += e.vx * dt;
-      if(Math.random() < 0.35){
-       State.footprints.push({
-        x:e.x,
-        y:e.y + e.r * 1.1,
-        alpha:0.7
-       });
+      if(Math.random() < 0.08){
+State.footprints.push({
+  x:e.x,
+  y:e.y + e.r*1.1,
+  rot: Math.atan2(e.vy,e.vx),
+  alpha:0.8
+});
         if(State.footprints.length > 20){
          State.footprints.shift();
         }
@@ -1246,7 +1227,7 @@ if(
   State.timeLeft < 15 &&
   State.combo >= 3 &&
   !State.bonusSpawned &&
-  Math.random() < 0.03
+  Math.random() < 0.008
 ){
   spawnBonus();
   State.bonusSpawned = true;
@@ -1340,53 +1321,20 @@ if (bgPattern) {
 // RESET FILTER HERE
 ctx.filter = "none";
      
-   // FOOTPRINTS
+// FOOTPRINTS
+ctx.globalCompositeOperation = "multiply";
 for(const f of State.footprints){
-  ctx.globalAlpha = f.alpha;
-  ctx.beginPath();
-  ctx.ellipse(f.x, f.y, 6, 3, 0, 0, Math.PI*2);
-  ctx.fillStyle="rgba(0,0,0,0.45)";
-  ctx.fill();
-  ctx.globalAlpha = 1;
-}
-     
-    // entities (humanoid)
-for (const e of State.entities) {
-// BONUS draw
-  let scale = 1;
-  if (e.hit) scale = 1 + e.hitTimer * 6;
-
-  const bounce = Math.sin(e.walkPhase) * 4;
-
-  let direction;
-  if (Math.abs(e.vx) > Math.abs(e.vy)) {
-    direction = "east";
-  } else {
-    direction = e.vy >= 0 ? "south" : "north";
-  }
-
-  const frames = SpriteManifest.caveman[e.type][direction];
-  const img = frames[e.frameIndex];
-
-  const size = e.r * 4.6;
-
   ctx.save();
-  ctx.translate(e.x, e.y + bounce);
-  ctx.scale(scale, scale);
-
-  if (e.vx < 0 && Math.abs(e.vx) > Math.abs(e.vy)) {
-    ctx.scale(-1, 1);
-  }
-
-   ctx.beginPath();
-ctx.ellipse(0, size * 0.38, size * 0.22, size * 0.10, 0, 0, Math.PI * 2);
-ctx.fillStyle = "rgba(0,0,0,0.25)";
-ctx.fill();
-   
-  ctx.drawImage(img, -size/2, -size/2, size, size);
-
+  ctx.globalAlpha = f.alpha;
+  ctx.translate(f.x,f.y);
+  ctx.rotate(f.rot || 0);
+  ctx.beginPath();
+  ctx.ellipse(0,0,14,7,0,0,Math.PI*2);
+  ctx.fillStyle="rgba(0,0,0,0.55)";
+  ctx.fill();
   ctx.restore();
 }
+ctx.globalCompositeOperation = "source-over";
 
     // hit rings
     for (const h of State.hitEffects) {
