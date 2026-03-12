@@ -269,7 +269,10 @@ async function loadSprites() {
     entities: [],
     hitEffects: [],
     floatingTexts: [],
-
+    tapEffects: [],
+    footprints: [], 
+    bonusSpawned:false,
+     
     // screen shake
     shakeTime: 0,
     shakeStrength: 0,
@@ -422,6 +425,29 @@ async function loadSprites() {
     t.rafId = t.timeTimer = t.freezeTimer = t.countdownTimer = null;
   }
 
+   /* =====================================================
+   VIBRATION SYSTEM
+===================================================== */
+
+function vibrationEnabled() {
+  return localStorage.getItem("squeeze_vibration") === "on";
+}
+
+function vibrateSpike(){
+  if(!vibrationEnabled()) return;
+  if(navigator.vibrate) navigator.vibrate(120);
+}
+
+function vibrateShield(){
+  if(!vibrationEnabled()) return;
+  if(navigator.vibrate) navigator.vibrate(35);
+}
+
+function vibrateTap(){
+  if(!vibrationEnabled()) return;
+  if(navigator.vibrate) navigator.vibrate(10);
+}
+   
 /* =====================================================
    SCREEN MANAGER
 ===================================================== */
@@ -613,7 +639,22 @@ function addXP(amount) {
       frameTimer: 0, 
     });
   }
-
+  
+   function spawnBonus(){
+  State.entities.push({
+    x: rand(100, State.W-100),
+    y: rand(100, State.H-100),
+    vx:0,
+    vy:0,
+    r:Config.entityRadius,
+    type:"bonus",
+    hit:false,
+    hitTimer:0,
+    walkPhase:0,
+    frameIndex:0,
+    frameTimer:0
+  });
+}
   function resetEntities() {
     State.entities.length = 0;
   }
@@ -1153,6 +1194,16 @@ function openRanks() {
       }
 
       e.x += e.vx * dt;
+      if(Math.random() < 0.15){
+       State.footprints.push({
+       x:e.x,
+       y:e.y,
+       alpha:0.4
+       });
+        if(State.footprints.length > 20){
+         State.footprints.shift();
+        }
+      } 
       e.walkPhase += dt * 8;
       e.y += e.vy * dt;
 
@@ -1174,7 +1225,24 @@ if (e.frameTimer > 0.1) {
         continue;
       }
     }
+ for(let i = State.footprints.length-1; i>=0;i--){
+  const f = State.footprints[i];
+  f.alpha -= dt*1.5;
 
+  if(f.alpha <=0){
+    State.footprints.splice(i,1);
+  }
+}
+     // BONUS SPAWN
+if(
+  State.timeLeft < 8 &&
+  State.combo >= 4 &&
+  !State.bonusSpawned &&
+  Math.random() < 0.01
+){
+  spawnBonus();
+  State.bonusSpawned = true;
+}
     // spawn rhythm (cap)
     State.spawnTimerMs += dt * 1000;
     if (State.spawnTimerMs >= State.spawnIntervalMs) {
@@ -1207,6 +1275,14 @@ if (e.frameTimer > 0.1) {
       f.alpha -= 1.5 * dt;
       if (f.alpha <= 0) State.floatingTexts.splice(i, 1);
     }
+    // tap effects
+    for (let i = State.tapEffects.length - 1; i >= 0; i--) {
+    const t = State.tapEffects[i];
+    t.life -= dt;
+      if (t.life <= 0) {
+      State.tapEffects.splice(i,1);
+      }
+    } 
     // update screen shake
 if (State.shakeTime > 0) {
   State.shakeTime -= dt;
@@ -1255,6 +1331,16 @@ if (bgPattern) {
 // RESET FILTER HERE
 ctx.filter = "none";
      
+   // FOOTPRINTS
+for(const f of State.footprints){
+  ctx.globalAlpha = f.alpha;
+  ctx.beginPath();
+  ctx.ellipse(f.x, f.y, 6, 3, 0, 0, Math.PI*2);
+  ctx.fillStyle="rgba(0,0,0,0.4)";
+  ctx.fill();
+  ctx.globalAlpha = 1;
+}
+     
     // entities (humanoid)
 for (const e of State.entities) {
 
@@ -1302,6 +1388,17 @@ ctx.fill();
       ctx.stroke();
     }
 
+    // TAP EFFECTS
+  for(const t of State.tapEffects){
+  const alpha = Math.max(t.life * 4,0);
+  ctx.globalAlpha = alpha;
+  ctx.beginPath();
+  ctx.arc(t.x, t.y, 18, 0, Math.PI*2);
+  ctx.strokeStyle = "white";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+  } 
     // floating texts
     ctx.textAlign = "center";
     ctx.font = "bold 18px Arial";
@@ -1338,6 +1435,21 @@ ctx.fill();
       const dy = y - e.y;
 
       if (dx * dx + dy * dy <= e.r * e.r) {
+         if(e.type==="bonus"){
+  sound._playBuffer("claim",{volume:1});
+  State.totalGems += 10;
+  UI.toast("+10 Bonus Gems ⭐");
+State.hitEffects.push({
+  x: e.x,
+  y: e.y,
+  radius: 18,
+  alpha: 1
+});
+  e.hit=true;
+  e.hitTimer=0.15;
+
+  return;
+}
         // NORMAL
         if (e.type === "normal") {
           updateDailyMissions("hit",1); 
@@ -1382,6 +1494,7 @@ ctx.fill();
 
         // SHIELD -> break combo (no central effect)
         if (e.type === "shield") {
+          vibrateShield(); 
           sound._playBuffer("shield", { volume: 0.6 });
           State.combo = 0;
           State.comboTimer = 0;
@@ -1398,6 +1511,7 @@ ctx.fill();
 
         // SPIKE -> break combo + freeze + -2 sec
           if (e.type === "spike") {
+          vibrateSpike();
           sound._playBuffer("spike", { volume: 0.8 });
           State.combo = 0;
           State.comboTimer = 0;
@@ -1425,6 +1539,11 @@ ctx.fill();
     if (!State.gameRunning) return;
     evt.preventDefault();
     const p = getPointerPos(evt);
+    State.tapEffects.push({
+     x:p.x,
+     y:p.y,
+     life:0.18
+    }); 
     tryHit(p.x, p.y);
   }
 
@@ -1475,6 +1594,7 @@ ctx.fill();
   }
 
   function beginRound() {
+    State.bonusSpawned = false; 
     if (topbar) {
       topbar.style.display = "grid";
     } 
