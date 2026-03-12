@@ -1989,6 +1989,19 @@ shopOverlay.addEventListener("click", () => {
     }
   });
 
+  function updateXPUI() {
+
+  const needed = xpNeededForLevel(State.playerLevel);
+
+  levelDisplay.textContent = "Level " + State.playerLevel;
+  menuLevelDisplay.textContent = State.playerLevel;
+
+  const percent = Math.min(1, State.currentXP / needed);
+
+  xpFill.style.width = (percent * 100) + "%";
+  menuXpFill.style.width = (percent * 100) + "%";
+
+} 
   /* =====================================================
      INIT
   ===================================================== */
