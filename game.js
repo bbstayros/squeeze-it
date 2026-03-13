@@ -1796,7 +1796,6 @@ if (State.doubleReady && adsRemaining > 0) {
 /* =====================================================
    MAIN MENU EVENTS
 ===================================================== */
-
 menuPlay.addEventListener("click", () => {
   mainMenu.classList.add("hidden");
   levelSelect.classList.remove("hidden");
@@ -1804,97 +1803,74 @@ menuPlay.addEventListener("click", () => {
     topbar.style.display = "none";
   }
 });
-
 menuInformation.addEventListener("click", () => {
-
   UI.hide(mainMenu);
   UI.show(infoPanel);
-
 });
-
 closeInfo.addEventListener("click", () => {
-
   UI.hide(infoPanel);
   goToMainMenu();
-
-});
-   
+});  
 menuShop.addEventListener("click", () => {
   UI.hide(mainMenu);
   renderShop();
   UI.show(shopOverlay);
   UI.show(shopPanel);
 });
-
 menuRanks.addEventListener("click", () => {
   mainMenu.classList.add("hidden");
   openRanks();
   UI.show(milestoneScreen);
 });
-
 menuRewards.addEventListener("click", () => {
   UI.hide(mainMenu);
   resetDailyMissionsIfNeeded();
   renderDailyMissions();
   UI.show(missionsPanel);
 });
-
 menuSettings.addEventListener("click", () => {
   UI.hide(mainMenu);
   UI.show(settingsPanel);
 });
-
   /* =====================================================
      EVENTS - START
   ===================================================== */
-
   startBtn.addEventListener("click", async () => {
     if (!State.difficulty) return;
     levelSelect.classList.add("hidden");
-
     if (State.gameRunning) return;
     startBtn.disabled = true;
-
     if (!sound.unlocked) {
     await sound.unlock();
 }
-
 sound.startAmbient();
-
 startCountdownThenPlay();
   });
-
   /* =====================================================
      EVENTS - SHOP
   ===================================================== */
-
   shopBtn.addEventListener("click", () => {
     renderShop();
     UI.show(shopOverlay);
     UI.show(shopPanel);
   });
-
    closeShop.addEventListener("click", () => {
   UI.hide(shopOverlay);
   UI.hide(shopPanel);
   goToMainMenu();
 });
-   
 shopOverlay.addEventListener("click", () => {
   UI.hide(shopOverlay);
   UI.hide(shopPanel);
   goToMainMenu();
 });
-
   /* =====================================================
      EVENTS - MILESTONES
   ===================================================== */
-
   milestonesBtn.addEventListener("click", () => {
   openRanks();
   UI.show(milestoneScreen);
 });
-
   closeMilestones.addEventListener("click", () => {
   UI.hide(milestoneScreen);
   goToMainMenu();
@@ -1904,40 +1880,30 @@ shopOverlay.addEventListener("click", () => {
   ===================================================== */
   doubleBtn.addEventListener("click", () => {
   const adCount = getAdWatchCount();
-
   if (adCount >= Config.AD_DAILY_LIMIT) {
     UI.toast("Daily Ad Limit Reached 🚫");
     return;
   }
-
   UI.toast("Watching Ad...");
-
   setTimeout(() => {
     State.totalGems += State.earnedGems;
     Storage.saveGems();
-
     incrementAdWatchCount();
-
     State.doubleReady = false;
     State.roundsSinceDouble = 0;
-
     UI.toast("Double Reward Applied! 💎💎");
     doubleBtn.classList.add("hidden");
     UI.setGems(State.totalGems);
-
   }, 1500);
 });
-   
    playAgainBtn.addEventListener("click", () => {
      UI.hide(endPanel);
   startCountdownThenPlay();
   });
-
   backMenuBtn.addEventListener("click", () => {
   UI.hide(endPanel);
   goToMainMenu();
   });
-
    /* =====================================================
      EVENTS - SOUND
   ===================================================== */ 
@@ -1954,37 +1920,22 @@ shopOverlay.addEventListener("click", () => {
     }
   }
 });
-
    toggleSoundBtn.addEventListener("click",()=>{
-
   const enabled = !sound.isEnabled();
   sound.setEnabled(enabled);
-
   toggleSoundBtn.textContent = enabled ? "ON" : "OFF";
-
 });
-
    toggleVibrationBtn.addEventListener("click",()=>{
-
   const current = localStorage.getItem("squeeze_vibration") === "on";
-
   const next = !current;
-
   localStorage.setItem("squeeze_vibration", next ? "on":"off");
-
   toggleVibrationBtn.textContent = next ? "ON":"OFF";
-
 });
-
    resetProgressBtn.addEventListener("click",()=>{
-
   if(!confirm("Reset ALL progress?")) return;
-
   localStorage.clear();
   location.reload();
-
 });
-
    /* =====================================================
      EVENTS - Missions
   ===================================================== */ 
@@ -1992,18 +1943,13 @@ shopOverlay.addEventListener("click", () => {
   UI.hide(missionsPanel);
   goToMainMenu();
 });
-
    closeSettings.addEventListener("click",()=>{
-
   UI.hide(settingsPanel);
   goToMainMenu();
-
 });
-   
   /* =====================================================
      DEBUG TOGGLE THEME
   ===================================================== */
-
   window.addEventListener("keydown", (e) => {
     if (e.key === "t") {
       State.currentThemeKey = State.currentThemeKey === "classic" ? "zombie" : "classic";
@@ -2012,17 +1958,14 @@ shopOverlay.addEventListener("click", () => {
   /* =====================================================
      INIT
   ===================================================== */
-
   Storage.loadThemeUnlocks();
   Storage.loadEquippedTheme();
-
   UI.setGems(State.totalGems);
   updateXPUI();
   const savedLastScore = localStorage.getItem("squeeze_last_score");
 if(savedLastScore && lastScoreEl){
   lastScoreEl.textContent = savedLastScore;
 } 
-
    // 🔊 RESTORE SOUND STATE
 const savedSound = localStorage.getItem("squeeze_sound");
 
@@ -2032,7 +1975,6 @@ if (savedSound === "off") {
 } else {
   soundToggleBtn.textContent = "🔊";
 }
-
   await loadSprites();
   resize();
   draw();
@@ -2047,3 +1989,60 @@ window.__DEBUG = {
   getRankProgress
 };
 });
+
+/* =====================================================
+   RANK UNLOCK ANIMATION
+===================================================== */
+.rank-unlock{
+  position: fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(6px);
+  z-index: 900;
+}
+
+.rank-unlock-card{
+  padding:40px 60px;
+  border-radius:24px;
+  text-align:center;
+  background: linear-gradient(
+    180deg,
+    rgba(40,28,16,0.95),
+    rgba(20,14,10,0.95)
+  );
+  border:1px solid rgba(255,180,80,0.2);
+  box-shadow:
+    0 0 40px rgba(255,140,0,0.5),
+    0 20px 60px rgba(0,0,0,0.7);
+  animation: rankUnlockPop 0.45s ease;
+}
+.rank-unlock-title{
+  font-size:22px;
+  font-weight:800;
+  margin-bottom:10px;
+  letter-spacing:1px;
+}
+.rank-unlock-name{
+  font-size:34px;
+  font-weight:900;
+  color:#ffb347;
+  text-shadow:
+    0 0 10px rgba(255,180,80,0.8),
+    0 0 24px rgba(255,140,0,0.6);
+}
+@keyframes rankUnlockPop{
+  0%{
+    transform: scale(0.6);
+    opacity:0;
+  }
+  60%{
+    transform: scale(1.08);
+  }
+  100%{
+    transform: scale(1);
+    opacity:1;
+  }
+}
