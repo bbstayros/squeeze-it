@@ -1523,7 +1523,13 @@ State.hitEffects.push({
           sound.tap(Math.min(State.combo / 20, 1));
           if (State.combo > 1) sound.combo(State.combo);
           State.comboTimer = Config.comboTimeoutSec;
-
+// TRACK COMBO 4
+if (State.combo === 4) {
+  State.combo4Count++;
+  if (!State.combo4StartTime) {
+    State.combo4StartTime = performance.now();
+  }
+}
           let multiplier = 1;
           if (State.combo >= 20) multiplier = 4;
           else if (State.combo >= 10) multiplier = 3;
@@ -1567,7 +1573,8 @@ State.hitEffects.push({
           sound._playBuffer("shield", { volume: 0.6 });
           State.combo = 0;
           State.comboTimer = 0;
-
+          State.combo4StartTime = null;
+           
         // μικρό hit flash μόνο στο entity
           State.hitEffects.push({
           x: e.x,
