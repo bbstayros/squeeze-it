@@ -1334,21 +1334,16 @@ State.bgOffsetY += 12 * dt;
     
 // background
 if (bgPattern) {
-  const tileSize = 512;
-  const ox = State.bgOffsetX % tileSize;
-  const oy = State.bgOffsetY % tileSize;
   ctx.save();
-  ctx.translate(-ox, -oy);
+  ctx.translate(-State.bgOffsetX, -State.bgOffsetY);
   ctx.fillStyle = bgPattern;
   ctx.fillRect(
-    -tileSize,
-    -tileSize,
-    State.W + tileSize * 2,
-    State.H + tileSize * 2
+    -2000,
+    -2000,
+    State.W + 4000,
+    State.H + 4000
   );
-
   ctx.restore();
-
 } else {
 
   ctx.fillStyle = theme.bg;
@@ -1402,15 +1397,16 @@ for (const e of State.entities) {
       e.r * 2
     );
   } else {
-  const spriteScale = Math.max(0.9, State.H / 700); 
-  const size = e.r * 2 * spriteScale;   
-    ctx.drawImage(
-      frame,
-      e.x - e.r,
-      e.y - e.r,
-      e.r * 2,
-      e.r * 2
-    );
+const spriteScale = Math.max(1.4, State.H / 650);
+const size = e.r * 2 * spriteScale;
+
+ctx.drawImage(
+  frame,
+  e.x - size / 2,
+  e.y - size / 2,
+  size,
+  size
+);
   }
 
   ctx.restore();
@@ -1423,8 +1419,8 @@ for(const f of State.footprints){
   ctx.translate(f.x,f.y);
   ctx.rotate(f.rot || 0);
   ctx.beginPath();
-  ctx.ellipse(0,0,10,5,0,0,Math.PI*2);
-  ctx.fillStyle="rgba(60,40,20,0.35)";
+  ctx.ellipse(0,0,14,6,0,0,Math.PI*2);
+  ctx.fillStyle="rgba(40,25,10,0.5)";
   ctx.fill();
   ctx.restore();
 }
@@ -1533,13 +1529,6 @@ if (State.combo === 4) {
           let multiplier = 1;
           if (State.combo >= 20) multiplier = 4;
           else if (State.combo >= 10) multiplier = 3;
-          else if (State.combo === 4) {
-           State.combo4Count++;
-            if (!State.combo4StartTime) {
-               State.combo4StartTime = performance.now();
-  }
-
-}
 
           const levelBonusMultiplier = 1 + (State.playerLevel - 1) * 0.01;
           const gained = Math.floor(10 * multiplier * levelBonusMultiplier);
