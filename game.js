@@ -1384,12 +1384,7 @@ for (const e of State.entities) {
   if (!frames || frames.length === 0) continue;
 
   const frame = frames[e.frameIndex % frames.length];
-  ctx.save();
-
-const spriteScale = Math.max(1.4, State.H / 650);
-const size = e.r * 2 * spriteScale;
 ctx.save();
-
 const spriteScale = Math.max(1.4, State.H / 650);
 const size = e.r * 2 * spriteScale;
 
@@ -1411,8 +1406,8 @@ if (flip) {
     size
   );
 }
-
 ctx.restore();
+
 }    
 // FOOTPRINTS
 ctx.globalCompositeOperation = "multiply";
