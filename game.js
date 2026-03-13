@@ -140,16 +140,16 @@ async function unlockAudio() {
     roundSeconds: 45,
 
     entityRadius: 30,
-    baseSpeed: 165,
+    baseSpeed: 140,
     maxEntities: 23,
 
     comboTimeoutSec: 1.2,
 
     // spawn rate by difficulty
     spawnIntervalMs: {
-      easy: 700,
-      medium: 500,
-      hard: 350
+      easy: 800,
+      medium: 600,
+      hard: 420
     },
 
     // spike
@@ -263,7 +263,9 @@ async function loadSprites() {
     // combo
     combo: 0,
     comboTimer: 0,
-
+    combo4Count: 0,
+    combo4StartTime: null,
+     
     // spawn
     spawnTimerMs: 0,
     spawnIntervalMs: Config.spawnIntervalMs.medium,
@@ -1210,7 +1212,7 @@ function openRanks() {
       if(Math.random() < 0.08){
 State.footprints.push({
   x:e.x,
-  y:e.y + e.r*0.75,
+  y:e.y + e.r*1.2,
   rot: Math.atan2(e.vy,e.vx),
   alpha:0.8
 });
@@ -1248,14 +1250,16 @@ if (e.frameTimer > 0.1) {
   }
 }
      // BONUS SPAWN
-if(
-  State.timeLeft < 15 &&
-  State.combo >= 3 &&
-  !State.bonusSpawned &&
-  Math.random() < 0.008
-){
-  spawnBonus();
-  State.bonusSpawned = true;
+if (!State.bonusSpawned) {
+  if (State.combo4Count >= 2) {
+    spawnBonus();
+    spawnBonus();
+    State.bonusSpawned = true;
+  }
+  else if (State.combo4Count >= 1) {
+    spawnBonus();
+    State.bonusSpawned = true;
+  }
 }
     // spawn rhythm (cap)
     State.spawnTimerMs += dt * 1000;
@@ -1398,6 +1402,8 @@ for (const e of State.entities) {
       e.r * 2
     );
   } else {
+  const spriteScale = Math.max(0.9, State.H / 700); 
+  const size = e.r * 2 * spriteScale;   
     ctx.drawImage(
       frame,
       e.x - e.r,
@@ -1521,10 +1527,13 @@ State.hitEffects.push({
           let multiplier = 1;
           if (State.combo >= 20) multiplier = 4;
           else if (State.combo >= 10) multiplier = 3;
-          else if (State.combo >= 5) {
-            multiplier = 2;
-            updateDailyMissions("combo5");
-          }
+          else if (State.combo === 4) {
+           State.combo4Count++;
+            if (!State.combo4StartTime) {
+               State.combo4StartTime = performance.now();
+  }
+
+}
 
           const levelBonusMultiplier = 1 + (State.playerLevel - 1) * 0.01;
           const gained = Math.floor(10 * multiplier * levelBonusMultiplier);
