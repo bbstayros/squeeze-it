@@ -100,6 +100,9 @@ async function unlockAudio() {
   const watchAdBtn = document.getElementById("watchAdBtn"); 
   const menuInformation = document.getElementById("menuInfo");
   const lastScoreEl = document.getElementById("lastScore");
+
+  const rankUnlockOverlay = document.getElementById("rankUnlockOverlay");
+  const rankUnlockName = document.getElementById("rankUnlockName"); 
    /* =====================================================
      PARALLAX BACKGROUND (Visual Only)
   ===================================================== */
@@ -423,7 +426,23 @@ async function loadSprites() {
       showToast(text);
     }
   };
+/* =====================================================
+   RANK UNLOCK SYSTEM
+===================================================== */
 
+function showRankUnlock(rankName){
+
+  rankUnlockName.textContent = rankName.toUpperCase();
+
+  rankUnlockOverlay.classList.remove("hidden");
+
+  sound._playBuffer("levelup", { volume: 1 });
+
+  setTimeout(()=>{
+    rankUnlockOverlay.classList.add("hidden");
+  },2500);
+
+}
   function clearTimers() {
     const t = State.timers;
     if (t.rafId) cancelAnimationFrame(t.rafId);
@@ -532,6 +551,12 @@ function updateXPUI() {
     if (State.currentXP < needed) break;
     State.currentXP -= needed;
     State.playerLevel++;
+    const newRank = getCurrentRank(State.playerLevel);
+    const prevRank = getCurrentRank(State.playerLevel - 1);
+
+    if(newRank.key !== prevRank.key){
+    showRankUnlock(newRank.name);
+    } 
     safetyCounter++;
     sound._playBuffer("levelup", { volume: 1 });
     if (safetyCounter >= MAX_LEVEL_UPS_PER_CALL) {
