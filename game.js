@@ -1359,56 +1359,49 @@ ctx.filter = "none";
 /* =====================================================
    DRAW ENTITIES (SPRITES)
 ===================================================== */
-
 for (const e of State.entities) {
-
   if (e.hit) continue;
-
   let type = e.type;
   if (!SpriteManifest.caveman[type]) type = "normal";
-
   const dir =
     Math.abs(e.vx) > Math.abs(e.vy)
       ? (e.vx > 0 ? "east" : "west")
       : (e.vy > 0 ? "south" : "north");
-
   let drawDir = dir;
   let flip = false;
-
   if (dir === "west") {
     drawDir = "east";
     flip = true;
   }
-
   const frames = SpriteManifest.caveman[type][drawDir];
   if (!frames || frames.length === 0) continue;
 
   const frame = frames[e.frameIndex % frames.length];
-ctx.save();
-const spriteScale = Math.max(1.4, State.H / 650);
-const size = e.r * 2 * spriteScale;
+  ctx.save();
+  const spriteScale = Math.max(1.4, State.H / 650);
+  const size = e.r * 2 * spriteScale;
 
-if (flip) {
-  ctx.scale(-1, 1);
-  ctx.drawImage(
-    frame,
-    -(e.x + size / 2),
-    e.y - size / 2,
-    size,
-    size
-  );
-} else {
-  ctx.drawImage(
-    frame,
-    e.x - size / 2,
-    e.y - size / 2,
-    size,
-    size
-  );
-}
-ctx.restore();
-
-}    
+  if (flip) {
+    ctx.scale(-1, 1);
+    ctx.drawImage(
+      frame,
+      -(e.x + size / 2),
+      e.y - size / 2,
+      size,
+      size
+    );
+  } else {
+    ctx.drawImage(
+      frame,
+      e.x - size / 2,
+      e.y - size / 2,
+      size,
+      size
+    );
+  }
+  ctx.restore();
+}   
+     
 // FOOTPRINTS
 ctx.globalCompositeOperation = "multiply";
 for(const f of State.footprints){
