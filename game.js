@@ -1209,10 +1209,10 @@ function openRanks() {
       }
 
       e.x += e.vx * dt;
-      if(Math.random() < 0.08){
+      if(Math.random() < 0.05){
 State.footprints.push({
   x:e.x,
-  y:e.y + e.r*1.2,
+  y:e.y + e.r*1.9,
   rot: Math.atan2(e.vy,e.vx),
   alpha:0.8
 });
@@ -1384,32 +1384,35 @@ for (const e of State.entities) {
   if (!frames || frames.length === 0) continue;
 
   const frame = frames[e.frameIndex % frames.length];
-
   ctx.save();
 
-  if (flip) {
-    ctx.scale(-1, 1);
-    ctx.drawImage(
-      frame,
-      -(e.x + e.r),
-      e.y - e.r,
-      e.r * 2,
-      e.r * 2
-    );
-  } else {
+const spriteScale = Math.max(1.4, State.H / 650);
+const size = e.r * 2 * spriteScale;
+ctx.save();
+
 const spriteScale = Math.max(1.4, State.H / 650);
 const size = e.r * 2 * spriteScale;
 
-ctx.drawImage(
-  frame,
-  e.x - size / 2,
-  e.y - size / 2,
-  size,
-  size
-);
-  }
+if (flip) {
+  ctx.scale(-1, 1);
+  ctx.drawImage(
+    frame,
+    -(e.x + size / 2),
+    e.y - size / 2,
+    size,
+    size
+  );
+} else {
+  ctx.drawImage(
+    frame,
+    e.x - size / 2,
+    e.y - size / 2,
+    size,
+    size
+  );
+}
 
-  ctx.restore();
+ctx.restore();
 }    
 // FOOTPRINTS
 ctx.globalCompositeOperation = "multiply";
