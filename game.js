@@ -1210,7 +1210,7 @@ function openRanks() {
       if(Math.random() < 0.08){
 State.footprints.push({
   x:e.x,
-  y:e.y + e.r*1.1,
+  y:e.y + e.r*0.75,
   rot: Math.atan2(e.vy,e.vx),
   alpha:0.8
 });
@@ -1417,8 +1417,8 @@ for(const f of State.footprints){
   ctx.translate(f.x,f.y);
   ctx.rotate(f.rot || 0);
   ctx.beginPath();
-  ctx.ellipse(0,0,14,7,0,0,Math.PI*2);
-  ctx.fillStyle="rgba(0,0,0,0.55)";
+  ctx.ellipse(0,0,10,5,0,0,Math.PI*2);
+  ctx.fillStyle="rgba(60,40,20,0.35)";
   ctx.fill();
   ctx.restore();
 }
