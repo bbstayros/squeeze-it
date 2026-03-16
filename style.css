@@ -1219,3 +1219,87 @@ body::after{
     transform:translateY(-200px);
   }
 }
+
+/* =====================================================
+   SHOP SYSTEM
+===================================================== */
+
+.shop-tabs{
+  display:flex;
+  gap:8px;
+  margin-bottom:10px;
+}
+
+.shop-tab{
+  flex:1;
+  padding:8px;
+  border-radius:10px;
+  background:#2a2f3a;
+  border:none;
+  cursor:pointer;
+}
+
+.shop-tab.active{
+  background:#ffb347;
+  color:#000;
+}
+
+.shop-subtabs{
+  display:flex;
+  gap:6px;
+  margin-bottom:12px;
+}
+
+.shop-subtab{
+  flex:1;
+  padding:6px;
+  border-radius:8px;
+  background:#2a2f3a;
+  border:none;
+  cursor:pointer;
+}
+
+.shop-subtab.active{
+  background:#ff7b00;
+  color:white;
+}
+
+.shop-grid{
+  display:grid;
+  grid-template-columns: repeat(2,1fr);
+  gap:10px;
+}
+
+.shop-item{
+  background:rgba(255,255,255,0.05);
+  border-radius:14px;
+  padding:10px;
+  text-align:center;
+}
+
+.shop-item img{
+  width:70px;
+  height:70px;
+  object-fit:contain;
+}
+
+.shop-item-name{
+  font-size:14px;
+  margin:6px 0;
+}
+
+.shop-btn{
+  padding:6px 10px;
+  border-radius:8px;
+  border:none;
+  cursor:pointer;
+}
+
+.shop-btn.buy{
+  background:#ffb347;
+}
+
+.shop-btn.equipped{
+  background:#00e676;
+  color:#000;
+}
