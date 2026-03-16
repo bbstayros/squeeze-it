@@ -102,7 +102,9 @@ async function unlockAudio() {
   const lastScoreEl = document.getElementById("lastScore");
 
   const rankUnlockOverlay = document.getElementById("rankUnlockOverlay");
-  const rankUnlockName = document.getElementById("rankUnlockName"); 
+  const rankUnlockName = document.getElementById("rankUnlockName");
+  const rankUnlockIcon = document.getElementById("rankUnlockIcon");
+  const rankFlash = document.getElementById("rankFlash"); 
    /* =====================================================
      PARALLAX BACKGROUND (Visual Only)
   ===================================================== */
@@ -429,19 +431,20 @@ async function loadSprites() {
 /* =====================================================
    RANK UNLOCK SYSTEM
 ===================================================== */
-
 function showRankUnlock(rankName){
-
   rankUnlockName.textContent = rankName.toUpperCase();
-
+  const rank = RANKS.find(r => r.name === rankName);
+  if(rank){
+    rankUnlockIcon.src = "assets/ranks/" + rank.key + ".png";
+  }
   rankUnlockOverlay.classList.remove("hidden");
-
+  rankFlash.classList.remove("hidden");
+  rankFlash.classList.add("active");
   sound._playBuffer("levelup", { volume: 1 });
-
   setTimeout(()=>{
     rankUnlockOverlay.classList.add("hidden");
+    rankFlash.classList.remove("active");
   },2500);
-
 }
   function clearTimers() {
     const t = State.timers;
