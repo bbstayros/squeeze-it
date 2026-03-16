@@ -156,11 +156,23 @@
     <div class="level-select-inner">
     <button id="backFromDifficulty" class="btn">← Back</button>
     <h2>Select Difficulty</h2>
+      
     <div class="levels">
-        <button class="level-btn" data-level="easy">🟢 Easy</button>
-        <button class="level-btn" data-level="medium">🟠 Medium</button>
-        <button class="level-btn" data-level="hard">🔴 Hard</button>
-      </div>
+      <button class="level-btn" data-level="easy">
+       <span class="level-title">🟢 EASY</span>
+       <span class="level-desc">Relaxed gameplay</span>
+      </button>
+
+      <button class="level-btn" data-level="medium">
+       <span class="level-title">🟠 MEDIUM</span>
+       <span class="level-desc">Balanced challenge</span>
+      </button>
+
+      <button class="level-btn" data-level="hard">
+       <span class="level-title">🔴 HARD</span>
+       <span class="level-desc">Fast enemies</span>
+      </button>
+    </div>
     </div>
     </div>  
     <canvas id="game">
