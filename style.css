@@ -135,6 +135,30 @@ canvas#game{
   transition: all 0.15s ease;
 }
 
+/* tap / hover effect */
+.level-btn:active{
+  transform:scale(0.92);
+}
+.level-btn:hover{
+  transform: translateY(-3px) scale(1.04);
+}
+
+/* difficulty colors */
+.level-btn[data-level="easy"]{
+  border-color:#00e676;
+  box-shadow:0 0 12px rgba(0,230,118,0.35);
+}
+
+.level-btn[data-level="medium"]{
+  border-color:#ffb347;
+  box-shadow:0 0 12px rgba(255,179,71,0.35);
+}
+
+.level-btn[data-level="hard"]{
+  border-color:#ff5252;
+  box-shadow:0 0 12px rgba(255,82,82,0.35);
+}
+
 .level-btn:hover{
   transform: translateY(-3px);
   box-shadow: 0 12px 30px rgba(0,0,0,0.5);
