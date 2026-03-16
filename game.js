@@ -431,12 +431,9 @@ async function loadSprites() {
 /* =====================================================
    RANK UNLOCK SYSTEM
 ===================================================== */
-function showRankUnlock(rankName){
-  rankUnlockName.textContent = rankName.toUpperCase();
-  const rank = RANKS.find(r => r.name === rankName);
-  if(rank){
-    rankUnlockIcon.src = "assets/ranks/" + rank.key + ".png";
-  }
+function showRankUnlock(rank){
+  rankUnlockName.textContent = rank.name.toUpperCase();
+  rankUnlockIcon.src = "assets/ranks/" + rank.key + ".png";
   rankUnlockOverlay.classList.remove("hidden");
   rankFlash.classList.remove("hidden");
   rankFlash.classList.add("active");
@@ -558,7 +555,7 @@ function updateXPUI() {
     const prevRank = getCurrentRank(State.playerLevel - 1);
 
     if(newRank.key !== prevRank.key){
-    showRankUnlock(newRank.name);
+    showRankUnlock(newRank);
     } 
     safetyCounter++;
     sound._playBuffer("levelup", { volume: 1 });
