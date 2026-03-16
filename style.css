@@ -1165,3 +1165,23 @@ body::after{
     transform:scale(1.4);
   }
 }
+
+/* ================= FIRE EMBERS ================= */
+.embers{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background-image:
+    radial-gradient(rgba(255,180,80,0.25) 1px, transparent 1px);
+  background-size:120px 120px;
+  animation:embersMove 40s linear infinite;
+  z-index:-1;
+}
+@keyframes embersMove{
+  from{
+    transform:translateY(0);
+  }
+  to{
+    transform:translateY(-200px);
+  }
+}
