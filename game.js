@@ -204,7 +204,7 @@ const FRAME_SIZE = 48;
 ===================================================== */
 
 const fingerImg = new Image();
-fingerImg.src = "assets/sprites/caveman/caveman-finger.png";
+fingerImg.src = "assets/themes/caveman/caveman-finger.png";
    /* =====================================================
    BACKGROUND TILE SYSTEM
 ===================================================== */
