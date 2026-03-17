@@ -1034,25 +1034,19 @@ function getNextRank(level) {
 // Generate a small set of reward checkpoints inside the current rank.
 // NOTE: We return "absolute levels" (real playerLevel), όχι stages.
 function generateRankRewards(rank) {
-  // Obsidian has no max -> choose a "window" of 250 levels for rewards
   const effectiveMax = isFinite(rank.max) ? rank.max : (rank.min + 250);
   const total = Math.max(1, effectiveMax - rank.min);
-
-  // helper: turn % into absolute level (rounded) and clamp
   const at = (p) => {
     const lvl = rank.min + Math.floor(total * p);
-    // clamp within [min, effectiveMax]
     return Math.max(rank.min, Math.min(effectiveMax, lvl));
   };
-
   return [
-    { level: at(0.10), type: "gems", amount: 10 },
-    { level: at(0.20), type: "gems", amount: 20 },
-    { level: at(0.35), type: "gems", amount: 30 },
-
-    { level: at(0.50), type: "humanoidSkin" },      // 1/3 idea (cosmetic)
-    { level: at(0.70), type: "backgroundSkin" },    // 2/3
-    { level: at(1.00), type: "fingerSkin" }         // 3/3 (prestige)
+    { id: "r1", level: at(0.10), type: "gems", amount: 10 },
+    { id: "r2", level: at(0.20), type: "gems", amount: 20 },
+    { id: "r3", level: at(0.35), type: "gems", amount: 30 },
+    { id: "r4", level: at(0.50), type: "humanoidSkin" },
+    { id: "r5", level: at(0.70), type: "backgroundSkin" },
+    { id: "r6", level: at(1.00), type: "fingerSkin" }
   ];
 }
 
@@ -1066,7 +1060,7 @@ function rewardLabel(reward) {
 
 function claimRankReward(reward) {
   const lvl = reward.level;
-  if (State.claimedRankRewards.includes(lvl)) return;
+  if (State.claimedRankRewards.includes(reward.id)) return;
   if (State.playerLevel < lvl) return;
 
   // apply
@@ -1078,7 +1072,7 @@ function claimRankReward(reward) {
     // for now we just toast
   }
 
-  State.claimedRankRewards.push(lvl);
+  State.claimedRankRewards.push(reward.id);
   Storage.saveClaimedRankRewards();
 
   sound._playBuffer("claim", { volume: 0.8 });
@@ -1165,7 +1159,7 @@ function renderRankScreen() {
   const rewards = generateRankRewards(rank);
 
   rewards.forEach(rw => {
-    const claimed = State.claimedRankRewards.includes(rw.level);
+    const claimed = State.claimedRankRewards.includes(rw.id);
     const unlocked = State.playerLevel >= rw.level;
 
     const card = document.createElement("div");
