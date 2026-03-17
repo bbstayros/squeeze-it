@@ -433,7 +433,10 @@ async function loadSprites() {
 ===================================================== */
 function showRankUnlock(rank){
   rankUnlockName.textContent = rank.name.toUpperCase();
-  rankUnlockIcon.src = "assets/ranks/" + rank.key + ".png";
+  rankUnlockIcon.src = `assets/ranks/${rank.key}.png`;
+  rankUnlockIcon.onerror = () => {
+  rankUnlockIcon.src = "assets/ranks/default.png";
+  };
   rankUnlockOverlay.classList.remove("hidden");
   rankFlash.classList.remove("hidden");
   rankFlash.classList.add("active");
@@ -441,6 +444,9 @@ function showRankUnlock(rank){
   setTimeout(()=>{
     rankUnlockOverlay.classList.add("hidden");
     rankFlash.classList.remove("active");
+    rankUnlockOverlay.style.animation = "none";
+    rankUnlockOverlay.offsetHeight; // force reflow
+    rankUnlockOverlay.style.animation = ""; 
   },2500);
 }
   function clearTimers() {
@@ -546,17 +552,19 @@ function updateXPUI() {
   State.currentXP += amount;
   let safetyCounter = 0;
   const MAX_LEVEL_UPS_PER_CALL = 50;
+  let leveledUp = false;   
   while (true) {
     const needed = xpNeededForLevel(State.playerLevel);
     if (State.currentXP < needed) break;
     State.currentXP -= needed;
     State.playerLevel++;
+    leveledUp = true; 
     const newRank = getCurrentRank(State.playerLevel);
     const prevRank = getCurrentRank(State.playerLevel - 1);
 
-    if(newRank.key !== prevRank.key){
+    if (!prevRank || newRank.key !== prevRank.key) {
     showRankUnlock(newRank);
-    } 
+   } 
     safetyCounter++;
     sound._playBuffer("levelup", { volume: 1 });
     if (safetyCounter >= MAX_LEVEL_UPS_PER_CALL) {
@@ -567,6 +575,9 @@ function updateXPUI() {
   UI.toast("LEVEL UP! 🔥 Level " + State.playerLevel);
   Storage.saveXP();
   updateXPUI();
+  if (leveledUp) {
+   renderRankScreen();
+  }   
 }
   /* =====================================================
      RANDOM / SPAWN
@@ -1007,7 +1018,9 @@ function getCurrentRank(level) {
 
 function getRankProgress(level) {
   const r = getCurrentRank(level);
-  if (!isFinite(r.max)) return 1; // Obsidian: no "next"
+  if (!isFinite(r.max)) {
+  return Math.min(1, (level - r.min) / 250); // fake progression window
+  }  
   const range = Math.max(1, r.max - r.min);
   return Math.max(0, Math.min(1, (level - r.min) / range));
 }
@@ -1094,11 +1107,11 @@ function renderRankCarousel() {
     card.dataset.rank = rank.key;
 
     if (rank.key === currentRank.key) {
-      card.classList.add("current");
-    }
-
-    if (State.playerLevel < rank.min) {
-      card.classList.add("locked");
+     card.classList.add("current");
+    } else if (State.playerLevel >= rank.min) {
+     card.classList.add("unlocked");
+    } else {
+     card.classList.add("locked");
     }
 
     card.innerHTML = `
@@ -1158,8 +1171,13 @@ function renderRankScreen() {
     const card = document.createElement("div");
     card.className = "milestone-card";
 
-    if (claimed) card.classList.add("completed");
-    else if (unlocked) card.classList.add("current");
+    if (claimed) {
+    card.classList.add("completed");
+    } else if (unlocked) {
+    card.classList.add("claimable");
+    } else {
+    card.classList.add("locked");
+    }
 
     card.innerHTML = `
       <div><strong>Level ${rw.level}</strong></div>
@@ -1170,12 +1188,24 @@ function renderRankScreen() {
       const btn = document.createElement("button");
       btn.className = "claim-btn";
       btn.textContent = "Claim";
-      btn.onclick = () => claimRankReward(rw);
+      btn.onclick = () => {
+        btn.disabled = true;
+        claimRankReward(rw);
+      };
       card.appendChild(btn);
     }
 
     milestoneList.appendChild(card);
   });
+   setTimeout(() => {
+  const current = document.querySelector(".milestone-card.claimable:not(.completed)");
+  if (current) {
+    current.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+  }
+}, 100);
 }
 
 function openRanks() {
