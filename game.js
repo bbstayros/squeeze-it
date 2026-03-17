@@ -49,7 +49,12 @@ async function unlockAudio() {
   const shopBtn = document.getElementById("shopBtn");
   const shopPanel = document.getElementById("shopPanel");
   const closeShop = document.getElementById("closeShop");
+  
   const themeList = document.getElementById("themeList");
+  if (!themeList) {
+  console.error("themeList NOT FOUND");
+  }
+   
   const shopOverlay = document.getElementById("shopOverlay");
   const gemCount = document.getElementById("gemCount");
 
@@ -842,6 +847,7 @@ function incrementAdWatchCount() {
   }
 
   function renderShop() {
+    if (!themeList) return; 
     UI.setGems(State.totalGems);
     themeList.innerHTML = "";
 
