@@ -395,7 +395,9 @@ canvas#game{
 }
 
 .milestone-card.completed{
-  opacity:0.4;
+  opacity:0.45;
+  filter: grayscale(0.7);
+  transform: scale(0.97);
 }
 
 .milestone-card.current{
@@ -403,18 +405,58 @@ canvas#game{
   animation: milestonePulse 1.8s ease-in-out infinite;
 }
 
+.milestone-card.claimable{
+  border: 2px solid #ffb347;
+  box-shadow:
+    0 0 12px rgba(255,180,80,0.4),
+    0 0 28px rgba(255,140,0,0.25);
+  animation: milestoneClaimPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes milestoneClaimPulse{
+  0%,100%{
+    box-shadow:
+      0 0 8px rgba(255,140,0,0.3),
+      0 0 20px rgba(255,140,0,0.2);
+  }
+  50%{
+    box-shadow:
+      0 0 16px rgba(255,140,0,0.6),
+      0 0 40px rgba(255,140,0,0.35);
+  }
+}
+
 .milestone-reward{
   font-weight:bold;
 }
 
 .claim-btn{
-  background:#00ffcc;
+  background: linear-gradient(180deg,#ffb347,#ff7b00);
   color:#000;
   border:none;
   padding:8px 14px;
   border-radius:12px;
   font-weight:bold;
   cursor:pointer;
+  box-shadow:
+    0 4px 10px rgba(0,0,0,0.35),
+    0 0 12px rgba(255,140,0,0.4);
+  transition: all 0.15s ease;
+}
+
+.claim-btn:hover{
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 20px rgba(0,0,0,0.45),
+    0 0 18px rgba(255,140,0,0.6);
+}
+
+.claim-btn:active{
+  transform: scale(0.95);
+}
+
+.milestone-list{
+  scroll-behavior: smooth;
 }
 
 .hidden {
