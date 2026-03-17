@@ -1152,6 +1152,7 @@ function renderRankCarousel() {
 }
    
 function renderRankScreen() {
+  console.log("RENDER RANK SCREEN"); 
   renderRankCarousel();
   milestoneList.innerHTML = "";
 
