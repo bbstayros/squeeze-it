@@ -228,7 +228,7 @@ async function loadSprites() {
       SpriteManifest.caveman[type][dir] = [];
 
       for (let i = 0; i < FRAME_COUNT; i++) {
-        const path = `assets/themes/caveman/${type}/${dir}/frame_00${i}.png`;
+        const path = `assets/themes/caveman/character/${type}/${dir}/frame_00${i}.png`;
 
         const p = new Promise((resolve, reject) => {
           const img = new Image();
