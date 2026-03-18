@@ -485,25 +485,23 @@ function vibrateTap(){
   if(!vibrationEnabled()) return;
   if(navigator.vibrate) navigator.vibrate(10);
 }
-   
+
 /* =====================================================
-   SCREEN MANAGER
+   SCREEN SYSTEM (NEW)
 ===================================================== */
-
-function closeAllScreens() {
-  UI.hide(shopPanel);
-  UI.hide(shopOverlay);
-  UI.hide(milestoneScreen);
-  UI.hide(endPanel);
-
-  levelSelect.classList.add("hidden");
-}
-
-function goToMainMenu() {
-  closeAllScreens();
-  mainMenu.classList.remove("hidden");
-  if (topbar) {
-    topbar.style.display = "none";
+let currentScreen = "main";
+function setScreen(name) {
+  currentScreen = name;
+  document.querySelectorAll(".screen").forEach(s => {
+    s.classList.remove("active");
+  });
+  const target = document.getElementById("screen-" + name);
+  if (target) target.classList.add("active");
+  // special UI logic
+  if (name === "game") {
+    if (topbar) topbar.style.display = "grid";
+  } else {
+    if (topbar) topbar.style.display = "none";
   }
 }
    
@@ -1846,14 +1844,14 @@ if (State.doubleReady && adsRemaining > 0) {
    backFromDifficulty.addEventListener("click", () => {
 
   levelSelect.classList.add("hidden");
-  goToMainMenu();
+  setScreen("main");
 
 });
 /* =====================================================
    MAIN MENU EVENTS
 ===================================================== */
 menuPlay.addEventListener("click", () => {
-  mainMenu.classList.add("hidden");
+  setScreen("game");
   levelSelect.classList.remove("hidden");
   if (topbar) {
     topbar.style.display = "none";
@@ -1865,7 +1863,7 @@ menuInformation.addEventListener("click", () => {
 });
 closeInfo.addEventListener("click", () => {
   UI.hide(infoPanel);
-  goToMainMenu();
+  setScreen("main");
 });  
 menuShop.addEventListener("click", () => {
   UI.hide(mainMenu);
@@ -1874,7 +1872,7 @@ menuShop.addEventListener("click", () => {
   UI.show(shopPanel);
 });
 menuRanks.addEventListener("click", () => {
-  mainMenu.classList.add("hidden");
+  setScreen("ranks");
   openRanks();
   UI.show(milestoneScreen);
 });
@@ -1913,12 +1911,12 @@ startCountdownThenPlay();
    closeShop.addEventListener("click", () => {
   UI.hide(shopOverlay);
   UI.hide(shopPanel);
-  goToMainMenu();
+  setScreen("main");
 });
 shopOverlay.addEventListener("click", () => {
   UI.hide(shopOverlay);
   UI.hide(shopPanel);
-  goToMainMenu();
+  setScreen("main");
 });
   /* =====================================================
      EVENTS - MILESTONES
@@ -1929,7 +1927,7 @@ shopOverlay.addEventListener("click", () => {
 });
   closeMilestones.addEventListener("click", () => {
   UI.hide(milestoneScreen);
-  goToMainMenu();
+  setScreen("main");
   });
   /* =====================================================
      EVENTS - END PANEL
@@ -1958,7 +1956,7 @@ shopOverlay.addEventListener("click", () => {
   });
   backMenuBtn.addEventListener("click", () => {
   UI.hide(endPanel);
-  goToMainMenu();
+  setScreen("main");
   });
    /* =====================================================
      EVENTS - SOUND
@@ -1997,11 +1995,11 @@ shopOverlay.addEventListener("click", () => {
   ===================================================== */ 
    closeMissions.addEventListener("click", () => {
   UI.hide(missionsPanel);
-  goToMainMenu();
+  setScreen("main");
 });
    closeSettings.addEventListener("click",()=>{
   UI.hide(settingsPanel);
-  goToMainMenu();
+  setScreen("main");
 });
   /* =====================================================
      DEBUG TOGGLE THEME
