@@ -211,7 +211,7 @@ canvas#game{
   display: none;
 }
 #shopPanel.active{
-  display: block;
+  z-index: 500;
 }
 
 #shopPanel h2{
@@ -1317,6 +1317,8 @@ body::after{
 }
 .screen.active {
   display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* modals (end, rank unlock etc) */
@@ -1337,4 +1339,18 @@ body::after{
 }
 .overlay.active {
   display: flex !important;
+}
+
+#screen-game {
+  z-index: 1;
+}
+
+#screen-game.active {
+  display: block !important;
+}
+
+canvas#game {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
 }
