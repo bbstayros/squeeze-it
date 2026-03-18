@@ -30,8 +30,8 @@ async function unlockAudio() {
   await sound.unlock();
   sound.startAmbient();
 }
-   
-  /* =====================================================
+
+   /* =====================================================
      DOM
   ===================================================== */
 
@@ -1981,11 +1981,11 @@ shopOverlay.addEventListener("click", () => {
   }, 1500);
 });
    playAgainBtn.addEventListener("click", () => {
-     closeOverlay(endPanel);
+     closeOverlay("endPanel");
   startCountdownThenPlay();
   });
   backMenuBtn.addEventListener("click", () => {
-  closeOverlay(endPanel);
+  closeOverlay("endPanel");
   setScreen("main");
   });
    /* =====================================================
