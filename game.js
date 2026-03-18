@@ -1934,12 +1934,12 @@ startCountdownThenPlay();
     openOverlay("shopPanel");
   });
    closeShop.addEventListener("click", () => {
-  closeOverlay("shopOverlay");
+  closeOverlay("shopPanel");
   closeOverlay("shopPanel");
   setScreen("main");
 });
 shopOverlay.addEventListener("click", () => {
-  closeOverlay("shopOverlay");
+  closeOverlay("shopPanel");
   closeOverlay("shopPanel");
   setScreen("main");
 });
