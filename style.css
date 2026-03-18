@@ -201,6 +201,10 @@ canvas#game{
   inset: 0;
   background: rgba(0,0,0,0.45);
   z-index: 550;
+  display: none;
+}
+#shopOverlay.active{
+  display: block;
 }
 
 /* panel */
@@ -216,6 +220,10 @@ canvas#game{
   padding: 14px;
   z-index: 600;
   backdrop-filter: blur(10px);
+  display: none;
+}
+#shopPanel.active{
+  display: block;
 }
 
 #shopPanel h2{
@@ -1320,13 +1328,6 @@ body::after{
 
 .screen.active {
   display: block;
-}
-
-/* overlays πάνω από screens */
-.overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 500;
 }
 
 /* modals (end, rank unlock etc) */
