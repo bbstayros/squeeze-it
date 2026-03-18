@@ -512,13 +512,23 @@ let currentOverlay = null;
 function openOverlay(name) {
   closeOverlay();
   currentOverlay = name;
+  // άνοιξε main panel
   const el = document.getElementById(name);
   if (el) el.classList.remove("hidden");
+  // ειδικά για shop → άνοιξε και background
+  if (name === "shopPanel") {
+    const overlayBg = document.getElementById("shopOverlay");
+    if (overlayBg) overlayBg.classList.remove("hidden");
+  }
 }
+   
 function closeOverlay() {
   if (!currentOverlay) return;
   const el = document.getElementById(currentOverlay);
   if (el) el.classList.add("hidden");
+  // κλείσε και shop background
+  const overlayBg = document.getElementById("shopOverlay");
+  if (overlayBg) overlayBg.classList.add("hidden");
   currentOverlay = null;
 }
    
