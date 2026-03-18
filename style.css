@@ -897,6 +897,7 @@ body::after{
   position: fixed;
   inset: 0;
   z-index: 100;
+  display: none;
 }
 
 #screen-main.active .main-menu {
@@ -1312,7 +1313,7 @@ body::after{
   position: fixed;
   inset: 0;
   display: none;
-  z-index: 50;
+  z-index: 1;
 }
 .screen.active {
   display: flex;
@@ -1335,5 +1336,5 @@ body::after{
   display: none;
 }
 .overlay.active {
-  display: flex;
+  display: flex !important;
 }
