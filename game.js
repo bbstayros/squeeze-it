@@ -1892,8 +1892,9 @@ if (State.doubleReady && adsRemaining > 0) {
    MAIN MENU EVENTS
 ===================================================== */
 menuPlay.addEventListener("click", () => {
-  console.log("PLAY CLICKED"); // debug
+  console.log("PLAY CLICKED");
   setScreen("game");
+  resize();
   levelSelect.classList.remove("hidden");
   if (topbar) topbar.style.display = "none";
 });
