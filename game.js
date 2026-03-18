@@ -1886,7 +1886,8 @@ menuShop.addEventListener("click", () => {
   closeOverlay(mainMenu);
   renderShop();
   openOverlay("shopOverlay");
-  openOverlay("shopPanel");
+  openOverlay("shopOverlay");
+  document.getElementById("shopPanel").classList.remove("hidden");
 });
 menuRanks.addEventListener("click", () => {
   setScreen("ranks");
