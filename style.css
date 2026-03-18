@@ -1335,3 +1335,16 @@ body::after{
   inset: 0;
   z-index: 800;
 }
+
+/* =========================
+   OVERLAY SYSTEM (NEW)
+========================= */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: none;
+}
+.overlay.active {
+  display: block;
+}
