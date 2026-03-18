@@ -893,17 +893,18 @@ body::after{
 /* =====================================================
    MAIN MENU
 ===================================================== */
-.main-menu{
+.main-menu {
   position: fixed;
   inset: 0;
   z-index: 100;
+}
+
+#screen-main.active .main-menu {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background:
-    radial-gradient(circle at center, rgba(255,180,80,0.15), transparent 40%),
-    rgba(0,0,0,0.75);
-  backdrop-filter: blur(10px);
+}
+
+#screen-main .main-menu {
+  display: none;
 }
 
 .menu-card{
@@ -1310,12 +1311,11 @@ body::after{
 .screen {
   position: fixed;
   inset: 0;
-  display: flex;
+  display: none;
   z-index: 50;
 }
-
 .screen.active {
-  display: block;
+  display: flex;
 }
 
 /* modals (end, rank unlock etc) */
@@ -1332,8 +1332,8 @@ body::after{
   position: fixed;
   inset: 0;
   z-index: 500;
-  display: flex;
+  display: none;
 }
 .overlay.active {
-  display: block;
+  display: flex;
 }
