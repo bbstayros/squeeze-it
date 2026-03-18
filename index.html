@@ -9,318 +9,313 @@
 
 <body translate="no">
 
-<!-- ================= MAIN MENU ================= -->
+<!-- ================= MAIN MENU SCREEN ================= -->
 <div id="screen-main" class="screen active">
   <div id="mainMenu" class="main-menu">
-  <!-- TOP INFO BAR -->
-  <div class="menu-topbar">
-    <div class="menu-stats">
-      <div>Last Score: <span id="lastScore">0</span></div>
-      <div class="menu-level">
-        Level <span id="menuLevel">1</span>
-        <div class="menu-xp-bar">
-          <div id="menuXpFill"></div>
+    <!-- TOP INFO BAR -->
+    <div class="menu-topbar">
+      <div class="menu-stats">
+        <div>Last Score: <span id="lastScore">0</span></div>
+        <div class="menu-level">
+          Level <span id="menuLevel">1</span>
+          <div class="menu-xp-bar">
+            <div id="menuXpFill"></div>
+          </div>
         </div>
       </div>
+      <button id="menuSettings" class="menu-settings">⚙ Settings</button>
     </div>
-    <button id="menuSettings" class="menu-settings">⚙ Settings</button>
-  </div>
-  <!-- MAIN CARD -->
-  <div class="menu-card">
-    <h1 class="menu-title">SQUEEZE IT</h1>
-    <div class="menu-buttons">
-      <button id="menuPlay" class="menu-btn">PLAY</button>
-      <button id="menuShop" class="menu-btn">SHOP</button>
-      <button id="menuRanks" class="menu-btn">RANKS</button>
-      <button id="menuRewards" class="menu-btn">REWARDS</button>
-      <button id="menuInfo" class="menu-btn">INFORMATION</button>
-    </div>
-  </div>
-</div>
 
-<!-- ================= Missions Panel ================= -->
- <div id="missionsPanel" class="hidden missions-panel overlay">
-  <div class="missions-header">
-    <h2>Daily Missions</h2>
-    <button id="closeMissions" class="btn">Back</button>
-  </div>
-  <div class="missions-content">
-    <!-- Daily Reward -->
-    <div class="mission-card">
-      <div class="mission-title">Daily Reward</div>
-      <div class="mission-desc">Login bonus</div>
-      <button id="dailyRewardBtn" class="btn">Claim</button>
+    <!-- MAIN CARD -->
+    <div class="menu-card">
+      <h1 class="menu-title">SQUEEZE IT</h1>
+      <div class="menu-buttons">
+        <button id="menuPlay" class="menu-btn">PLAY</button>
+        <button id="menuShop" class="menu-btn">SHOP</button>
+        <button id="menuRanks" class="menu-btn">RANKS</button>
+        <button id="menuRewards" class="menu-btn">REWARDS</button>
+        <button id="menuInfo" class="menu-btn">INFORMATION</button>
+      </div>
     </div>
-    <!-- Watch Ad -->
-    <div class="mission-card">
-      <div class="mission-title">Watch Ad</div>
-      <div class="mission-desc">Get free gems</div>
-      <button id="watchAdBtn" class="btn">+60 💎</button>
-    </div>
-    <!-- MISSIONS -->
-    <div id="dailyMissionList"></div>
   </div>
-</div> 
 
-<!-- ================= Info Panel ================= -->
+  <!-- ================= Missions Panel ================= -->
+  <div id="missionsPanel" class="hidden missions-panel overlay">
+    <div class="missions-header">
+      <h2>Daily Missions</h2>
+      <button id="closeMissions" class="btn">Back</button>
+    </div>
+    <div class="missions-content">
+      <div class="mission-card">
+        <div class="mission-title">Daily Reward</div>
+        <div class="mission-desc">Login bonus</div>
+        <button id="dailyRewardBtn" class="btn">Claim</button>
+      </div>
+
+      <div class="mission-card">
+        <div class="mission-title">Watch Ad</div>
+        <div class="mission-desc">Get free gems</div>
+        <button id="watchAdBtn" class="btn">+60 💎</button>
+      </div>
+
+      <div id="dailyMissionList"></div>
+    </div>
+  </div>
+
+  <!-- ================= Info Panel ================= -->
   <div id="infoPanel" class="hidden missions-panel overlay">
-  <div class="missions-header">
-    <h2>How To Play</h2>
-    <button id="closeInfo" class="btn">Back</button>
+    <div class="missions-header">
+      <h2>How To Play</h2>
+      <button id="closeInfo" class="btn">Back</button>
+    </div>
+    <div class="missions-content info-text">
+      <p>Tap the cavemen to score points.</p>
+      <p>
+        Red cavemen give points.<br>
+        Yellow cavemen break your combo.<br>
+        Spikes freeze you and remove time.
+      </p>
+      <p>
+        Build combos to earn more points and level up faster.
+      </p>
+      <p>
+        Complete missions and daily rewards to earn gems.
+      </p>
+    </div>
   </div>
-  <div class="missions-content info-text">
-    <p>Tap the cavemen to score points.</p>
-    <p>
-    Red cavemen give points.<br>
-    Yellow cavemen break your combo.<br>
-    Spikes freeze you and remove time.
-    </p>
-    <p>
-    Build combos to earn more points and level up faster.
-    </p>
-    <p>
-    Complete missions and daily rewards to earn gems.
-    </p>
+
+  <!-- ================= SETTINGS PANEL ================= -->
+  <div id="settingsPanel" class="hidden missions-panel overlay">
+    <div class="missions-header">
+      <h2>Settings</h2>
+      <button id="closeSettings" class="btn">Back</button>
+    </div>
+    <div class="missions-content">
+      <div class="mission-card">
+        <div>Sound</div>
+        <button id="toggleSoundBtn" class="btn">ON</button>
+      </div>
+      <div class="mission-card">
+        <div>Vibration</div>
+        <button id="toggleVibrationBtn" class="btn">OFF</button>
+      </div>
+      <div class="mission-card">
+        <div>Reset Progress</div>
+        <button id="resetProgressBtn" class="btn">Reset</button>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- ================= SETTINGS PANEL ================= -->
-  <div id="settingsPanel" class="hidden missions-panel overlay">
-  <div class="missions-header">
-    <h2>Settings</h2>
-    <button id="closeSettings" class="btn">Back</button>
-  </div>
-  <div class="missions-content">
-    <div class="mission-card">
-      <div>Sound</div>
-      <button id="toggleSoundBtn" class="btn">ON</button>
-    </div>
-    <div class="mission-card">
-      <div>Vibration</div>
-      <button id="toggleVibrationBtn" class="btn">OFF</button>
-    </div>
-    <div class="mission-card">
-      <div>Reset Progress</div>
-      <button id="resetProgressBtn" class="btn">Reset</button>
-    </div>
-  </div>
-</div>
-  
-<!-- ================= BACKGROUND WRAPPER ================= -->
+<!-- ================= GAME SCREEN ================= -->
 <div id="screen-game" class="screen">
   <div id="game-wrapper">
-  <!-- Background Layers -->
-  <div class="bg bg-far"></div>
-  <div class="bg bg-mid"></div>
-  <div class="bg bg-near"></div>
-  <div class="bg-overlay"></div>
-  <div class="embers"></div>
+    <!-- Background Layers -->
+    <div class="bg bg-far"></div>
+    <div class="bg bg-mid"></div>
+    <div class="bg bg-near"></div>
+    <div class="bg-overlay"></div>
+    <div class="embers"></div>
 
-  <!-- ================= UI + GAME ================= -->
-
-<header class="topbar">
-  <div class="topbar-left">
-    <div class="stat">Score: <span id="score">0</span></div>
-    <div class="stat">Time: <span id="time">45</span>s</div>
-  </div>
-  <div class="topbar-center">
-    <button id="startBtn" class="btn">Start</button>
-  </div>
-  <div class="topbar-right">
-    <button id="shopBtn" class="btn">Shop</button>
-    <button id="milestonesBtn" class="btn">Milestones</button>
-    <button id="soundToggle" class="btn-sound" aria-label="Sound toggle">🔊</button>
-  </div>
-  <div class="xp-container">
-    <div class="xp-label">Level <span id="levelDisplay">1</span></div>
-    <div class="xp-bar">
-      <div id="xpFill" class="xp-fill"></div>
-    </div>
-  </div>
-  
-</header>
-
-<!-- ================= Overlay ================= -->
-  <div id="shopOverlay" class="hidden overlay"></div>
-
-<!-- ================= Shop Panel ================= -->
-  <div id="shopPanel" class="overlay">
-    <h2>Shop</h2>
-    <div class="shop-balance">
-      Gems: <span id="gemCount">0</span> 💎
-    </div>
-    <div id="themeList" class="theme-list"></div>
-    <div class="shop-tabs">
-
-  <button class="shop-tab active" data-tab="characters">Characters</button>
-  <button class="shop-tab" data-tab="finger">Finger</button>
-  <button class="shop-tab" data-tab="backgrounds">Backgrounds</button>
-
-</div>
-
-
-<div class="shop-subtabs">
-
-  <button class="shop-subtab active" data-subtab="buy">Buy</button>
-  <button class="shop-subtab" data-subtab="owned">Owned</button>
-
-</div>
-
-
-<div class="shop-content">
-
-  <div class="shop-category active" id="characters">
-
-    <div class="shop-grid">
-
-      <div class="shop-item">
-        <img src="assets/themes/caveman/finger-caveman.png">
-        <div class="shop-item-name">Classic</div>
-        <button class="shop-btn equipped">Equipped</button>
+    <!-- ================= UI + GAME ================= -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="stat">Score: <span id="score">0</span></div>
+        <div class="stat">Time: <span id="time">45</span>s</div>
       </div>
-
-      <div class="shop-item">
-        <img src="assets/skins/zombie.png">
-        <div class="shop-item-name">Zombie</div>
-        <button class="shop-btn buy">300 💎</button>
+      <div class="topbar-center">
+        <button id="startBtn" class="btn">Start</button>
       </div>
-
-      <div class="shop-item">
-        <img src="assets/skins/knight.png">
-        <div class="shop-item-name">Knight</div>
-        <button class="shop-btn buy">600 💎</button>
+      <div class="topbar-right">
+        <button id="shopBtn" class="btn">Shop</button>
+        <button id="milestonesBtn" class="btn">Milestones</button>
+        <button id="soundToggle" class="btn-sound" aria-label="Sound toggle">🔊</button>
       </div>
-
-      <div class="shop-item">
-        <img src="assets/skins/alien.png">
-        <div class="shop-item-name">Alien</div>
-        <button class="shop-btn buy">1000 💎</button>
-      </div>
-
-      <div class="shop-item">
-        <img src="assets/skins/fruit.png">
-        <div class="shop-item-name">Fruit</div>
-        <button class="shop-btn buy">350 💎</button>
-      </div>
-
-      <div class="shop-item">
-        <img src="assets/skins/ninja.png">
-        <div class="shop-item-name">Ninja</div>
-        <button class="shop-btn buy">700 💎</button>
-      </div>
-
-      <div class="shop-item">
-        <img src="assets/skins/arcade.png">
-        <div class="shop-item-name">Arcade</div>
-        <button class="shop-btn buy">1800 💎</button>
-      </div>
-
-      <div class="shop-item">
-        <img src="assets/skins/pirate.png">
-        <div class="shop-item-name">Pirate</div>
-        <button class="shop-btn buy">650 💎</button>
-      </div>
-
-      <div class="shop-item">
-        <img src="assets/skins/robot.png">
-        <div class="shop-item-name">Robot</div>
-        <button class="shop-btn buy">1100 💎</button>
-      </div>
-
-      <div class="shop-item">
-        <img src="assets/skins/viking.png">
-        <div class="shop-item-name">Viking</div>
-        <button class="shop-btn buy">1200 💎</button>
-      </div>
-
-      <div class="shop-item">
-        <img src="assets/skins/ghost.png">
-        <div class="shop-item-name">Ghost</div>
-        <button class="shop-btn buy">1600 💎</button>
-      </div>
-    </div>
-  </div>
-</div>
-    <button id="closeShop" class="btn close-btn">Close</button>
-  </div>
-  
-  <main class="wrap">
-    <div id="levelSelect" class="level-select">
-    <div class="level-select-inner">
-    <button id="backFromDifficulty" class="btn">← Back</button>
-    <h2>Select Difficulty</h2>
-      
-    <div class="levels">
-      <button class="level-btn" data-level="easy">
-       <span class="level-title">🟢 EASY</span>
-       <span class="level-desc">Relaxed gameplay</span>
-      </button>
-
-      <button class="level-btn" data-level="medium">
-       <span class="level-title">🟠 MEDIUM</span>
-       <span class="level-desc">Balanced challenge</span>
-      </button>
-
-      <button class="level-btn" data-level="hard">
-       <span class="level-title">🔴 HARD</span>
-       <span class="level-desc">Fast enemies</span>
-      </button>
-    </div>
-    </div>
-    </div>  
-    <canvas id="game">
-Your browser does not support the HTML5 canvas.
-</canvas>
-    <div id="countdown" class="countdown hidden">3</div>
-  </main>
-
-<!-- ================= Milestones Screen ================= -->
-  <div id="screen-ranks" class="screen">
-  <div id="milestoneScreen" class="milestone-screen">
-  <div class="milestone-header">
-    <h2>Rank & Rewards</h2>
-    <button id="closeMilestones" class="btn">Close</button>
-  </div>
-
-  <!-- RANK CAROUSEL -->
-  <div class="rank-panel">
-    <div class="rank-top">
-      <div class="rank-header-title">
-        <div id="rankName" class="rank-name">—</div>
-        <div id="rankNext" class="rank-next">Next: —</div>
-      </div>
-      <div class="rank-progress">
-        <div class="rank-progress-label">Progress to next rank</div>
-        <div class="rank-progress-bar">
-          <div id="rankProgressFill" class="rank-progress-fill"></div>
+      <div class="xp-container">
+        <div class="xp-label">Level <span id="levelDisplay">1</span></div>
+        <div class="xp-bar">
+          <div id="xpFill" class="xp-fill"></div>
         </div>
-        <div id="rankProgressText" class="rank-progress-text">0%</div>
+      </div>
+    </header>
+
+    <!-- Shop dark overlay -->
+    <div id="shopOverlay" class="hidden overlay"></div>
+
+    <!-- Shop panel -->
+    <div id="shopPanel" class="overlay">
+      <h2>Shop</h2>
+      <div class="shop-balance">
+        Gems: <span id="gemCount">0</span> 💎
+      </div>
+      <div id="themeList" class="theme-list"></div>
+
+      <div class="shop-tabs">
+        <button class="shop-tab active" data-tab="characters">Characters</button>
+        <button class="shop-tab" data-tab="finger">Finger</button>
+        <button class="shop-tab" data-tab="backgrounds">Backgrounds</button>
+      </div>
+
+      <div class="shop-subtabs">
+        <button class="shop-subtab active" data-subtab="buy">Buy</button>
+        <button class="shop-subtab" data-subtab="owned">Owned</button>
+      </div>
+
+      <div class="shop-content">
+        <div class="shop-category active" id="characters">
+          <div class="shop-grid">
+            <div class="shop-item">
+              <img src="assets/themes/caveman/finger-caveman.png">
+              <div class="shop-item-name">Classic</div>
+              <button class="shop-btn equipped">Equipped</button>
+            </div>
+
+            <div class="shop-item">
+              <img src="assets/skins/zombie.png">
+              <div class="shop-item-name">Zombie</div>
+              <button class="shop-btn buy">300 💎</button>
+            </div>
+
+            <div class="shop-item">
+              <img src="assets/skins/knight.png">
+              <div class="shop-item-name">Knight</div>
+              <button class="shop-btn buy">600 💎</button>
+            </div>
+
+            <div class="shop-item">
+              <img src="assets/skins/alien.png">
+              <div class="shop-item-name">Alien</div>
+              <button class="shop-btn buy">1000 💎</button>
+            </div>
+
+            <div class="shop-item">
+              <img src="assets/skins/fruit.png">
+              <div class="shop-item-name">Fruit</div>
+              <button class="shop-btn buy">350 💎</button>
+            </div>
+
+            <div class="shop-item">
+              <img src="assets/skins/ninja.png">
+              <div class="shop-item-name">Ninja</div>
+              <button class="shop-btn buy">700 💎</button>
+            </div>
+
+            <div class="shop-item">
+              <img src="assets/skins/arcade.png">
+              <div class="shop-item-name">Arcade</div>
+              <button class="shop-btn buy">1800 💎</button>
+            </div>
+
+            <div class="shop-item">
+              <img src="assets/skins/pirate.png">
+              <div class="shop-item-name">Pirate</div>
+              <button class="shop-btn buy">650 💎</button>
+            </div>
+
+            <div class="shop-item">
+              <img src="assets/skins/robot.png">
+              <div class="shop-item-name">Robot</div>
+              <button class="shop-btn buy">1100 💎</button>
+            </div>
+
+            <div class="shop-item">
+              <img src="assets/skins/viking.png">
+              <div class="shop-item-name">Viking</div>
+              <button class="shop-btn buy">1200 💎</button>
+            </div>
+
+            <div class="shop-item">
+              <img src="assets/skins/ghost.png">
+              <div class="shop-item-name">Ghost</div>
+              <button class="shop-btn buy">1600 💎</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button id="closeShop" class="btn close-btn">Close</button>
+    </div>
+
+    <main class="wrap">
+      <div id="levelSelect" class="level-select">
+        <div class="level-select-inner">
+          <button id="backFromDifficulty" class="btn">← Back</button>
+          <h2>Select Difficulty</h2>
+
+          <div class="levels">
+            <button class="level-btn" data-level="easy">
+              <span class="level-title">🟢 EASY</span>
+              <span class="level-desc">Relaxed gameplay</span>
+            </button>
+
+            <button class="level-btn" data-level="medium">
+              <span class="level-title">🟠 MEDIUM</span>
+              <span class="level-desc">Balanced challenge</span>
+            </button>
+
+            <button class="level-btn" data-level="hard">
+              <span class="level-title">🔴 HARD</span>
+              <span class="level-desc">Fast enemies</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <canvas id="game">
+        Your browser does not support the HTML5 canvas.
+      </canvas>
+
+      <div id="countdown" class="countdown hidden">3</div>
+    </main>
+
+    <div id="endPanel" class="end-panel hidden">
+      <div class="end-card">
+        <h2>Round Summary</h2>
+        <div id="doubleProgress" class="double-progress"></div>
+        <div class="end-stat">Score: <span id="endScore">0</span></div>
+        <div class="end-stat">Gems: +<span id="endGems">0</span> 💎</div>
+        <div class="end-stat">XP: +<span id="endXP">0</span></div>
+        <div class="end-buttons">
+          <button id="doubleBtn" class="btn hidden">x2 Gems</button>
+          <button id="playAgainBtn" class="btn">Play Again</button>
+          <button id="backMenuBtn" class="btn">Main Menu</button>
+        </div>
       </div>
     </div>
-    <div class="rank-carousel-wrapper">
-      <div id="rankCarousel" class="rank-carousel" aria-label="Rank carousel" role="region"></div>
-    </div>
   </div>
-
-  <div id="milestoneList" class="milestone-list"></div>
 </div>
-</div>    
 
-  <div id="endPanel" class="end-panel hidden">
-  <div class="end-card">
-    <h2>Round Summary</h2>
-    <div id="doubleProgress" class="double-progress"></div> 
-    <div class="end-stat">Score: <span id="endScore">0</span></div>
-    <div class="end-stat">Gems: +<span id="endGems">0</span> 💎</div>
-    <div class="end-stat">XP: +<span id="endXP">0</span></div>
-    <div class="end-buttons">
-      <button id="doubleBtn" class="btn hidden">x2 Gems</button>
-      <button id="playAgainBtn" class="btn">Play Again</button>
-      <button id="backMenuBtn" class="btn">Main Menu</button>
+<!-- ================= RANKS SCREEN ================= -->
+<div id="screen-ranks" class="screen">
+  <div id="milestoneScreen" class="milestone-screen">
+    <div class="milestone-header">
+      <h2>Rank & Rewards</h2>
+      <button id="closeMilestones" class="btn">Close</button>
     </div>
+
+    <div class="rank-panel">
+      <div class="rank-top">
+        <div class="rank-header-title">
+          <div id="rankName" class="rank-name">—</div>
+          <div id="rankNext" class="rank-next">Next: —</div>
+        </div>
+        <div class="rank-progress">
+          <div class="rank-progress-label">Progress to next rank</div>
+          <div class="rank-progress-bar">
+            <div id="rankProgressFill" class="rank-progress-fill"></div>
+          </div>
+          <div id="rankProgressText" class="rank-progress-text">0%</div>
+        </div>
+      </div>
+
+      <div class="rank-carousel-wrapper">
+        <div id="rankCarousel" class="rank-carousel" aria-label="Rank carousel" role="region"></div>
+      </div>
+    </div>
+
+    <div id="milestoneList" class="milestone-list"></div>
   </div>
-</div> 
-</div> <!-- END WRAPPER -->
+</div>
 
 <!-- ================= RANK UNLOCK OVERLAY ================= -->
 <div id="rankUnlockOverlay" class="rank-unlock hidden">
@@ -332,8 +327,8 @@ Your browser does not support the HTML5 canvas.
       IRON FINGER
     </div>
   </div>
-</div>  
+</div>
 
-<script type="module" src="game.js"></script> 
+<script type="module" src="game.js"></script>
 </body>
 </html>
