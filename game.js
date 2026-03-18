@@ -435,12 +435,14 @@ async function loadSprites() {
   };
 
 function openShop() {
+  shopOverlay.classList.remove("hidden");
   shopOverlay.classList.add("active");
   shopPanel.classList.add("active");
 }
 
 function closeShopPanel() {
   shopOverlay.classList.remove("active");
+  shopOverlay.classList.add("hidden");
   shopPanel.classList.remove("active");
 }
    
@@ -525,14 +527,20 @@ function openOverlay(id) {
   closeOverlay();
   currentOverlay = id;
   const el = document.getElementById(id);
-  if (el) el.classList.add("active");
+  if (el) {
+    el.classList.remove("hidden");
+    el.classList.add("active");
+  }
 }
 
 function closeOverlay(id = null) {
   const targetId = id || currentOverlay;
   if (!targetId) return;
   const el = document.getElementById(targetId);
-  if (el) el.classList.remove("active");
+  if (el) {
+    el.classList.remove("active");
+    el.classList.add("hidden");
+  }
   if (!id || id === currentOverlay) {
     currentOverlay = null;
   }
@@ -1884,11 +1892,10 @@ if (State.doubleReady && adsRemaining > 0) {
    MAIN MENU EVENTS
 ===================================================== */
 menuPlay.addEventListener("click", () => {
+  console.log("PLAY CLICKED"); // debug
   setScreen("game");
   levelSelect.classList.remove("hidden");
-  if (topbar) {
-    topbar.style.display = "none";
-  }
+  if (topbar) topbar.style.display = "none";
 });
    
 menuInformation.addEventListener("click", () => {
