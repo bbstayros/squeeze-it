@@ -504,6 +504,23 @@ function setScreen(name) {
     if (topbar) topbar.style.display = "none";
   }
 }
+
+/* =====================================================
+   OVERLAY SYSTEM (NEW)
+===================================================== */
+let currentOverlay = null;
+function openOverlay(name) {
+  closeOverlay();
+  currentOverlay = name;
+  const el = document.getElementById(name);
+  if (el) el.classList.remove("hidden");
+}
+function closeOverlay() {
+  if (!currentOverlay) return;
+  const el = document.getElementById(currentOverlay);
+  if (el) el.classList.add("hidden");
+  currentOverlay = null;
+}
    
 /* =====================================================
      RESIZE
@@ -1684,7 +1701,7 @@ if (State.combo === 4) {
   ===================================================== */
 
   function startCountdownThenPlay() {
-    UI.show(countdownEl);
+    openOverlay(countdownEl);
 
     let c = Config.countdownStart;
     countdownEl.textContent = c;
@@ -1696,7 +1713,7 @@ if (State.combo === 4) {
       if (c <= 0) {
         clearInterval(State.timers.countdownTimer);
         State.timers.countdownTimer = null;
-        UI.hide(countdownEl);
+        closeOverlay(countdownEl);
         beginRound();
         return;
       }
@@ -1804,7 +1821,7 @@ if (State.combo === 4) {
   }
 }
      
-    UI.show(endPanel);
+    openOverlay(endPanel);
      // ===== Double Button UI Logic =====
 const adCount = getAdWatchCount();
 const adsRemaining = Config.AD_DAILY_LIMIT - adCount;
@@ -1858,33 +1875,33 @@ menuPlay.addEventListener("click", () => {
   }
 });
 menuInformation.addEventListener("click", () => {
-  UI.hide(mainMenu);
-  UI.show(infoPanel);
+  closeOverlay(mainMenu);
+  openOverlay(infoPanel);
 });
 closeInfo.addEventListener("click", () => {
-  UI.hide(infoPanel);
+  closeOverlay(infoPanel);
   setScreen("main");
 });  
 menuShop.addEventListener("click", () => {
-  UI.hide(mainMenu);
+  closeOverlay(mainMenu);
   renderShop();
-  UI.show(shopOverlay);
-  UI.show(shopPanel);
+  openOverlay("shopOverlay");
+  openOverlay("shopPanel");
 });
 menuRanks.addEventListener("click", () => {
   setScreen("ranks");
   openRanks();
-  UI.show(milestoneScreen);
+  openOverlay(milestoneScreen);
 });
 menuRewards.addEventListener("click", () => {
-  UI.hide(mainMenu);
+  closeOverlay(mainMenu);
   resetDailyMissionsIfNeeded();
   renderDailyMissions();
-  UI.show(missionsPanel);
+  openOverlay("missionsPanel");
 });
 menuSettings.addEventListener("click", () => {
-  UI.hide(mainMenu);
-  UI.show(settingsPanel);
+  closeOverlay(mainMenu);
+  openOverlay(settingsPanel);
 });
   /* =====================================================
      EVENTS - START
@@ -1905,17 +1922,17 @@ startCountdownThenPlay();
   ===================================================== */
   shopBtn.addEventListener("click", () => {
     renderShop();
-    UI.show(shopOverlay);
-    UI.show(shopPanel);
+    openOverlay(shopOverlay);
+    openOverlay(shopPanel);
   });
    closeShop.addEventListener("click", () => {
-  UI.hide(shopOverlay);
-  UI.hide(shopPanel);
+  closeOverlay(shopOverlay);
+  closeOverlay(shopPanel);
   setScreen("main");
 });
 shopOverlay.addEventListener("click", () => {
-  UI.hide(shopOverlay);
-  UI.hide(shopPanel);
+  closeOverlay(shopOverlay);
+  closeOverlay(shopPanel);
   setScreen("main");
 });
   /* =====================================================
@@ -1923,10 +1940,10 @@ shopOverlay.addEventListener("click", () => {
   ===================================================== */
   milestonesBtn.addEventListener("click", () => {
   openRanks();
-  UI.show(milestoneScreen);
+  openOverlay(milestoneScreen);
 });
   closeMilestones.addEventListener("click", () => {
-  UI.hide(milestoneScreen);
+  closeOverlay(milestoneScreen);
   setScreen("main");
   });
   /* =====================================================
@@ -1951,11 +1968,11 @@ shopOverlay.addEventListener("click", () => {
   }, 1500);
 });
    playAgainBtn.addEventListener("click", () => {
-     UI.hide(endPanel);
+     closeOverlay(endPanel);
   startCountdownThenPlay();
   });
   backMenuBtn.addEventListener("click", () => {
-  UI.hide(endPanel);
+  closeOverlay(endPanel);
   setScreen("main");
   });
    /* =====================================================
@@ -1994,11 +2011,11 @@ shopOverlay.addEventListener("click", () => {
      EVENTS - Missions
   ===================================================== */ 
    closeMissions.addEventListener("click", () => {
-  UI.hide(missionsPanel);
+  closeOverlay(missionsPanel);
   setScreen("main");
 });
    closeSettings.addEventListener("click",()=>{
-  UI.hide(settingsPanel);
+  closeOverlay(settingsPanel);
   setScreen("main");
 });
   /* =====================================================
