@@ -208,7 +208,7 @@ canvas#game{
   padding: 14px;
   z-index: 600;
   backdrop-filter: blur(10px);
-  display: none;
+  display: flex;
 }
 #shopPanel.active{
   display: block;
@@ -1310,7 +1310,7 @@ body::after{
 .screen {
   position: fixed;
   inset: 0;
-  display: none;
+  display: flex;
   z-index: 50;
 }
 
@@ -1332,7 +1332,7 @@ body::after{
   position: fixed;
   inset: 0;
   z-index: 500;
-  display: none;
+  display: flex;
 }
 .overlay.active {
   display: block;
