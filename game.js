@@ -433,6 +433,17 @@ async function loadSprites() {
       showToast(text);
     }
   };
+
+function openShop() {
+  shopOverlay.classList.add("active");
+  shopPanel.classList.add("active");
+}
+
+function closeShopPanel() {
+  shopOverlay.classList.remove("active");
+  shopPanel.classList.remove("active");
+}
+   
 /* =====================================================
    RANK UNLOCK SYSTEM
 ===================================================== */
@@ -509,27 +520,22 @@ function setScreen(name) {
    OVERLAY SYSTEM (NEW)
 ===================================================== */
 let currentOverlay = null;
-function openOverlay(name) {
+
+function openOverlay(id) {
   closeOverlay();
-  currentOverlay = name;
-  // άνοιξε main panel
-  const el = document.getElementById(name);
-  if (el) el.classList.remove("hidden");
-  // ειδικά για shop → άνοιξε και background
-  if (name === "shopPanel") {
-    const overlayBg = document.getElementById("shopOverlay");
-    if (overlayBg) overlayBg.classList.remove("hidden");
-  }
+  currentOverlay = id;
+  const el = document.getElementById(id);
+  if (el) el.classList.add("active");
 }
-   
-function closeOverlay() {
-  if (!currentOverlay) return;
-  const el = document.getElementById(currentOverlay);
-  if (el) el.classList.add("hidden");
-  // κλείσε και shop background
-  const overlayBg = document.getElementById("shopOverlay");
-  if (overlayBg) overlayBg.classList.add("hidden");
-  currentOverlay = null;
+
+function closeOverlay(id = null) {
+  const targetId = id || currentOverlay;
+  if (!targetId) return;
+  const el = document.getElementById(targetId);
+  if (el) el.classList.remove("active");
+  if (!id || id === currentOverlay) {
+    currentOverlay = null;
+  }
 }
    
 /* =====================================================
@@ -1829,9 +1835,9 @@ if (State.combo === 4) {
   } else {
     doubleProgress.textContent = "🔥 Double Gems Ready!";
   }
-}
-     
-    openOverlay(endPanel);
+}    
+    openOverlay("endPanel");
+
      // ===== Double Button UI Logic =====
 const adCount = getAdWatchCount();
 const adsRemaining = Config.AD_DAILY_LIMIT - adCount;
@@ -1884,32 +1890,37 @@ menuPlay.addEventListener("click", () => {
     topbar.style.display = "none";
   }
 });
-menuInformation.addEventListener("click", () => {
    
+menuInformation.addEventListener("click", () => {
   openOverlay("infoPanel");
 });
 closeInfo.addEventListener("click", () => {
   closeOverlay("infoPanel");
-  setScreen("main");
-});  
+}); 
+   
 menuShop.addEventListener("click", () => {
   renderShop();
-  openOverlay("shopPanel");
+  openShop();
 });
 menuRanks.addEventListener("click", () => {
   setScreen("ranks");
   openRanks();
-  openOverlay("milestoneScreen");
 });
-menuRewards.addEventListener("click", () => {
    
+menuRewards.addEventListener("click", () => {
   resetDailyMissionsIfNeeded();
   renderDailyMissions();
   openOverlay("missionsPanel");
 });
-menuSettings.addEventListener("click", () => {
+closeMissions.addEventListener("click", () => {
+  closeOverlay("missionsPanel");
+});
    
+menuSettings.addEventListener("click", () => {
   openOverlay("settingsPanel");
+});
+closeSettings.addEventListener("click", () => {
+  closeOverlay("settingsPanel");
 });
   /* =====================================================
      EVENTS - START
@@ -1928,32 +1939,26 @@ startCountdownThenPlay();
   /* =====================================================
      EVENTS - SHOP
   ===================================================== */
-  shopBtn.addEventListener("click", () => {
-    renderShop();
-    openOverlay("shopOverlay");
-    openOverlay("shopPanel");
-  });
-   closeShop.addEventListener("click", () => {
-  closeOverlay("shopPanel");
-  closeOverlay("shopPanel");
-  setScreen("main");
+shopBtn.addEventListener("click", () => {
+  renderShop();
+  openShop();
+});
+ closeShop.addEventListener("click", () => {
+  closeShopPanel();
 });
 shopOverlay.addEventListener("click", () => {
-  closeOverlay("shopPanel");
-  closeOverlay("shopPanel");
-  setScreen("main");
+  closeShopPanel();
 });
   /* =====================================================
      EVENTS - MILESTONES
   ===================================================== */
   milestonesBtn.addEventListener("click", () => {
+  setScreen("ranks");
   openRanks();
-  openOverlay("milestoneScreen");
 });
   closeMilestones.addEventListener("click", () => {
-  closeOverlay(milestoneScreen);
   setScreen("main");
-  });
+});
   /* =====================================================
      EVENTS - END PANEL
   ===================================================== */
