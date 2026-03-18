@@ -208,7 +208,7 @@ canvas#game{
   padding: 14px;
   z-index: 600;
   backdrop-filter: blur(10px);
-  display: flex;
+  display: none;
 }
 #shopPanel.active{
   display: block;
