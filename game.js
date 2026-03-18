@@ -1711,7 +1711,7 @@ if (State.combo === 4) {
   ===================================================== */
 
   function startCountdownThenPlay() {
-    openOverlay(countdownEl);
+    countdownEl.classList.remove("hidden");
 
     let c = Config.countdownStart;
     countdownEl.textContent = c;
@@ -1723,7 +1723,7 @@ if (State.combo === 4) {
       if (c <= 0) {
         clearInterval(State.timers.countdownTimer);
         State.timers.countdownTimer = null;
-        closeOverlay(countdownEl);
+        countdownEl.classList.add("hidden");
         beginRound();
         return;
       }
@@ -1885,34 +1885,31 @@ menuPlay.addEventListener("click", () => {
   }
 });
 menuInformation.addEventListener("click", () => {
-  closeOverlay(mainMenu);
-  openOverlay(infoPanel);
+   
+  openOverlay("infoPanel");
 });
 closeInfo.addEventListener("click", () => {
-  closeOverlay(infoPanel);
+  closeOverlay("infoPanel");
   setScreen("main");
 });  
 menuShop.addEventListener("click", () => {
-  closeOverlay(mainMenu);
   renderShop();
-  openOverlay("shopOverlay");
-  openOverlay("shopOverlay");
-  document.getElementById("shopPanel").classList.remove("hidden");
+  openOverlay("shopPanel");
 });
 menuRanks.addEventListener("click", () => {
   setScreen("ranks");
   openRanks();
-  openOverlay(milestoneScreen);
+  openOverlay("milestoneScreen");
 });
 menuRewards.addEventListener("click", () => {
-  closeOverlay(mainMenu);
+   
   resetDailyMissionsIfNeeded();
   renderDailyMissions();
   openOverlay("missionsPanel");
 });
 menuSettings.addEventListener("click", () => {
-  closeOverlay(mainMenu);
-  openOverlay(settingsPanel);
+   
+  openOverlay("settingsPanel");
 });
   /* =====================================================
      EVENTS - START
@@ -1933,17 +1930,17 @@ startCountdownThenPlay();
   ===================================================== */
   shopBtn.addEventListener("click", () => {
     renderShop();
-    openOverlay(shopOverlay);
-    openOverlay(shopPanel);
+    openOverlay("shopOverlay");
+    openOverlay("shopPanel");
   });
    closeShop.addEventListener("click", () => {
-  closeOverlay(shopOverlay);
-  closeOverlay(shopPanel);
+  closeOverlay("shopOverlay");
+  closeOverlay("shopPanel");
   setScreen("main");
 });
 shopOverlay.addEventListener("click", () => {
-  closeOverlay(shopOverlay);
-  closeOverlay(shopPanel);
+  closeOverlay("shopOverlay");
+  closeOverlay("shopPanel");
   setScreen("main");
 });
   /* =====================================================
@@ -1951,7 +1948,7 @@ shopOverlay.addEventListener("click", () => {
   ===================================================== */
   milestonesBtn.addEventListener("click", () => {
   openRanks();
-  openOverlay(milestoneScreen);
+  openOverlay("milestoneScreen");
 });
   closeMilestones.addEventListener("click", () => {
   closeOverlay(milestoneScreen);
@@ -2022,11 +2019,11 @@ shopOverlay.addEventListener("click", () => {
      EVENTS - Missions
   ===================================================== */ 
    closeMissions.addEventListener("click", () => {
-  closeOverlay(missionsPanel);
+  closeOverlay("missionsPanel");
   setScreen("main");
 });
    closeSettings.addEventListener("click",()=>{
-  closeOverlay(settingsPanel);
+  closeOverlay("settingsPanel");
   setScreen("main");
 });
   /* =====================================================
