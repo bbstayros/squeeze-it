@@ -409,7 +409,6 @@ async function loadSprites() {
   /* =====================================================
      UI HELPERS
   ===================================================== */
-
   const UI = {
     setScore(v) {
       scoreEl.textContent = v;
@@ -434,17 +433,13 @@ async function loadSprites() {
     }
   };
 
-function openShop() {
-  shopOverlay.classList.remove("hidden");
-  shopOverlay.classList.add("active");
-  shopPanel.classList.add("active");
-}
+   closeShop.addEventListener("click", () => {
+    closeOverlay("shopPanel");
+   });
 
-function closeShopPanel() {
-  shopOverlay.classList.remove("active");
-  shopOverlay.classList.add("hidden");
-  shopPanel.classList.remove("active");
-}
+   shopOverlay.addEventListener("click", () => {
+    closeOverlay("shopPanel");
+   });
    
 /* =====================================================
    RANK UNLOCK SYSTEM
@@ -1448,8 +1443,6 @@ if (bgPattern) {
 ctx.save();
 ctx.translate(offsetX, offsetY);
 ctx.filter = "brightness(0.9) contrast(0.9) saturate(0.85)";
-// RESET FILTER HERE
-ctx.filter = "none";
 
 /* =====================================================
    DRAW ENTITIES (SPRITES)
@@ -1861,23 +1854,17 @@ if (State.doubleReady && adsRemaining > 0) {
   /* =====================================================
      EVENTS - DIFFICULTY
   ===================================================== */
-
-  levelButtons.forEach((btn) => {
+levelButtons.forEach((btn) => {
   btn.addEventListener("click", async () => {
-
     State.difficulty = btn.dataset.level;
-
     levelButtons.forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
-
     levelSelect.classList.add("hidden");
-
+    resize();
     if (!sound.unlocked) {
       await sound.unlock();
     }
-
     sound.startAmbient();
-
     startCountdownThenPlay();
   });
 });
@@ -1907,8 +1894,11 @@ closeInfo.addEventListener("click", () => {
 }); 
    
 menuShop.addEventListener("click", () => {
+  console.log("SHOP CLICKED");
+  setScreen("game");
+  resize();
   renderShop();
-  openShop();
+  openOverlay("shopPanel");
 });
 menuRanks.addEventListener("click", () => {
   setScreen("ranks");
