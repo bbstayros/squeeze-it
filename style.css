@@ -900,8 +900,14 @@ body::after{
   display: none;
 }
 
+.menu-card {
+  margin: 0 auto;
+}
+
 #screen-main.active .main-menu {
   display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #screen-main .main-menu {
