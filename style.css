@@ -195,18 +195,6 @@ canvas#game{
   opacity:0.9;
 }
 
-/* overlay (σκοτεινό φόντο πίσω από το shop) */
-#shopOverlay{
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-  z-index: 550;
-  display: none;
-}
-#shopOverlay.active{
-  display: block;
-}
-
 /* panel */
 #shopPanel{
   position: fixed;
