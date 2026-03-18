@@ -2020,17 +2020,7 @@ shopOverlay.addEventListener("click", () => {
   localStorage.clear();
   location.reload();
 });
-   /* =====================================================
-     EVENTS - Missions
-  ===================================================== */ 
-   closeMissions.addEventListener("click", () => {
-  closeOverlay("missionsPanel");
-  setScreen("main");
-});
-   closeSettings.addEventListener("click",()=>{
-  closeOverlay("settingsPanel");
-  setScreen("main");
-});
+   
   /* =====================================================
      DEBUG TOGGLE THEME
   ===================================================== */
