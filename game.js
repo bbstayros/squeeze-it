@@ -434,10 +434,6 @@ async function loadSprites() {
     closeOverlay("shopPanel");
    });
 
-   shopOverlay.addEventListener("click", () => {
-    closeOverlay("shopPanel");
-   });
-   
 /* =====================================================
    RANK UNLOCK SYSTEM
 ===================================================== */
@@ -512,7 +508,7 @@ function setScreen(name) {
   } else {
     if (topbar) topbar.style.display = "none";
   }
-  console.log("SCREEN:", name);
+  console.log("SCREEN SWITCH →", name); 
 }
 
 /* =====================================================
@@ -1872,9 +1868,11 @@ document.querySelectorAll("#screen-play .level-btn").forEach((btn) => {
 /* =====================================================
    MAIN MENU EVENTS
 ===================================================== */
-menuPlay.addEventListener("click", () => {
-  setScreen("play");
-});
+if (menuPlay) {
+  menuPlay.addEventListener("click", () => {
+    setScreen("play");
+  });
+}
 
 if (menuInformation) {
   menuInformation.addEventListener("click", () => {
@@ -1888,10 +1886,11 @@ if (infoBackBtn) {
   });
 }   
    
+if (menuShop) {   
 menuShop.addEventListener("click", () => {
-  renderShop();
-  openOverlay("shopPanel");
-});
+setScreen("shop");
+  });
+}
    
 if (menuRanks) {
   menuRanks.addEventListener("click", () => {
@@ -1899,21 +1898,21 @@ if (menuRanks) {
   });
 }
    
-menuRewards.addEventListener("click", () => {
-  resetDailyMissionsIfNeeded();
-  renderDailyMissions();
-  openOverlay("missionsPanel");
-});
-closeMissions.addEventListener("click", () => {
-  closeOverlay("missionsPanel");
-});
+// menuRewards.addEventListener("click", () => {
+//  resetDailyMissionsIfNeeded();
+//  renderDailyMissions();
+//  openOverlay("missionsPanel");
+// });
+// closeMissions.addEventListener("click", () => {
+//   closeOverlay("missionsPanel");
+// });
    
-menuSettings.addEventListener("click", () => {
-  openOverlay("settingsPanel");
-});
-closeSettings.addEventListener("click", () => {
-  closeOverlay("settingsPanel");
-});
+// menuSettings.addEventListener("click", () => {
+//   openOverlay("settingsPanel");
+// });
+// closeSettings.addEventListener("click", () => {
+//   closeOverlay("settingsPanel");
+// });
    
   /* =====================================================
      EVENTS - SHOP
