@@ -1893,10 +1893,11 @@ menuShop.addEventListener("click", () => {
   openOverlay("shopPanel");
 });
    
-menuRanks.addEventListener("click", () => {
-  setScreen("ranks");
-  openRanks();
-});
+if (menuRanks) {
+  menuRanks.addEventListener("click", () => {
+    setScreen("ranks");
+  });
+}
    
 menuRewards.addEventListener("click", () => {
   resetDailyMissionsIfNeeded();
@@ -1933,9 +1934,12 @@ shopOverlay.addEventListener("click", () => {
   setScreen("ranks");
   openRanks();
 });
+
+   if (closeMilestones) {
   closeMilestones.addEventListener("click", () => {
-  setScreen("main");
-});
+    setScreen("main");
+  });
+}
    
   /* =====================================================
      EVENTS - END PANEL
