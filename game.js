@@ -1554,25 +1554,29 @@ for(const t of State.tapEffects){
   /* =====================================================
      INPUT / HIT DETECTION
   ===================================================== */
-
-  function getPointerPos(evt) {
-    const rect = canvas.getBoundingClientRect();
-    const clientX = evt.touches && evt.touches[0] ? evt.touches[0].clientX : evt.clientX;
-    const clientY = evt.touches && evt.touches[0] ? evt.touches[0].clientY : evt.clientY;
-    return { x: clientX - rect.left, y: clientY - rect.top };
-  }
+function getPointerPos(evt) {
+  const rect = canvas.getBoundingClientRect();
+  const clientX = evt.touches && evt.touches[0]
+    ? evt.touches[0].clientX
+    : evt.clientX;
+  const clientY = evt.touches && evt.touches[0]
+    ? evt.touches[0].clientY
+    : evt.clientY;
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  return {
+    x: (clientX - rect.left) * scaleX,
+    y: (clientY - rect.top) * scaleY
+  };
+}
 
   function tryHit(x, y) {
     if (State.playerFrozen) return;
-
     for (let i = State.entities.length - 1; i >= 0; i--) {
       const e = State.entities[i];
-
       if (e.hit) continue;
-
       const dx = x - e.x;
       const dy = y - e.y;
-
       if (dx * dx + dy * dy <= e.r * e.r) {
          if(e.type==="bonus"){
   sound._playBuffer("claim",{volume:1});
@@ -1586,7 +1590,6 @@ State.hitEffects.push({
 });
   e.hit=true;
   e.hitTimer=0.15;
-
   return;
 }
         // NORMAL
@@ -1696,20 +1699,17 @@ if (State.combo === 4) {
   /* =====================================================
      LOOP
   ===================================================== */
-
   let lastTs = 0;
 
-  function loop(ts) {
-    if (!State.gameRunning) return;
-
-    const dt = Math.min(0.028, (ts - lastTs) / 1000 || 0);
-    lastTs = ts;
-
-    update(dt);
-    draw();
-
-    State.timers.rafId = requestAnimationFrame(loop);
-  }
+ function loop(ts) {
+  if (!State.gameRunning) return;
+  const dt = (ts - lastTs) / 1000 || 0;
+  lastTs = ts;
+  const safeDt = Math.min(dt, 0.05);
+  update(safeDt);
+  draw();
+  State.timers.rafId = requestAnimationFrame(loop);
+}
 
   /* =====================================================
      ROUND FLOW
@@ -1717,12 +1717,9 @@ if (State.combo === 4) {
 
   function startCountdownThenPlay() {
     countdownEl.classList.remove("hidden");
-
     let c = Config.countdownStart;
     countdownEl.textContent = c;
-
     if (State.timers.countdownTimer) clearInterval(State.timers.countdownTimer);
-
     State.timers.countdownTimer = setInterval(() => {
       c--;
       if (c <= 0) {
@@ -1743,22 +1740,17 @@ if (State.combo === 4) {
     } 
     State.score = 0;
     State.timeLeft = Config.roundSeconds;
-
     State.combo = 0;
     State.comboTimer = 0;
-
     State.spawnTimerMs = 0;
-
     UI.setScore(State.score);
     UI.setTime(State.timeLeft);
-
     resetEntities();
     State.hitEffects.length = 0;
     State.floatingTexts.length = 0;
 
     // difficulty spawn rate
     State.spawnIntervalMs = Config.spawnIntervalMs[State.difficulty] || Config.spawnIntervalMs.medium;
-
     State.gameRunning = true;
 
     lastTs = 0;
@@ -1886,9 +1878,11 @@ if (infoBackBtn) {
   });
 }   
    
-if (menuShop) {   
-menuShop.addEventListener("click", () => {
-setScreen("shop");
+if (menuRewards) {
+  menuRewards.addEventListener("click", () => {
+    resetDailyMissionsIfNeeded();
+    renderDailyMissions();
+    openOverlay("missionsPanel");
   });
 }
    
@@ -1898,21 +1892,13 @@ if (menuRanks) {
   });
 }
    
-// menuRewards.addEventListener("click", () => {
-//  resetDailyMissionsIfNeeded();
-//  renderDailyMissions();
-//  openOverlay("missionsPanel");
-// });
-// closeMissions.addEventListener("click", () => {
-//   closeOverlay("missionsPanel");
-// });
-   
-// menuSettings.addEventListener("click", () => {
-//   openOverlay("settingsPanel");
-// });
-// closeSettings.addEventListener("click", () => {
-//   closeOverlay("settingsPanel");
-// });
+if (menuShop) {
+  menuShop.addEventListener("click", () => {
+    setScreen("game");
+    renderShop();
+    openOverlay("shopPanel");
+  });
+}
    
   /* =====================================================
      EVENTS - SHOP
