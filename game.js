@@ -43,8 +43,6 @@ async function unlockAudio() {
   const timeEl = document.getElementById("time");
   const startBtn = document.getElementById("startBtn");
   const countdownEl = document.getElementById("countdown"); 
-  const levelButtons = document.querySelectorAll(".level-btn");
-
   const shopBtn = document.getElementById("shopBtn");
   const shopPanel = document.getElementById("shopPanel");
   const closeShop = document.getElementById("closeShop");
@@ -503,13 +501,18 @@ function setScreen(name) {
     s.classList.remove("active");
   });
   const target = document.getElementById("screen-" + name);
-  if (target) target.classList.add("active");
+  if (!target) {
+    console.error("SCREEN NOT FOUND:", name);
+    return;
+  }
+  target.classList.add("active");
   closeOverlay();
   if (name === "game") {
     if (topbar) topbar.style.display = "grid";
   } else {
     if (topbar) topbar.style.display = "none";
   }
+  console.log("SCREEN:", name);
 }
 
 /* =====================================================
@@ -1873,9 +1876,11 @@ menuPlay.addEventListener("click", () => {
   setScreen("play");
 });
 
-menuInformation.addEventListener("click", () => {
-  setScreen("info");
-});
+if (menuInformation) {
+  menuInformation.addEventListener("click", () => {
+    setScreen("info");
+  });
+}
 
 if (infoBackBtn) {
   infoBackBtn.addEventListener("click", () => {
@@ -1910,29 +1915,15 @@ closeSettings.addEventListener("click", () => {
 });
    
   /* =====================================================
-     EVENTS - START
-  ===================================================== */
-startBtn.addEventListener("click", async () => {
-  if (!State.difficulty) return;
-  if (State.gameRunning) return;
-  startBtn.disabled = true;
-  if (!sound.unlocked) {
-    await sound.unlock();
-  }
-  sound.startAmbient();
-  startCountdownThenPlay();
-});
-   
-  /* =====================================================
      EVENTS - SHOP
   ===================================================== */
 shopBtn.addEventListener("click", () => {
   renderShop();
-  openShop();
+  openOverlay("shopPanel");
 });
 
 shopOverlay.addEventListener("click", () => {
-  closeShopPanel();
+  closeOverlay("shopPanel");
 });
    
   /* =====================================================
