@@ -1070,55 +1070,93 @@ body::after{
 }
 
 /* =========================
-   MISSIONS / INFO / SETTINGS PANELS
+   MISSIONS PAPYRUS WINDOW
 ========================= */
-.missions-panel{
+/* overlay background */
+#missionsPanel {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.85);
-  z-index: 400;
-  display:flex;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+}
+
+/* main window */
+.missions-window {
+  width: min(420px, 90%);
+  max-height: 80vh;
+  background: linear-gradient(
+    to bottom,
+    #f2e2b6,
+    #e4c98a
+  );
+  border-radius: 18px;
+  border: 4px solid #8b5e34;
+  padding: 16px;
+  display: flex;
   flex-direction: column;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.6),
+    inset 0 0 20px rgba(0,0,0,0.15);
 }
 
-.missions-header{
-  display:flex;
+/* header */
+.missions-header {
+  display: flex;
   justify-content: space-between;
-  align-items:center;
-  padding:20px;
-  border-bottom:1px solid rgba(255,255,255,0.1);
+  align-items: flex-start;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #8b5e34;
+  padding-bottom: 10px;
 }
 
-.missions-content{
-  flex:1;
-  padding:20px;
-  display:flex;
-  flex-direction:column;
-  gap:16px;
-  overflow-y:auto;
+.missions-title h2 {
+  margin: 0;
+  font-size: 18px;
+  color: #3b2a1a;
 }
 
-.mission-card{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:16px;
-  border-radius:14px;
-  background:rgba(255,255,255,0.05);
+.missions-gems {
+  font-size: 14px;
+  color: #5a3d28;
 }
 
-.mission-title{
-  font-weight:800;
+/* body */
+.missions-body {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.mission-desc{
-  font-size:13px;
-  opacity:0.7;
+/* cards */
+.mission-card {
+  background: rgba(255,255,255,0.4);
+  border: 2px solid #8b5e34;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.info-text{
-  font-size:16px;
-  line-height:1.6;
+.mission-title {
+  font-weight: 800;
+  color: #2a1c12;
+}
+
+.mission-desc {
+  font-size: 13px;
+  color: #5a3d28;
+}
+
+/* back button */
+.back-btn {
+  background: linear-gradient(180deg,#8b5e34,#5a3d28);
+  color: white;
+  border-radius: 10px;
 }
 
 /* =====================================================
