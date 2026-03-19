@@ -100,9 +100,13 @@ async function unlockAudio() {
   const dailyRewardBtn = document.getElementById("dailyRewardBtn");
   const watchAdBtn = document.getElementById("watchAdBtn"); 
   const menuInformation = document.getElementById("menuInfo");
-  const infoBackBtn = document.getElementById("infoBackBtn");
+ 
+   const infoBackBtn = document.getElementById("infoBackBtn");
+   if (!infoBackBtn) {
+    console.warn("infoBackBtn NOT FOUND");
+   }
+   
   const lastScoreEl = document.getElementById("lastScore");
-
   const rankUnlockOverlay = document.getElementById("rankUnlockOverlay");
   const rankUnlockName = document.getElementById("rankUnlockName");
   const rankUnlockIcon = document.getElementById("rankUnlockIcon");
@@ -1886,6 +1890,12 @@ menuPlay.addEventListener("click", () => {
 menuInformation.addEventListener("click", () => {
   setScreen("info");
 });
+
+if (infoBackBtn) {
+  infoBackBtn.addEventListener("click", () => {
+    setScreen("main");
+  });
+}   
    
 menuShop.addEventListener("click", () => {
   console.log("SHOP CLICKED");
