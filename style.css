@@ -449,11 +449,10 @@ canvas#game{
 /* =====================================================
    BACKGROUND PARALLAX LAYERS (Visual Polish Step 1)
 ===================================================== */
-#game-wrapper{
-  position: fixed;
+#screen-game #game-wrapper{
+  position: absolute;
   inset: 0;
   overflow: hidden;
-  z-index: 0;
 }
 
 /* Base background layers */
@@ -1325,7 +1324,7 @@ body::after{
 #screen-game {
   z-index: 1;
 }
-canvas#game {
+#screen-game canvas#game {
   position: absolute;
   inset: 0;
   z-index: 0;
