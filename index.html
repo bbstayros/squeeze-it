@@ -62,27 +62,58 @@
     </div>
   </div>
 
-  <!-- ================= Info Panel ================= -->
-  <div id="infoPanel" class="hidden missions-panel overlay">
-    <div class="missions-header">
-      <h2>How To Play</h2>
-      <button id="closeInfo" class="btn">Back</button>
+<!-- ================= INFO SCREEN ================= -->
+<div id="screen-info" class="screen">
+  <div class="info-screen">
+    <!-- TOP BAR -->
+    <div class="info-header">
+      <button id="infoBackBtn" class="btn">← Back</button>
+      <h2>HOW TO PLAY</h2>
     </div>
-    <div class="missions-content info-text">
-      <p>Tap the cavemen to score points.</p>
-      <p>
-        Red cavemen give points.<br>
-        Yellow cavemen break your combo.<br>
-        Spikes freeze you and remove time.
-      </p>
-      <p>
-        Build combos to earn more points and level up faster.
-      </p>
-      <p>
-        Complete missions and daily rewards to earn gems.
-      </p>
+    <!-- CONTENT -->
+    <div class="info-content">
+      <div class="info-section">
+        <h3>🎯 Objective</h3>
+        <p>
+          Tap the correct characters as fast as you can before time runs out.
+        </p>
+      </div>
+      <div class="info-section">
+        <h3>👥 Character Types</h3>
+        <div class="info-card">
+          <strong>🟢 Point Characters</strong>
+          <p>Give you points when tapped.</p>
+        </div>
+        <div class="info-card">
+          <strong>🛡 Shield Characters</strong>
+          <p>Resist your tap. Avoid them.</p>
+        </div>
+        <div class="info-card">
+          <strong>⚠ Attack Characters</strong>
+          <p>Damage you and reduce time.</p>
+        </div>
+        <div class="info-card">
+          <strong>⭐ Special Characters</strong>
+          <p>Give extra points.</p>
+        </div>
+      </div>
+      <div class="info-section">
+        <h3>🏁 Goal</h3>
+        <p>
+          React fast, avoid mistakes and reach the highest score possible.
+        </p>
+      </div>
+      <div class="info-section">
+        <h3>💡 Tips</h3>
+        <ul>
+          <li>Faster taps = higher score</li>
+          <li>Avoid wrong targets</li>
+          <li>Use special characters wisely</li>
+        </ul>
+      </div>
     </div>
   </div>
+</div>
 
   <!-- ================= SETTINGS PANEL ================= -->
   <div id="settingsPanel" class="hidden missions-panel overlay">
