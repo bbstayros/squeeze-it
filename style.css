@@ -911,9 +911,7 @@ body::after{
 
 /* Only main menu is centered */
 #screen-main.active {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: block;
 }
 
 #screen-main .main-menu {
@@ -1374,7 +1372,9 @@ canvas#game {
   display: flex;
   flex-direction: column;
   background: #0f1115;
+  z-index: 25;
 }
+
 /* HEADER */
 .info-header{
   display:flex;
@@ -1429,4 +1429,29 @@ canvas#game {
 .info-section li{
   margin-bottom:6px;
   opacity:0.9;
+}
+
+/* =========================
+   GLOBAL SCREEN SYSTEM (FIX)
+========================= */
+
+.screen {
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 5;
+}
+
+.screen.active {
+  display: block;
+}
+
+/* όλα τα screens πάνω από game */
+#screen-main,
+#screen-play,
+#screen-info,
+#screen-shop,
+#screen-ranks,
+#screen-rewards {
+  z-index: 20;
 }
