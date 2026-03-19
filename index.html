@@ -196,14 +196,22 @@
     </div>
   </div>
 
-  <!-- ================= MISSIONS PANEL ================= -->
-  <div id="missionsPanel" class="hidden missions-panel overlay">
+  <!-- ================= MISSIONS PANEL (NEW) ================= -->
+<div id="missionsPanel" class="overlay hidden">
+  <div class="missions-window">
+    <!-- HEADER -->
     <div class="missions-header">
-      <h2>Daily Missions</h2>
-      <button id="closeMissions" class="btn">Back</button>
+      <div class="missions-title">
+        <h2>Daily Missions</h2>
+        <div class="missions-gems">
+          Gems: <span id="missionsGemCount">0</span> 💎
+        </div>
+      </div>
+      <button id="closeMissions" class="btn back-btn">Back</button>
     </div>
-
-    <div class="missions-content">
+    <!-- BODY -->
+    <div class="missions-body">
+      <!-- υπάρχον reward -->
       <div class="mission-card">
         <div>
           <div class="mission-title">Daily Reward</div>
@@ -211,7 +219,7 @@
         </div>
         <button id="dailyRewardBtn" class="btn">Claim</button>
       </div>
-
+      <!-- ad reward -->
       <div class="mission-card">
         <div>
           <div class="mission-title">Watch Ad</div>
@@ -219,10 +227,11 @@
         </div>
         <button id="watchAdBtn" class="btn">+60 💎</button>
       </div>
-
+      <!-- dynamic missions -->
       <div id="dailyMissionList"></div>
     </div>
   </div>
+</div>
 
   <!-- ================= SETTINGS PANEL ================= -->
   <div id="settingsPanel" class="hidden missions-panel overlay">
