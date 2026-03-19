@@ -138,6 +138,30 @@
   </div>
 </div>
 
+<!-- ================= PLAY SCREEN ================= -->
+<div id="screen-play" class="screen">
+  <div class="play-screen">
+    <div class="play-header">
+      <button id="playBackBtn" class="btn">← Back</button>
+      <h2>Select Difficulty</h2>
+    </div>
+    <div class="play-content">
+      <button class="level-btn" data-level="easy">
+        🟢 EASY
+        <span>Relaxed gameplay</span>
+      </button>
+      <button class="level-btn" data-level="medium">
+        🟠 MEDIUM
+        <span>Balanced challenge</span>
+      </button>
+      <button class="level-btn" data-level="hard">
+        🔴 HARD
+        <span>Fast enemies</span>
+      </button>
+    </div>
+  </div>
+</div>  
+  
 <!-- ================= GAME SCREEN ================= -->
 <div id="screen-game" class="screen">
   <div id="game-wrapper">
@@ -196,7 +220,7 @@
         <div class="shop-category active" id="characters">
           <div class="shop-grid">
             <div class="shop-item">
-              <img src="assets/themes/caveman/finger-caveman.png">
+              <img src="assets/themes/caveman/caveman-finger.png">
               <div class="shop-item-name">Classic</div>
               <button class="shop-btn equipped">Equipped</button>
             </div>
@@ -268,29 +292,6 @@
     </div>
 
     <main class="wrap">
-      <div id="levelSelect" class="level-select">
-        <div class="level-select-inner">
-          <button id="backFromDifficulty" class="btn">← Back</button>
-          <h2>Select Difficulty</h2>
-
-          <div class="levels">
-            <button class="level-btn" data-level="easy">
-              <span class="level-title">🟢 EASY</span>
-              <span class="level-desc">Relaxed gameplay</span>
-            </button>
-
-            <button class="level-btn" data-level="medium">
-              <span class="level-title">🟠 MEDIUM</span>
-              <span class="level-desc">Balanced challenge</span>
-            </button>
-
-            <button class="level-btn" data-level="hard">
-              <span class="level-title">🔴 HARD</span>
-              <span class="level-desc">Fast enemies</span>
-            </button>
-          </div>
-        </div>
-      </div>
 
       <canvas id="game">
         Your browser does not support the HTML5 canvas.
