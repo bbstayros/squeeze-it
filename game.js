@@ -2054,7 +2054,8 @@ if (savedSound === "off") {
   await loadSprites();
   resize();
   draw();
-
+  setScreen("main");
+  
    // DEBUG GLOBAL ACCESS
 window.__DEBUG = {
   State,
