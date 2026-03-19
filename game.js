@@ -42,8 +42,7 @@ async function unlockAudio() {
   const topbar = document.querySelector(".topbar");
   const timeEl = document.getElementById("time");
   const startBtn = document.getElementById("startBtn");
-  const countdownEl = document.getElementById("countdown");
-  const levelSelect = document.getElementById("levelSelect");
+  const countdownEl = document.getElementById("countdown"); 
   const levelButtons = document.querySelectorAll(".level-btn");
 
   const shopBtn = document.getElementById("shopBtn");
@@ -96,7 +95,6 @@ async function unlockAudio() {
   const toggleSoundBtn = document.getElementById("toggleSoundBtn");
   const toggleVibrationBtn = document.getElementById("toggleVibrationBtn");
   const resetProgressBtn = document.getElementById("resetProgressBtn");
-  const backFromDifficulty = document.getElementById("backFromDifficulty");
   const dailyRewardBtn = document.getElementById("dailyRewardBtn");
   const watchAdBtn = document.getElementById("watchAdBtn"); 
   const menuInformation = document.getElementById("menuInfo");
@@ -1855,12 +1853,10 @@ if (State.doubleReady && adsRemaining > 0) {
   /* =====================================================
      EVENTS - DIFFICULTY
   ===================================================== */
-levelButtons.forEach((btn) => {
+document.querySelectorAll("#screen-play .level-btn").forEach((btn) => {
   btn.addEventListener("click", async () => {
     State.difficulty = btn.dataset.level;
-    levelButtons.forEach((b) => b.classList.remove("active"));
-    btn.classList.add("active");
-    levelSelect.classList.add("hidden");
+    setScreen("game");
     resize();
     if (!sound.unlocked) {
       await sound.unlock();
@@ -1870,21 +1866,11 @@ levelButtons.forEach((btn) => {
   });
 });
 
-   backFromDifficulty.addEventListener("click", () => {
-
-  levelSelect.classList.add("hidden");
-  setScreen("main");
-
-});
 /* =====================================================
    MAIN MENU EVENTS
 ===================================================== */
 menuPlay.addEventListener("click", () => {
-  console.log("PLAY CLICKED");
-  setScreen("game");
-  resize();
-  levelSelect.classList.remove("hidden");
-  if (topbar) topbar.style.display = "none";
+  setScreen("play");
 });
 
 menuInformation.addEventListener("click", () => {
@@ -1898,12 +1884,10 @@ if (infoBackBtn) {
 }   
    
 menuShop.addEventListener("click", () => {
-  console.log("SHOP CLICKED");
-  setScreen("game");
-  resize();
   renderShop();
   openOverlay("shopPanel");
 });
+   
 menuRanks.addEventListener("click", () => {
   setScreen("ranks");
   openRanks();
@@ -1924,20 +1908,21 @@ menuSettings.addEventListener("click", () => {
 closeSettings.addEventListener("click", () => {
   closeOverlay("settingsPanel");
 });
+   
   /* =====================================================
      EVENTS - START
   ===================================================== */
-  startBtn.addEventListener("click", async () => {
-    if (!State.difficulty) return;
-    levelSelect.classList.add("hidden");
-    if (State.gameRunning) return;
-    startBtn.disabled = true;
-    if (!sound.unlocked) {
+startBtn.addEventListener("click", async () => {
+  if (!State.difficulty) return;
+  if (State.gameRunning) return;
+  startBtn.disabled = true;
+  if (!sound.unlocked) {
     await sound.unlock();
-}
-sound.startAmbient();
-startCountdownThenPlay();
-  });
+  }
+  sound.startAmbient();
+  startCountdownThenPlay();
+});
+   
   /* =====================================================
      EVENTS - SHOP
   ===================================================== */
@@ -1945,12 +1930,11 @@ shopBtn.addEventListener("click", () => {
   renderShop();
   openShop();
 });
- closeShop.addEventListener("click", () => {
-  closeShopPanel();
-});
+
 shopOverlay.addEventListener("click", () => {
   closeShopPanel();
 });
+   
   /* =====================================================
      EVENTS - MILESTONES
   ===================================================== */
@@ -1961,6 +1945,7 @@ shopOverlay.addEventListener("click", () => {
   closeMilestones.addEventListener("click", () => {
   setScreen("main");
 });
+   
   /* =====================================================
      EVENTS - END PANEL
   ===================================================== */
@@ -1990,6 +1975,7 @@ shopOverlay.addEventListener("click", () => {
   closeOverlay("endPanel");
   setScreen("main");
   });
+   
    /* =====================================================
      EVENTS - SOUND
   ===================================================== */ 
@@ -2031,6 +2017,7 @@ shopOverlay.addEventListener("click", () => {
       State.currentThemeKey = State.currentThemeKey === "classic" ? "zombie" : "classic";
     }
   });
+   
   /* =====================================================
      INIT
   ===================================================== */
