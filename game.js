@@ -90,10 +90,6 @@ async function unlockAudio() {
   const missionsPanel = document.getElementById("missionsPanel");
   const closeMissions = document.getElementById("closeMissions");
   const dailyMissionList = document.getElementById("dailyMissionList");
-
-  const infoPanel = document.getElementById("infoPanel");
-  const closeInfo = document.getElementById("closeInfo");
-
   const settingsPanel = document.getElementById("settingsPanel");
   const closeSettings = document.getElementById("closeSettings");
 
@@ -104,6 +100,7 @@ async function unlockAudio() {
   const dailyRewardBtn = document.getElementById("dailyRewardBtn");
   const watchAdBtn = document.getElementById("watchAdBtn"); 
   const menuInformation = document.getElementById("menuInfo");
+  const infoBackBtn = document.getElementById("infoBackBtn");
   const lastScoreEl = document.getElementById("lastScore");
 
   const rankUnlockOverlay = document.getElementById("rankUnlockOverlay");
@@ -505,7 +502,7 @@ function setScreen(name) {
   });
   const target = document.getElementById("screen-" + name);
   if (target) target.classList.add("active");
-  // special UI logic
+  closeOverlay();
   if (name === "game") {
     if (topbar) topbar.style.display = "grid";
   } else {
@@ -1885,13 +1882,10 @@ menuPlay.addEventListener("click", () => {
   levelSelect.classList.remove("hidden");
   if (topbar) topbar.style.display = "none";
 });
-   
+
 menuInformation.addEventListener("click", () => {
-  openOverlay("infoPanel");
+  setScreen("info");
 });
-closeInfo.addEventListener("click", () => {
-  closeOverlay("infoPanel");
-}); 
    
 menuShop.addEventListener("click", () => {
   console.log("SHOP CLICKED");
