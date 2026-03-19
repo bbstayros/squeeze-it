@@ -1322,14 +1322,13 @@ body::after{
 /* =========================
    SCREEN SYSTEM (NEW)
 ========================= */
-.screen {
-  position: fixed;
-  inset: 0;
-  display: none;
+#screen-game {
   z-index: 1;
 }
-.screen.active {
-  display: block;
+canvas#game {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
 }
 
 /* modals (end, rank unlock etc) */
