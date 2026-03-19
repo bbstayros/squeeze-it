@@ -15,6 +15,7 @@ const AUDIO_MANIFEST = [
   { name: "spike", url: "assets/audio/spike.mp3" },
   { name: "claim", url: "assets/audio/claim.mp3" },
   { name: "levelup", url: "assets/audio/levelup.mp3" },
+  { name: "scroll", url: "assets/audio/scroll.mp3" }, 
   { name: "ambient", url: "assets/audio/ambient.mp3" }
 ];
 
