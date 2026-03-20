@@ -4,10 +4,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 /* =====================================================
    SOUND SYSTEM
 ===================================================== */
-
 const sound = new SoundManager();
 sound.init();
-
 const AUDIO_MANIFEST = [
   { name: "tap", url: "assets/audio/tap.mp3" },
   { name: "combo", url: "assets/audio/combo.mp3" },
@@ -20,14 +18,12 @@ const AUDIO_MANIFEST = [
 ];
 
 sound.loadAll(AUDIO_MANIFEST);
-
 let audioUnlocked = false;
 
 // Mobile unlock
 async function unlockAudio() {
   if (audioUnlocked) return;
   audioUnlocked = true;
-
   await sound.unlock();
   sound.startAmbient();
 }
@@ -35,10 +31,8 @@ async function unlockAudio() {
    /* =====================================================
      DOM
   ===================================================== */
-
   const canvas = document.getElementById("game");
   const ctx = canvas.getContext("2d");
-
   const scoreEl = document.getElementById("score");
   const topbar = document.querySelector(".topbar");
   const timeEl = document.getElementById("time");
@@ -55,12 +49,10 @@ async function unlockAudio() {
    
   const shopOverlay = document.getElementById("shopOverlay");
   const gemCount = document.getElementById("gemCount");
-
   const levelDisplay = document.getElementById("levelDisplay");
   const menuLevelDisplay = document.getElementById("menuLevel"); 
   const menuXpFill = document.getElementById("menuXpFill");
   const xpFill = document.getElementById("xpFill");
-
   const milestonesBtn = document.getElementById("milestonesBtn");
   const milestoneScreen = document.getElementById("milestoneScreen");
   const milestoneList = document.getElementById("milestoneList");
@@ -108,6 +100,7 @@ async function unlockAudio() {
   const rankUnlockName = document.getElementById("rankUnlockName");
   const rankUnlockIcon = document.getElementById("rankUnlockIcon");
   const rankFlash = document.getElementById("rankFlash"); 
+  const missionsWindow = document.querySelector(".missions-window"); 
    /* =====================================================
      PARALLAX BACKGROUND (Visual Only)
   ===================================================== */
@@ -525,6 +518,17 @@ function openOverlay(id) {
     el.classList.remove("hidden");
     el.classList.add("active");
   }
+  // 🎬 PAPYRUS ANIMATION
+  if (id === "missionsPanel" && missionsWindow) {
+    // reset πρώτα
+    missionsWindow.classList.remove("open");
+    // force reflow (important για restart animation)
+    missionsWindow.offsetHeight;
+    // play animation
+    missionsWindow.classList.add("open");
+    // 🔊 SOUND
+    sound._playBuffer("scroll", { volume: 0.8 });
+  }
 }
 
 function closeOverlay(id = null) {
@@ -534,6 +538,9 @@ function closeOverlay(id = null) {
   if (el) {
     el.classList.remove("active");
     el.classList.add("hidden");
+  }
+  if (targetId === "missionsPanel" && missionsWindow) {
+    missionsWindow.classList.remove("open");
   }
   if (!id || id === currentOverlay) {
     currentOverlay = null;
