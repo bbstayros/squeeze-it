@@ -1077,29 +1077,51 @@ body::after{
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.7);
-  display: flex;
+  display: none; /* <-- IMPORTANT */
   align-items: center;
   justify-content: center;
   z-index: 500;
 }
 
+#missionsPanel.active {
+  display: flex;
+}
+
 /* main window */
 .missions-window {
   width: min(420px, 90%);
-  max-height: 80vh;
-  background: linear-gradient(
-    to bottom,
-    #f2e2b6,
-    #e4c98a
-  );
-  border-radius: 18px;
-  border: 4px solid #8b5e34;
-  padding: 16px;
+  aspect-ratio: 3 / 4;
+  background: url("assets/ui/parchment.png") center/contain no-repeat;
+  padding: 60px 30px;
+  pointer-events: none;
   display: flex;
   flex-direction: column;
-  box-shadow:
-    0 20px 60px rgba(0,0,0,0.6),
-    inset 0 0 20px rgba(0,0,0,0.15);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+  transform-origin: top center;
+  /* αρχική κατάσταση (κλειστό) */
+  transform: scaleY(0.2) scaleX(0.85);
+  opacity: 0;
+}
+
+/* =========================
+   PAPYRUS OPEN ANIMATION
+========================= */
+.missions-window.open {
+  pointer-events: auto;
+  animation: scrollOpen 0.5s ease-out forwards;
+}
+@keyframes scrollOpen {
+  0% {
+    transform: scaleY(0.2) scaleX(0.85);
+    opacity: 0;
+  }
+  60% {
+    transform: scaleY(1.05) scaleX(1.02);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(1) scaleX(1);
+  }
 }
 
 /* header */
@@ -1121,6 +1143,8 @@ body::after{
 .missions-gems {
   font-size: 14px;
   color: #5a3d28;
+  font-family: serif;
+  letter-spacing: 1px;
 }
 
 /* body */
@@ -1133,7 +1157,8 @@ body::after{
 
 /* cards */
 .mission-card {
-  background: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(2px);
   border: 2px solid #8b5e34;
   border-radius: 12px;
   padding: 12px;
