@@ -613,7 +613,9 @@ function updateXPUI() {
       break;
     }
   }
+  if (leveledUp) {
   UI.toast("LEVEL UP! 🔥 Level " + State.playerLevel);
+}
   Storage.saveXP();
   updateXPUI();
   if (leveledUp) {
