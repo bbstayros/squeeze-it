@@ -515,20 +515,17 @@ function openOverlay(id) {
   currentOverlay = id;
   const el = document.getElementById(id);
   if (el) {
-    el.classList.remove("hidden");
     el.classList.add("active");
   }
   // 🎬 PAPYRUS ANIMATION
-  if (id === "missionsPanel" && missionsWindow) {
-    // reset πρώτα
+if (id === "missionsPanel" && missionsWindow) {
+  setTimeout(() => {
     missionsWindow.classList.remove("open");
-    // force reflow (important για restart animation)
     missionsWindow.offsetHeight;
-    // play animation
     missionsWindow.classList.add("open");
-    // 🔊 SOUND
     sound._playBuffer("scroll", { volume: 0.8 });
-  }
+  }, 10);
+}
 }
 
 function closeOverlay(id = null) {
@@ -537,7 +534,6 @@ function closeOverlay(id = null) {
   const el = document.getElementById(targetId);
   if (el) {
     el.classList.remove("active");
-    el.classList.add("hidden");
   }
   if (targetId === "missionsPanel" && missionsWindow) {
     missionsWindow.classList.remove("open");
