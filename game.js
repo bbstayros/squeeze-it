@@ -77,25 +77,16 @@ async function unlockAudio() {
   const menuShop = document.getElementById("menuShop");
   const menuRanks = document.getElementById("menuRanks");
   const menuRewards = document.getElementById("menuRewards");
-   menuRewards.addEventListener("click", () => {
-     console.log("CLICK REWARDS"); // debug
-     setScreen("missions");
-   });
-  const menuSettings = document.getElementById("menuSettings");
-  const missionsPanel = document.getElementById("missionsPanel");
-  const closeMissions = document.getElementById("closeMissions");
-  const dailyMissionList = document.getElementById("dailyMissionList");
+  const menuSettings = document.getElementById("menuSettings"); 
   const settingsPanel = document.getElementById("settingsPanel");
   const closeSettings = document.getElementById("closeSettings");
-
   const toggleSoundBtn = document.getElementById("toggleSoundBtn");
   const toggleVibrationBtn = document.getElementById("toggleVibrationBtn");
   const resetProgressBtn = document.getElementById("resetProgressBtn");
   const dailyRewardBtn = document.getElementById("dailyRewardBtn");
   const watchAdBtn = document.getElementById("watchAdBtn"); 
-  const menuInformation = document.getElementById("menuInfo");
- 
-   const infoBackBtn = document.getElementById("infoBackBtn");
+  const menuInformation = document.getElementById("menuInfo"); 
+  const infoBackBtn = document.getElementById("infoBackBtn");
    if (!infoBackBtn) {
     console.warn("infoBackBtn NOT FOUND");
    }
@@ -105,7 +96,6 @@ async function unlockAudio() {
   const rankUnlockName = document.getElementById("rankUnlockName");
   const rankUnlockIcon = document.getElementById("rankUnlockIcon");
   const rankFlash = document.getElementById("rankFlash"); 
-  const missionsWindow = document.querySelector(".missions-window"); 
    /* =====================================================
      PARALLAX BACKGROUND (Visual Only)
   ===================================================== */
@@ -522,15 +512,6 @@ function openOverlay(id) {
   if (el) {
     el.classList.add("active");
   }
-  // 🎬 PAPYRUS ANIMATION
-if (id === "missionsPanel" && missionsWindow) {
-  setTimeout(() => {
-    missionsWindow.classList.remove("open");
-    missionsWindow.offsetHeight;
-    missionsWindow.classList.add("open");
-    sound._playBuffer("scroll", { volume: 0.8 });
-  }, 10);
-}
 }
 
 function closeOverlay(id = null) {
@@ -539,9 +520,6 @@ function closeOverlay(id = null) {
   const el = document.getElementById(targetId);
   if (el) {
     el.classList.remove("active");
-  }
-  if (targetId === "missionsPanel" && missionsWindow) {
-    missionsWindow.classList.remove("open");
   }
   if (!id || id === currentOverlay) {
     currentOverlay = null;
@@ -978,9 +956,9 @@ if (remaining > 0) {
     }
   }
 function renderDailyMissions() {
-const container = document.getElementById("dailyMissionList");
-if (!container) return;
-  dailyMissionList.innerHTML = "";
+const dailyMissionList = document.getElementById("missionsList");
+if (!dailyMissionList) return;
+dailyMissionList.innerHTML = "";
 
   const missions = [
 
@@ -1889,13 +1867,21 @@ if (infoBackBtn) {
     setScreen("main");
   });
 }   
+
+const missionsBackBtn = document.getElementById("missionsBackBtn");
+if (missionsBackBtn) {
+  missionsBackBtn.addEventListener("click", () => {
+    setScreen("main");
+  });
+}
    
 if (menuRewards) {
   menuRewards.addEventListener("click", () => {
-    resetDailyMissionsIfNeeded();
-    renderDailyMissions();
-    openOverlay("missionsPanel");
-  });
+  resetDailyMissionsIfNeeded();
+  renderDailyMissions();
+  setScreen("missions");
+  sound._playBuffer("scroll", { volume: 0.8 });
+});
 }
    
 if (menuRanks) {
