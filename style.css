@@ -212,6 +212,7 @@ canvas#game{
 }
 #shopPanel.active{
   z-index: 500;
+  display: block;
 }
 
 #shopPanel h2{
@@ -325,6 +326,10 @@ canvas#game{
     transparent 70%
   );
   animation: xpShine 2.8s linear infinite;
+}
+
+.xp-fill {
+  position: relative;
 }
 
 @keyframes xpShine{
@@ -1126,12 +1131,11 @@ body::after{
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(
-    circle at center,
-    transparent 60%,
-    rgba(0,0,0,0.25)
-  );
   pointer-events: none;
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,0.2), transparent 40%),
+    radial-gradient(circle at bottom right, rgba(0,0,0,0.3), transparent 50%),
+    radial-gradient(circle at center, transparent 60%, rgba(0,0,0,0.25));
 }
 
 .missions-panel::after {
@@ -1249,6 +1253,55 @@ body::after{
 .missions-card-text {
   font-size: 13px;
   margin-bottom: 10px;
+}
+
+.mission-action-btn:active {
+  transform: scale(0.92);
+  box-shadow:
+    0 2px 6px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.mission-claim-btn.claimed {
+  background: linear-gradient(#888,#555);
+  color: #ddd;
+  cursor: default;
+  opacity: 0.7;
+}
+
+.missions-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.missions-card:active {
+  transform: scale(0.97);
+  box-shadow:
+    0 0 12px rgba(255,255,255,0.15),
+    0 4px 10px rgba(0,0,0,0.25);
+}
+
+.missions-body {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+#screen-missions.active .missions-panel {
+  animation: missionsOpen 0.35s ease;
+}
+
+@keyframes missionsOpen {
+  0% {
+    transform: scale(0.8) translateY(40px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.missions-back-btn:active {
+  transform: scale(0.9);
 }
 
 /* BUTTONS */
@@ -1544,18 +1597,8 @@ body::after{
   display: flex !important;
 }
 
-#screen-game {
-  z-index: 1;
-}
-
 #screen-game.active {
   display: block !important;
-}
-
-canvas#game {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
 }
 
 /* =====================================================
@@ -1635,7 +1678,7 @@ canvas#game {
   position: fixed;
   inset: 0;
   display: none;
-  z-index: 5;
+  z-index: 20;
 }
 
 .screen.active {
@@ -1648,6 +1691,3 @@ canvas#game {
 #screen-info,
 #screen-shop,
 #screen-ranks,
-#screen-rewards {
-  z-index: 20;
-}
