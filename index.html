@@ -196,39 +196,52 @@
     </div>
   </div>
 
-  <!-- ================= MISSIONS PANEL (NEW) ================= -->
-<div id="missionsPanel" class="overlay">
-  <div class="missions-window">
-    <!-- HEADER -->
-    <div class="missions-header">
-      <div class="missions-title">
-        <h2>Daily Missions</h2>
-        <div class="missions-gems">
-          Gems: <span id="missionsGemCount">0</span> 💎
+<!-- ================= MISSIONS SCREEN ================= -->
+<div id="screen-missions" class="screen">
+  <div class="missions-wrap">
+    <div class="missions-panel" id="missionsPanelScreen">
+      <!-- HEADER -->
+      <div class="missions-header">
+        <div class="missions-header-left">
+          <h2 class="missions-title">Daily Missions</h2>
+          <div class="missions-gems">
+            💎 <span id="missionsGemCount">0</span>
+          </div>
+        </div>
+        <button id="missionsBackBtn" class="missions-back-btn">←</button>
+      </div>
+      <!-- BODY -->
+      <div class="missions-body">
+        <!-- DAILY REWARD -->
+        <div class="missions-card">
+          <div class="missions-card-top">
+            <h3>Daily Reward</h3>
+            <span class="missions-badge">FREE</span>
+          </div>
+          <p class="missions-card-text">Claim your daily reward</p>
+          <button id="dailyRewardBtn" class="mission-action-btn">
+            Claim Reward
+          </button>
+        </div>
+        <!-- WATCH AD -->
+        <div class="missions-card">
+          <div class="missions-card-top">
+            <h3>Watch Ad</h3>
+            <span class="missions-badge">BONUS</span>
+          </div>
+          <p class="missions-card-text">Watch ad to earn gems</p>
+          <button id="watchAdBtn" class="mission-action-btn alt">
+            +60 💎
+          </button>
+        </div>
+        <!-- MISSIONS LIST -->
+        <div class="missions-list-block">
+          <div class="missions-list-header">
+            <h3>Today’s Missions</h3>
+          </div>
+          <div id="missionsList" class="missions-list"></div>
         </div>
       </div>
-      <button id="closeMissions" class="btn back-btn">Back</button>
-    </div>
-    <!-- BODY -->
-    <div class="missions-body">
-      <!-- υπάρχον reward -->
-      <div class="mission-card">
-        <div>
-          <div class="mission-title">Daily Reward</div>
-          <div class="mission-desc">Login bonus</div>
-        </div>
-        <button id="dailyRewardBtn" class="btn">Claim</button>
-      </div>
-      <!-- ad reward -->
-      <div class="mission-card">
-        <div>
-          <div class="mission-title">Watch Ad</div>
-          <div class="mission-desc">Get free gems</div>
-        </div>
-        <button id="watchAdBtn" class="btn">+60 💎</button>
-      </div>
-      <!-- dynamic missions -->
-      <div id="dailyMissionList"></div>
     </div>
   </div>
 </div>
