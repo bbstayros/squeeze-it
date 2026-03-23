@@ -1,6 +1,7 @@
 import { SoundManager } from "./sound.js";
 document.addEventListener("DOMContentLoaded", async () => {
-
+let canvasRect;
+let SPRITE_SCALE = 1;   
 /* =====================================================
    SOUND SYSTEM
 ===================================================== */
@@ -548,12 +549,14 @@ function closeOverlay(id = null) {
 ===================================================== */
   function resize() {
     const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-    const rect = canvas.getBoundingClientRect();
+    canvasRect = canvas.getBoundingClientRect();
+    const rect = canvasRect;
     State.W = Math.floor(rect.width);
     State.H = Math.floor(rect.height);
     canvas.width = Math.floor(State.W * dpr);
     canvas.height = Math.floor(State.H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    SPRITE_SCALE = Math.max(1.4, State.H / 650); 
   }
   window.addEventListener("resize", resize);
 
@@ -1303,17 +1306,14 @@ function openRanks() {
       }
 
       e.x += e.vx * dt;
-      if(Math.random() < 0.05){
-State.footprints.push({
-  x:e.x,
-  y:e.y + e.r*1.9,
-  rot: Math.atan2(e.vy,e.vx),
-  alpha:0.8
-});
-        if(State.footprints.length > 20){
-         State.footprints.shift();
-        }
-      } 
+if (State.footprints.length < 25 && Math.random() < 0.05) {
+  State.footprints.push({
+    x:e.x,
+    y:e.y + e.r*1.9,
+    rot: Math.atan2(e.vy,e.vx),
+    alpha:0.8
+  });
+} 
       e.walkPhase += dt * 8;
       e.y += e.vy * dt;
 
@@ -1470,8 +1470,7 @@ for (const e of State.entities) {
 
   const frame = frames[e.frameIndex % frames.length];
   ctx.save();
-  const spriteScale = Math.max(1.4, State.H / 650);
-  const size = e.r * 2 * spriteScale;
+  const size = e.r * 2 * SPRITE_SCALE;
 
   if (flip) {
     ctx.scale(-1, 1);
@@ -1561,7 +1560,7 @@ for(const t of State.tapEffects){
      INPUT / HIT DETECTION
   ===================================================== */
 function getPointerPos(evt) {
-  const rect = canvas.getBoundingClientRect();
+  const rect = canvasRect;
   const clientX = evt.touches && evt.touches[0]
     ? evt.touches[0].clientX
     : evt.clientX;
@@ -1749,6 +1748,8 @@ if (State.combo === 4) {
     State.combo = 0;
     State.comboTimer = 0;
     State.spawnTimerMs = 0;
+    State.combo4Count = 0;
+    State.combo4StartTime = null;
     UI.setScore(State.score);
     UI.setTime(State.timeLeft);
     resetEntities();
