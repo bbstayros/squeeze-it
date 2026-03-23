@@ -1093,6 +1093,7 @@ body::after{
   width: 100%;
   max-width: 420px;
   max-height: 92vh;
+  position: relative;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -1101,9 +1102,30 @@ body::after{
   filter: contrast(1.05) brightness(0.98);
   border: none;
   box-shadow:
-    0 20px 60px rgba(0,0,0,0.6);
+  0 25px 80px rgba(0,0,0,0.7),
+  inset 0 0 40px rgba(0,0,0,0.25);
   color: #4c2f12;
   transform-origin: top;
+}
+
+.missions-panel::before,
+.missions-panel::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 40px;
+  pointer-events: none;
+}
+
+.missions-panel::before {
+  top: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.25), transparent);
+}
+
+.missions-panel::after {
+  bottom: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.25), transparent);
 }
 
 /* OPEN ANIMATION */
@@ -1181,7 +1203,7 @@ body::after{
   position: relative;
   width: 100%;
   padding: 16px;
-  background: rgba(255,248,231,0.75);
+  background: transparent;
   border-radius: 16px;
   overflow-y: auto;
   flex: 1;
