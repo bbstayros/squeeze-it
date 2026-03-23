@@ -974,7 +974,8 @@ if (remaining > 0) {
     }
   }
 function renderDailyMissions() {
-
+const container = document.getElementById("dailyMissionList");
+if (!container) return;
   dailyMissionList.innerHTML = "";
 
   const missions = [
