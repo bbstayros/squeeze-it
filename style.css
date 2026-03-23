@@ -462,7 +462,7 @@ canvas#game{
   height: 120%;
   top: -10%;
   left: -10%;
-  pointer-events: none;
+  pointer-events: auto;
   will-change: transform;
 }
 
@@ -1094,6 +1094,8 @@ body::after{
   flex-direction: column;
   gap: 20px;
   transform-origin: top center;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
   opacity: 0;
   transform: scale(0.7) rotateX(30deg);
   pointer-events: none;
