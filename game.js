@@ -77,6 +77,9 @@ async function unlockAudio() {
   const menuShop = document.getElementById("menuShop");
   const menuRanks = document.getElementById("menuRanks");
   const menuRewards = document.getElementById("menuRewards");
+   menuRewards.addEventListener("click", () => {
+    setScreen("missions");
+   }); 
   const menuSettings = document.getElementById("menuSettings");
   const missionsPanel = document.getElementById("missionsPanel");
   const closeMissions = document.getElementById("closeMissions");
