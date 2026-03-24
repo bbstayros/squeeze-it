@@ -484,6 +484,7 @@ function setScreen(name) {
   currentScreen = name;
   document.querySelectorAll(".screen").forEach(s => {
     s.classList.remove("active");
+    s.style.pointerEvents = "none";
   });
   const target = document.getElementById("screen-" + name);
   if (!target) {
@@ -491,13 +492,15 @@ function setScreen(name) {
     return;
   }
   target.classList.add("active");
+  target.style.pointerEvents = "auto";
   closeOverlay();
   if (name === "game") {
     if (topbar) topbar.style.display = "grid";
+    resize();
   } else {
     if (topbar) topbar.style.display = "none";
   }
-  console.log("SCREEN SWITCH →", name); 
+  console.log("SCREEN SWITCH →", name);
 }
 
 /* =====================================================
@@ -812,29 +815,38 @@ function incrementAdWatchCount() {
     Storage.saveGems();
     localStorage.setItem(Config.DAILY_REWARD_KEY, Date.now());
     localStorage.setItem(Config.STREAK_KEY, streak);
+    const dailyRewardBtn = document.getElementById("dailyRewardBtn");
+    if (dailyRewardBtn) {
+      dailyRewardBtn.disabled = true;
+      dailyRewardBtn.textContent = "Claimed";
+    } 
 
     UI.toast("Day " + streak + " Reward: +" + reward + " 💎");
     renderShop();
   }
 
- function watchAdReward() {
+function watchAdReward() {
   const count = getAdWatchCount();
-
   if (count >= Config.AD_DAILY_LIMIT) {
     UI.toast("Daily Ad Limit Reached 🚫");
     return;
   }
-
+  if (watchAdBtn) {
+    watchAdBtn.disabled = true;
+    watchAdBtn.textContent = "Loading...";
+  }
   UI.toast("Watching Ad...");
-
   setTimeout(() => {
     State.totalGems += Config.AD_REWARD_AMOUNT;
     Storage.saveGems();
-
     incrementAdWatchCount();
-
     UI.toast("Ad Reward: +" + Config.AD_REWARD_AMOUNT + " 💎");
     renderShop();
+    UI.setGems(State.totalGems);
+    if (watchAdBtn) {
+      watchAdBtn.disabled = false;
+      watchAdBtn.textContent = "+60 💎";
+    }
   }, 1500);
 }
 
@@ -1543,7 +1555,7 @@ for(const t of State.tapEffects){
      INPUT / HIT DETECTION
   ===================================================== */
 function getPointerPos(evt) {
-  const rect = canvasRect;
+  const rect = canvas.getBoundingClientRect();
   const clientX = evt.touches && evt.touches[0]
     ? evt.touches[0].clientX
     : evt.clientX;
@@ -1878,11 +1890,31 @@ if (missionsBackBtn) {
 if (menuRewards) {
   menuRewards.addEventListener("click", () => {
   resetDailyMissionsIfNeeded();
+  UI.setGems(State.totalGems);   
   renderDailyMissions();
   setScreen("missions");
   sound._playBuffer("scroll", { volume: 0.8 });
 });
 }
+
+/* =====================================================
+   MISSIONS BUTTONS
+===================================================== */
+if (dailyRewardBtn) {
+  dailyRewardBtn.addEventListener("click", () => {
+    claimDailyReward();
+    UI.setGems(State.totalGems); 
+    renderDailyMissions();
+  });
+}
+
+if (watchAdBtn) {
+  watchAdBtn.addEventListener("click", () => {
+    watchAdReward();
+    UI.setGems(State.totalGems); 
+    renderDailyMissions();
+  });
+}   
    
 if (menuRanks) {
   menuRanks.addEventListener("click", () => {
