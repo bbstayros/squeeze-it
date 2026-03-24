@@ -1705,7 +1705,8 @@ body::after{
 #screen-play,
 #screen-info,
 #screen-shop,
-#screen-ranks,
+#screen-ranks {
+}
 
 .play-content.center{
   display:flex;
