@@ -22,6 +22,9 @@
             </div>
           </div>
         </div>
+        <div class="menu-gems">
+          💎<span id="menuGemCount">0</span>
+        </div>
         <button id="menuSettings" class="menu-settings">⚙ Settings</button>
       </div>
 
@@ -101,7 +104,7 @@
         <h2>Select Difficulty</h2>
       </div>
 
-      <div class="play-content">
+      <div class="play-content center">
         <button class="level-btn" data-level="easy">
           🟢 EASY
           <span>Relaxed gameplay</span>
@@ -133,29 +136,12 @@
         Your browser does not support the HTML5 canvas.
       </canvas>
 
-      <header class="topbar">
-        <div class="topbar-left">
-          <div class="stat">Score: <span id="score">0</span></div>
-          <div class="stat">Time: <span id="time">45</span>s</div>
-        </div>
-
-        <div class="topbar-center">
-          <button id="startBtn" class="btn">Start</button>
-        </div>
-
-        <div class="topbar-right">
-          <button id="shopBtn" class="btn">Shop</button>
-          <button id="milestonesBtn" class="btn">Milestones</button>
-          <button id="soundToggle" class="btn-sound" aria-label="Sound toggle">🔊</button>
-        </div>
-
-        <div class="xp-container">
-          <div class="xp-label">Level <span id="levelDisplay">1</span></div>
-          <div class="xp-bar">
-            <div id="xpFill" class="xp-fill"></div>
-          </div>
-        </div>
-      </header>
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="stat">Score: <span id="score">0</span></div>
+    <div class="stat">Time: <span id="time">45</span>s</div>
+  </div>
+</header>
 
       <main class="wrap">
         <div id="countdown" class="countdown hidden">3</div>
