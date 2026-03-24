@@ -1742,3 +1742,7 @@ body::after{
 .level-btn:hover{
   transform: translateY(-4px) scale(1.05);
 }
+
+canvas#game{
+  touch-action: none;
+}
