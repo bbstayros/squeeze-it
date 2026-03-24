@@ -50,6 +50,7 @@ async function unlockAudio() {
    
   const shopOverlay = document.getElementById("shopOverlay");
   const gemCount = document.getElementById("gemCount");
+  const missionsGemCount = document.getElementById("missionsGemCount");
   const levelDisplay = document.getElementById("levelDisplay");
   const menuLevelDisplay = document.getElementById("menuLevel"); 
   const menuXpFill = document.getElementById("menuXpFill");
@@ -403,7 +404,10 @@ async function loadSprites() {
       timeEl.textContent = v;
     },
     setGems(v) {
-      gemCount.textContent = v;
+     gemCount.textContent = v;
+      if (missionsGemCount) {
+        missionsGemCount.textContent = v; // 🔥 FIX
+      }
     },
     setFrozen(isFrozen) {
       canvas.style.filter = isFrozen ? "grayscale(1) blur(2px)" : "none";
@@ -500,7 +504,6 @@ function setScreen(name) {
   } else {
     if (topbar) topbar.style.display = "none";
   }
-  console.log("SCREEN SWITCH →", name);
 }
 
 /* =====================================================
@@ -811,8 +814,8 @@ function incrementAdWatchCount() {
 
     const reward = Config.STREAK_REWARDS[streak - 1];
     State.totalGems += reward;
-
     Storage.saveGems();
+    UI.setGems(State.totalGems);
     localStorage.setItem(Config.DAILY_REWARD_KEY, Date.now());
     localStorage.setItem(Config.STREAK_KEY, streak);
     const dailyRewardBtn = document.getElementById("dailyRewardBtn");
@@ -822,7 +825,7 @@ function incrementAdWatchCount() {
     } 
 
     UI.toast("Day " + streak + " Reward: +" + reward + " 💎");
-    renderShop();
+    renderDailyMissions();
   }
 
 function watchAdReward() {
@@ -839,13 +842,12 @@ function watchAdReward() {
   setTimeout(() => {
     State.totalGems += Config.AD_REWARD_AMOUNT;
     Storage.saveGems();
+    UI.setGems(State.totalGems);
     incrementAdWatchCount();
     UI.toast("Ad Reward: +" + Config.AD_REWARD_AMOUNT + " 💎");
-    renderShop();
-    UI.setGems(State.totalGems);
+    renderDailyMissions();
     if (watchAdBtn) {
       watchAdBtn.disabled = false;
-      watchAdBtn.textContent = "+60 💎";
     }
   }, 1500);
 }
@@ -968,6 +970,29 @@ if (remaining > 0) {
     }
   }
 function renderDailyMissions() {
+const canClaim = canClaimDailyReward();   
+const count = getAdWatchCount();
+const max = Config.AD_DAILY_LIMIT;
+
+if (watchAdBtn) {
+  if (count >= max) {
+    watchAdBtn.textContent = "Come back tomorrow";
+    watchAdBtn.disabled = true;
+    watchAdBtn.style.background = "#777";
+  } else {
+    watchAdBtn.textContent = `+60 💎 (${count}/${max})`;
+    watchAdBtn.disabled = false;
+  }
+}   
+if (dailyRewardBtn) {
+  if (canClaim) {
+    dailyRewardBtn.disabled = false;
+    dailyRewardBtn.textContent = "Claim Reward";
+  } else {
+    dailyRewardBtn.disabled = true;
+    dailyRewardBtn.textContent = "Claimed";
+  }
+}   
 const dailyMissionList = document.getElementById("missionsList");
 if (!dailyMissionList) return;
 dailyMissionList.innerHTML = "";
@@ -1109,6 +1134,7 @@ function claimRankReward(reward) {
   if (reward.type === "gems") {
     State.totalGems += reward.amount;
     Storage.saveGems();
+    UI.setGems(State.totalGems);
   } else {
     // TODO later: unlock cosmetics in your cosmetics system
     // for now we just toast
@@ -1581,6 +1607,8 @@ function getPointerPos(evt) {
          if(e.type==="bonus"){
   sound._playBuffer("claim",{volume:1});
   State.totalGems += 10;
+    Storage.saveGems();
+    UI.setGems(State.totalGems);          
   UI.toast("+10 Bonus Gems ⭐");
 State.hitEffects.push({
   x: e.x,
@@ -1798,6 +1826,7 @@ if (State.combo === 4) {
     State.earnedGems = calculateGems(State.score);
     State.totalGems += State.earnedGems;
     Storage.saveGems();
+    UI.setGems(State.totalGems);
 
     let difficultyXPBonus = 1;
     if (State.difficulty === "easy") difficultyXPBonus = Config.xpDifficultyBonus.easy;
@@ -1833,6 +1862,19 @@ if (State.combo === 4) {
 
      // ===== Double Button UI Logic =====
 const adCount = getAdWatchCount();
+if (watchAdBtn) {
+  const count = getAdWatchCount();
+  const max = Config.AD_DAILY_LIMIT;
+
+  if (count >= max) {
+    watchAdBtn.textContent = "Come back tomorrow";
+    watchAdBtn.disabled = true;
+    watchAdBtn.style.background = "#777";
+  } else {
+    watchAdBtn.textContent = `+60 💎 (${count}/${max})`;
+    watchAdBtn.disabled = false;
+  }
+}     
 const adsRemaining = Config.AD_DAILY_LIMIT - adCount;
 
 if (State.doubleReady && adsRemaining > 0) {
@@ -1890,7 +1932,7 @@ if (missionsBackBtn) {
 if (menuRewards) {
   menuRewards.addEventListener("click", () => {
   resetDailyMissionsIfNeeded();
-  UI.setGems(State.totalGems);   
+  UI.setGems(State.totalGems);  
   renderDailyMissions();
   setScreen("missions");
   sound._playBuffer("scroll", { volume: 0.8 });
@@ -1969,6 +2011,7 @@ shopOverlay.addEventListener("click", () => {
   setTimeout(() => {
     State.totalGems += State.earnedGems;
     Storage.saveGems();
+    UI.setGems(State.totalGems);
     incrementAdWatchCount();
     State.doubleReady = false;
     State.roundsSinceDouble = 0;
