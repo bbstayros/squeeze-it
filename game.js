@@ -501,7 +501,9 @@ function setScreen(name) {
   closeOverlay();
   if (name === "game") {
     if (topbar) topbar.style.display = "grid";
-    resize();
+    requestAnimationFrame(() => {
+      resize();
+    });
   } else {
     if (topbar) topbar.style.display = "none";
   }
@@ -1893,7 +1895,9 @@ document.querySelectorAll("#screen-play .level-btn").forEach((btn) => {
   btn.addEventListener("click", async () => {
     State.difficulty = btn.dataset.level;
     setScreen("game");
-    resize();
+    requestAnimationFrame(() => {
+     resize();
+    });
     if (!sound.unlocked) {
       await sound.unlock();
     }
