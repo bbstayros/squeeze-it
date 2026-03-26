@@ -97,6 +97,8 @@ async function unlockAudio() {
   const rankUnlockName = document.getElementById("rankUnlockName");
   const rankUnlockIcon = document.getElementById("rankUnlockIcon");
   const rankFlash = document.getElementById("rankFlash"); 
+  const menuGemCount = document.getElementById("menuGemCount");
+  const playBackBtn = document.getElementById("playBackBtn"); 
    /* =====================================================
      PARALLAX BACKGROUND (Visual Only)
   ===================================================== */
@@ -404,10 +406,9 @@ async function loadSprites() {
       timeEl.textContent = v;
     },
     setGems(v) {
-     gemCount.textContent = v;
-      if (missionsGemCount) {
-        missionsGemCount.textContent = v; // 🔥 FIX
-      }
+      if (gemCount) gemCount.textContent = v;
+      if (missionsGemCount) missionsGemCount.textContent = v;
+      if (menuGemCount) menuGemCount.textContent = v;
     },
     setFrozen(isFrozen) {
       canvas.style.filter = isFrozen ? "grayscale(1) blur(2px)" : "none";
@@ -573,11 +574,11 @@ function xpNeededForLevel(level) {
 
 function updateXPUI() {
   const needed = xpNeededForLevel(State.playerLevel);
-  levelDisplay.textContent = "Level " + State.playerLevel;
-  menuLevelDisplay.textContent = State.playerLevel;
   const percent = Math.min(1, State.currentXP / needed);
-  xpFill.style.width = (percent * 100) + "%";
-  menuXpFill.style.width = (percent * 100) + "%";
+  if (levelDisplay) levelDisplay.textContent = "Level " + State.playerLevel;
+  if (menuLevelDisplay) menuLevelDisplay.textContent = State.playerLevel;
+  if (xpFill) xpFill.style.width = (percent * 100) + "%";
+  if (menuXpFill) menuXpFill.style.width = (percent * 100) + "%";
 }
    
   function addXP(amount) {
@@ -1836,7 +1837,7 @@ if (State.combo === 4) {
     const xpEarned = Math.floor((State.score / Config.xpScoreDiv) * difficultyXPBonus);
     addXP(xpEarned);
 
-    startBtn.disabled = false;
+    if (startBtn) startBtn.disabled = false;
 
     // Fill summary panel
     endScore.textContent = State.score;
@@ -1921,7 +1922,13 @@ if (infoBackBtn) {
     setScreen("main");
   });
 }   
-
+   
+if (playBackBtn) {
+  playBackBtn.addEventListener("click", () => {
+    setScreen("main");
+  });
+}
+   
 const missionsBackBtn = document.getElementById("missionsBackBtn");
 if (missionsBackBtn) {
   missionsBackBtn.addEventListener("click", () => {
@@ -1975,22 +1982,28 @@ if (menuShop) {
   /* =====================================================
      EVENTS - SHOP
   ===================================================== */
-shopBtn.addEventListener("click", () => {
-  renderShop();
-  openOverlay("shopPanel");
-});
+if (shopBtn) {
+  shopBtn.addEventListener("click", () => {
+    renderShop();
+    openOverlay("shopPanel");
+  });
+}
 
-shopOverlay.addEventListener("click", () => {
-  closeOverlay("shopPanel");
-});
+if (shopOverlay) {
+  shopOverlay.addEventListener("click", () => {
+    closeOverlay("shopPanel");
+  });
+}
    
   /* =====================================================
      EVENTS - MILESTONES
   ===================================================== */
+if (milestonesBtn) {
   milestonesBtn.addEventListener("click", () => {
-  setScreen("ranks");
-  openRanks();
-});
+    setScreen("ranks");
+    openRanks();
+  });
+}
 
    if (closeMilestones) {
   closeMilestones.addEventListener("click", () => {
@@ -2032,19 +2045,21 @@ shopOverlay.addEventListener("click", () => {
    /* =====================================================
      EVENTS - SOUND
   ===================================================== */ 
+if (soundToggleBtn) {
   soundToggleBtn.addEventListener("click", async () => {
-  const newState = !sound.isEnabled();
-  sound.setEnabled(newState);
-  soundToggleBtn.textContent = newState ? "🔊" : "🔇";
-  if (newState) {
-    if (!sound.unlocked) {
-      await sound.unlock();
+    const newState = !sound.isEnabled();
+    sound.setEnabled(newState);
+    soundToggleBtn.textContent = newState ? "🔊" : "🔇";
+    if (newState) {
+      if (!sound.unlocked) {
+        await sound.unlock();
+      }
+      if (State.gameRunning) {
+        sound.startAmbient();
+      }
     }
-    if (State.gameRunning) {
-      sound.startAmbient();
-    }
-  }
-});
+  });
+}
    toggleSoundBtn.addEventListener("click",()=>{
   const enabled = !sound.isEnabled();
   sound.setEnabled(enabled);
@@ -2087,9 +2102,9 @@ const savedSound = localStorage.getItem("squeeze_sound");
 
 if (savedSound === "off") {
   sound.setEnabled(false);
-  soundToggleBtn.textContent = "🔇";
+  if (soundToggleBtn) soundToggleBtn.textContent = "🔇";
 } else {
-  soundToggleBtn.textContent = "🔊";
+  if (soundToggleBtn) soundToggleBtn.textContent = "🔊";
 }
   await loadSprites();
   resize();
