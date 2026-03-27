@@ -1809,8 +1809,8 @@ if (menuRanks) {
    
 if (menuShop) {
   menuShop.addEventListener("click", () => {
-    setScreen("game");
-    renderShopGrid(); // ✅
+    setScreen("main"); 
+    renderShopGrid();
     openOverlay("shopPanel");
   });
 }
@@ -1879,6 +1879,7 @@ let currentFilter = "buy";
    
 function renderShopGrid() {
   const grid = document.querySelector(".shop-grid");
+  if (!grid) return;
   grid.innerHTML = "";
   const category = currentCategory; // θα το φτιάξουμε μετά
   const filter = currentFilter;
@@ -1911,15 +1912,30 @@ function renderShopGrid() {
   });
 }   
 
+document.querySelectorAll(".shop-tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    currentCategory = tab.dataset.tab;
+
+    document.querySelectorAll(".shop-tab").forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+
+    renderShopGrid();
+  });
+});
+
+document.querySelectorAll(".shop-subtab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    currentFilter = tab.dataset.subtab;
+
+    document.querySelectorAll(".shop-subtab").forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+
+    renderShopGrid();
+  });
+});
+   
 loadShop();
 renderShopGrid();
-   
-if (shopBtn) {
-  shopBtn.addEventListener("click", () => {
-    renderShop();
-    openOverlay("shopPanel");
-  });
-}
 
 if (shopOverlay) {
   shopOverlay.addEventListener("click", () => {
