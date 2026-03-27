@@ -42,12 +42,6 @@ async function unlockAudio() {
   const shopBtn = document.getElementById("shopBtn");
   const shopPanel = document.getElementById("shopPanel");
   const closeShop = document.getElementById("closeShop");
-  
-  const themeList = document.getElementById("themeList");
-  if (!themeList) {
-  console.error("themeList NOT FOUND");
-  }
-   
   const shopOverlay = document.getElementById("shopOverlay");
   const gemCount = document.getElementById("gemCount");
   const missionsGemCount = document.getElementById("missionsGemCount");
@@ -325,30 +319,10 @@ async function loadSprites() {
   /* =====================================================
      THEMES
   ===================================================== */
-
-  const themes = {
-    classic: {
-      name: "classic",
-      bg: "#151a22",
-      normal: "#ff3b30",
-      shield: "#ffd60a",
-      spike: "#ff006e",
-      price: 0,
-      unlocked: true
-    },
-    zombie: {
-      name: "zombie",
-      bg: "#0f1a12",
-      normal: "#4caf50",
-      shield: "#8bc34a",
-      spike: "#2e7d32",
-      price: 300,
-      unlocked: false
-    }
-  };
-
   function getCurrentTheme() {
-    return themes[State.currentThemeKey] || themes.classic;
+    return {
+     bg: "#151a22"
+    };
   }
 
   /* =====================================================
@@ -369,30 +343,6 @@ async function loadSprites() {
      JSON.stringify(State.claimedRankRewards)
       );
      },
-     
-    loadThemeUnlocks() {
-      const saved = JSON.parse(localStorage.getItem("squeeze_theme_unlocks"));
-      if (!saved) return;
-      for (let key in saved) {
-        if (themes[key]) themes[key].unlocked = saved[key];
-      }
-    },
-    saveThemeUnlocks() {
-      const data = {};
-      for (let key in themes) data[key] = themes[key].unlocked;
-      localStorage.setItem("squeeze_theme_unlocks", JSON.stringify(data));
-    },
-    loadEquippedTheme() {
-      const saved = localStorage.getItem("squeeze_equipped_theme");
-      if (saved && themes[saved] && themes[saved].unlocked) {
-        State.currentThemeKey = saved;
-      } else {
-        State.currentThemeKey = "classic";
-      }
-    },
-    saveEquippedTheme(themeKey) {
-      localStorage.setItem("squeeze_equipped_theme", themeKey);
-    }
   };
 
   /* =====================================================
@@ -860,123 +810,6 @@ function watchAdReward() {
   }, 1500);
 }
 
-  function buyTheme(themeKey) {
-    const theme = themes[themeKey];
-    if (!theme) return;
-
-    if (theme.unlocked) return;
-
-    if (State.totalGems >= theme.price) {
-      State.totalGems -= theme.price;
-      theme.unlocked = true;
-      Storage.saveThemeUnlocks();
-      Storage.saveGems();
-      UI.toast("Purchased: " + theme.name + " ✅");
-    } else {
-      UI.toast("Not enough gems 💎");
-    }
-  }
-
-  function equipTheme(themeKey) {
-    const theme = themes[themeKey];
-    if (!theme) return;
-
-    if (!theme.unlocked) {
-      UI.toast("Theme locked 🔒");
-      return;
-    }
-
-    State.currentThemeKey = themeKey;
-    Storage.saveEquippedTheme(themeKey);
-    UI.toast("Equipped: " + theme.name + " ✅");
-  }
-
-  function renderShop() {
-    if (!themeList) return; 
-    UI.setGems(State.totalGems);
-    themeList.innerHTML = "";
-
-    // ===== DAILY + STREAK =====
-    const dailyDiv = document.createElement("div");
-    dailyDiv.className = "theme-item";
-
-    const streak = parseInt(localStorage.getItem(Config.STREAK_KEY)) || 0;
-
-    const dailyText = document.createElement("strong");
-    dailyText.textContent = "Daily Reward (Day " + (streak || 1) + ")";
-
-    const dailyBtn = document.createElement("button");
-
-    if (canClaimDailyReward()) {
-      dailyBtn.textContent = "Claim 💎";
-      dailyBtn.onclick = claimDailyReward;
-    } else {
-      dailyBtn.textContent = "Come back tomorrow";
-      dailyBtn.disabled = true;
-    }
-
-    dailyDiv.appendChild(dailyText);
-    dailyDiv.appendChild(dailyBtn);
-    themeList.appendChild(dailyDiv);
-
-    // ===== AD REWARD =====
-    const adDiv = document.createElement("div");
-    adDiv.className = "theme-item";
-
-    const adText = document.createElement("strong");
-    adText.textContent = "Watch Ad";
-
-    const adBtn = document.createElement("button");
-
-const adCount = getAdWatchCount();
-const remaining = Config.AD_DAILY_LIMIT - adCount;
-
-if (remaining > 0) {
-  adBtn.textContent = "+" + Config.AD_REWARD_AMOUNT + " 💎 (" + remaining + " left)";
-  adBtn.onclick = watchAdReward;
-} else {
-  adBtn.textContent = "No Ads Left Today";
-  adBtn.disabled = true;
-}
-
-    adDiv.appendChild(adText);
-    adDiv.appendChild(adBtn);
-    themeList.appendChild(adDiv);
-
-    // ===== THEMES =====
-    for (let key in themes) {
-      const theme = themes[key];
-
-      const item = document.createElement("div");
-      item.className = "theme-item";
-
-      const name = document.createElement("strong");
-      name.textContent = theme.name;
-
-      const btn = document.createElement("button");
-
-      if (!theme.unlocked) {
-        btn.textContent = "Buy (" + theme.price + " 💎)";
-        btn.onclick = () => {
-          buyTheme(key);
-          renderShop();
-        };
-      } else if (State.currentThemeKey === key) {
-        btn.textContent = "Equipped";
-        btn.disabled = true;
-      } else {
-        btn.textContent = "Equip";
-        btn.onclick = () => {
-          equipTheme(key);
-          renderShop();
-        };
-      }
-
-      item.appendChild(name);
-      item.appendChild(btn);
-      themeList.appendChild(item);
-    }
-  }
 function renderDailyMissions() {
 const canClaim = canClaimDailyReward();   
 const count = getAdWatchCount();
@@ -1977,7 +1810,7 @@ if (menuRanks) {
 if (menuShop) {
   menuShop.addEventListener("click", () => {
     setScreen("game");
-    renderShop();
+    renderShopGrid(); // ✅
     openOverlay("shopPanel");
   });
 }
@@ -1985,6 +1818,102 @@ if (menuShop) {
   /* =====================================================
      EVENTS - SHOP
   ===================================================== */
+const ShopItems = {
+  characters: [
+    { id: "classic", name: "Classic", price: 0, unlocked: true, equipped: true, img: "assets/skins/classic.png" },
+    { id: "zombie", name: "Zombie", price: 300, unlocked: false, equipped: false, img: "assets/skins/zombie.png" },
+    { id: "knight", name: "Knight", price: 600, unlocked: false, equipped: false, img: "assets/skins/knight.png" }
+  ],
+  finger: [
+    { id: "basic", name: "Basic", price: 0, unlocked: true, equipped: true, img: "assets/fingers/basic.png" },
+    { id: "gold", name: "Gold Finger", price: 500, unlocked: false, equipped: false, img: "assets/fingers/gold.png" }
+  ],
+  backgrounds: [
+    { id: "cave", name: "Cave", price: 0, unlocked: true, equipped: true, img: "assets/bg/cave.png" },
+    { id: "lava", name: "Lava", price: 700, unlocked: false, equipped: false, img: "assets/bg/lava.png" }
+  ]
+};
+
+function saveShop() {
+  localStorage.setItem("squeeze_shop", JSON.stringify(ShopItems));
+}
+
+function loadShop() {
+  const data = JSON.parse(localStorage.getItem("squeeze_shop"));
+  if (!data) return;
+  Object.keys(data).forEach(cat => {
+    data[cat].forEach(savedItem => {
+      const item = ShopItems[cat].find(i => i.id === savedItem.id);
+      if (item) {
+        item.unlocked = savedItem.unlocked;
+        item.equipped = savedItem.equipped;
+      }
+    });
+  });
+}
+
+function buyItem(category, item) {
+  if (State.totalGems < item.price) {
+    UI.toast("Not enough gems 💎");
+    return;
+  }
+  State.totalGems -= item.price;
+  item.unlocked = true;
+  Storage.saveGems();
+  saveShop();
+  UI.setGems(State.totalGems);
+  UI.toast("Purchased ✅");
+  renderShopGrid();
+}
+   
+function equipItem(category, item) {
+  ShopItems[category].forEach(i => i.equipped = false);
+  item.equipped = true;
+  saveShop();
+  UI.toast("Equipped 🎮");
+  renderShopGrid();
+}
+
+let currentCategory = "characters";
+let currentFilter = "buy";
+   
+function renderShopGrid() {
+  const grid = document.querySelector(".shop-grid");
+  grid.innerHTML = "";
+  const category = currentCategory; // θα το φτιάξουμε μετά
+  const filter = currentFilter;
+  ShopItems[category].forEach(item => {
+    if (filter === "buy" && item.unlocked) return;
+    if (filter === "owned" && !item.unlocked) return;
+    const card = document.createElement("div");
+    card.className = "shop-item";
+    card.innerHTML = `
+      <img src="${item.img}">
+      <div class="shop-item-name">${item.name}</div>
+    `;
+    const btn = document.createElement("button");
+    btn.className = "shop-btn";
+    if (!item.unlocked) {
+      btn.classList.add("buy");
+      btn.textContent = item.price + " 💎";
+      btn.onclick = () => buyItem(category, item);
+    } 
+    else if (item.equipped) {
+      btn.classList.add("equipped");
+      btn.textContent = "Equipped";
+    } 
+    else {
+      btn.textContent = "Equip";
+      btn.onclick = () => equipItem(category, item);
+    }
+    card.appendChild(btn);
+    grid.appendChild(card);
+  });
+}   
+
+loadShop();
+renderShopGrid();
+   
 if (shopBtn) {
   shopBtn.addEventListener("click", () => {
     renderShop();
@@ -2092,8 +2021,6 @@ if (soundToggleBtn) {
   /* =====================================================
      INIT
   ===================================================== */
-  Storage.loadThemeUnlocks();
-  Storage.loadEquippedTheme();
   UI.setGems(State.totalGems);
   updateXPUI();
   const savedLastScore = localStorage.getItem("squeeze_last_score");
