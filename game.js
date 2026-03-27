@@ -39,7 +39,6 @@ async function unlockAudio() {
   const timeEl = document.getElementById("time");
   const startBtn = document.getElementById("startBtn");
   const countdownEl = document.getElementById("countdown"); 
-  const shopBtn = document.getElementById("shopBtn");
   const shopPanel = document.getElementById("shopPanel");
   const closeShop = document.getElementById("closeShop");
   const shopOverlay = document.getElementById("shopOverlay");
@@ -1809,7 +1808,6 @@ if (menuRanks) {
    
 if (menuShop) {
   menuShop.addEventListener("click", () => {
-    setScreen("main"); 
     renderShopGrid();
     openOverlay("shopPanel");
   });
@@ -1818,6 +1816,14 @@ if (menuShop) {
   /* =====================================================
      EVENTS - SHOP
   ===================================================== */
+const shopBackBtn = document.getElementById("shopBackBtn");
+
+if (shopBackBtn) {
+  shopBackBtn.addEventListener("click", () => {
+    closeOverlay("shopPanel");
+  });
+}
+   
 const ShopItems = {
   characters: [
     { id: "classic", name: "Classic", price: 0, unlocked: true, equipped: true, img: "assets/skins/classic.png" },
@@ -1881,7 +1887,7 @@ function renderShopGrid() {
   const grid = document.querySelector(".shop-grid");
   if (!grid) return;
   grid.innerHTML = "";
-  const category = currentCategory; // θα το φτιάξουμε μετά
+  const category = currentCategory;
   const filter = currentFilter;
   ShopItems[category].forEach(item => {
     if (filter === "buy" && item.unlocked) return;
