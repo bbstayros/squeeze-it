@@ -1333,7 +1333,7 @@ function openRanks() {
       }
 
       e.x += e.vx * dt;
-if (State.footprints.length < 25 && Math.random() < 0.05) {
+if (State.footprints.length < 15 && Math.random() < 0.03) {
   State.footprints.push({
     x:e.x,
     y:e.y + e.r*1.9,
@@ -1473,7 +1473,6 @@ if (bgPattern) {
 }
 ctx.save();
 ctx.translate(offsetX, offsetY);
-ctx.filter = "brightness(0.9) contrast(0.9) saturate(0.85)";
 
 /* =====================================================
    DRAW ENTITIES (SPRITES)
@@ -1743,10 +1742,11 @@ window.addEventListener("touchstart", (e) => {
 
  function loop(ts) {
   if (!State.gameRunning) return;
-  const dt = (ts - lastTs) / 1000 || 0;
+  let dt = (ts - lastTs) / 1000;
   lastTs = ts;
-  const safeDt = Math.min(dt, 0.033);
-  update(safeDt);
+  // clamp για stability
+  if (dt > 0.05) dt = 0.05;
+  update(dt);
   draw();
   State.timers.rafId = requestAnimationFrame(loop);
 }
