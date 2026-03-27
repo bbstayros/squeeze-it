@@ -299,6 +299,13 @@ async function loadSprites() {
     claimedRankRewards:
     JSON.parse(localStorage.getItem(Config.CLAIMED_KEY)) || [],
 
+    unlockedSkins: JSON.parse(localStorage.getItem("squeeze_unlocked")) || ["caveman"],
+    equipped: {
+      characters: localStorage.getItem("eq_char") || "caveman",
+      finger: localStorage.getItem("eq_finger") || "caveman",
+      backgrounds: localStorage.getItem("eq_bg") || "caveman"
+    }, 
+
     // theme
     currentThemeKey: "classic",
 
@@ -343,6 +350,32 @@ async function loadSprites() {
      },
   };
 
+  function saveSkins() {
+    localStorage.setItem("squeeze_unlocked", JSON.stringify(State.unlockedSkins));
+    localStorage.setItem("eq_char", State.equipped.characters);
+    localStorage.setItem("eq_finger", State.equipped.finger);
+    localStorage.setItem("eq_bg", State.equipped.backgrounds);
+  }
+
+  function buySkin(skin) {
+   if (State.totalGems < skin.price) {
+     UI.toast("Not enough gems 💎");
+     return;
+   }
+   State.totalGems -= skin.price;
+   State.unlockedSkins.push(skin.id);
+   Storage.saveGems();
+   saveSkins();
+   UI.setGems(State.totalGems);
+   renderShopGrid();
+  } 
+
+  function equipSkin(skin) {
+  State.equipped[currentCategory] = skin.id;
+  saveSkins();
+  renderShopGrid();
+}
+   
   /* =====================================================
      UI HELPERS
   ===================================================== */
@@ -359,7 +392,7 @@ async function loadSprites() {
       if (menuGemCount) menuGemCount.textContent = v;
       const shopGemCount = document.getElementById("shopGemCount");
       if (shopGemCount) shopGemCount.textContent = v;
-    }
+}
     setFrozen(isFrozen) {
       canvas.style.filter = isFrozen ? "grayscale(1) blur(2px)" : "none";
     },
@@ -566,6 +599,15 @@ function updateXPUI() {
   if (leveledUp) {
    renderRankScreen();
   }   
+ SKINS.forEach(skin => {
+  if (skin.rank && State.playerLevel >= skin.rank) {
+    if (!State.unlockedSkins.includes(skin.id)) {
+      State.unlockedSkins.push(skin.id);
+      UI.toast("Unlocked: " + skin.id + " 🔥");
+      saveSkins();
+    }
+  }
+});    
 }
   /* =====================================================
      RANDOM / SPAWN
@@ -1808,6 +1850,7 @@ if (menuShop) {
     renderShopGrid();
     openOverlay("shopPanel");
     setupShopEvents(); 
+    UI.setGems(State.totalGems); 
   });
 }
    
@@ -1823,21 +1866,30 @@ function setupShopEvents() {
   }
 }
    
-const ShopItems = {
-  characters: [
-    { id: "classic", name: "Classic", price: 0, unlocked: true, equipped: true, img: "assets/skins/classic.png" },
-    { id: "zombie", name: "Zombie", price: 300, unlocked: false, equipped: false, img: "assets/skins/zombie.png" },
-    { id: "knight", name: "Knight", price: 600, unlocked: false, equipped: false, img: "assets/skins/knight.png" }
-  ],
-  finger: [
-    { id: "basic", name: "Basic", price: 0, unlocked: true, equipped: true, img: "assets/fingers/basic.png" },
-    { id: "gold", name: "Gold Finger", price: 500, unlocked: false, equipped: false, img: "assets/fingers/gold.png" }
-  ],
-  backgrounds: [
-    { id: "cave", name: "Cave", price: 0, unlocked: true, equipped: true, img: "assets/bg/cave.png" },
-    { id: "lava", name: "Lava", price: 700, unlocked: false, equipped: false, img: "assets/bg/lava.png" }
-  ]
-};
+const SKINS = [
+  // 🟢 BUYABLE
+  { id: "alien", price: 1000 },
+  { id: "caveman", price: 0 },
+  { id: "fruit", price: 350 },
+  { id: "ghost", price: 400 },
+  { id: "knight", price: 600 },
+  { id: "ninja", price: 700 },
+  { id: "pirate", price: 650 },
+  { id: "robot", price: 800 },
+  { id: "viking", price: 900 },
+  { id: "zombie", price: 300 },
+
+  // 🔒 RANK ONLY
+  { id: "bronze", rank: 120 },
+  { id: "diamond", rank: 1000 },
+  { id: "emerald", rank: 1500 },
+  { id: "gold", rank: 450 },
+  { id: "iron", rank: 50 },
+  { id: "lapiz", rank: 1 },
+  { id: "obsidian", rank: 2200 },
+  { id: "platinum", rank: 700 },
+  { id: "silver", rank: 250 }
+];
 
 function saveShop() {
   localStorage.setItem("squeeze_shop", JSON.stringify(ShopItems));
@@ -1886,36 +1938,37 @@ function renderShopGrid() {
   const grid = document.querySelector(".shop-grid");
   if (!grid) return;
   grid.innerHTML = "";
-  const category = currentCategory;
-  const filter = currentFilter;
-  ShopItems[category].forEach(item => {
-    if (filter === "buy" && item.unlocked) return;
-    if (filter === "owned" && !item.unlocked) return;
+  SKINS.forEach(skin => {
+    const unlocked = State.unlockedSkins.includes(skin.id);
+    const equipped = State.equipped[currentCategory] === skin.id;
+    // 🔒 hide rank skins αν δεν έχουν ξεκλειδωθεί
+    if (skin.rank && !unlocked) return;
+    if (currentFilter === "buy" && unlocked) return;
+    if (currentFilter === "owned" && !unlocked) return;
     const card = document.createElement("div");
     card.className = "shop-item";
+    const path = `assets/${currentCategory}/${skin.id}.png`;
     card.innerHTML = `
-      <img src="${item.img}">
-      <div class="shop-item-name">${item.name}</div>
+      <img src="${path}">
+      <div>${skin.id}</div>
     `;
     const btn = document.createElement("button");
-    btn.className = "shop-btn";
-    if (!item.unlocked) {
-      btn.classList.add("buy");
-      btn.textContent = item.price + " 💎";
-      btn.onclick = () => buyItem(category, item);
-    } 
-    else if (item.equipped) {
-      btn.classList.add("equipped");
+    if (!unlocked && skin.price) {
+      btn.textContent = skin.price + " 💎";
+      btn.onclick = () => buySkin(skin);
+    }
+    else if (equipped) {
       btn.textContent = "Equipped";
-    } 
+      btn.disabled = true;
+    }
     else {
       btn.textContent = "Equip";
-      btn.onclick = () => equipItem(category, item);
+      btn.onclick = () => equipSkin(skin);
     }
     card.appendChild(btn);
     grid.appendChild(card);
   });
-}   
+}
 
 document.querySelectorAll(".shop-tab").forEach(tab => {
   tab.addEventListener("click", () => {
