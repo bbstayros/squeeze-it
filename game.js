@@ -357,7 +357,9 @@ async function loadSprites() {
       if (gemCount) gemCount.textContent = v;
       if (missionsGemCount) missionsGemCount.textContent = v;
       if (menuGemCount) menuGemCount.textContent = v;
-    },
+      const shopGemCount = document.getElementById("shopGemCount");
+      if (shopGemCount) shopGemCount.textContent = v;
+    }
     setFrozen(isFrozen) {
       canvas.style.filter = isFrozen ? "grayscale(1) blur(2px)" : "none";
     },
