@@ -1810,18 +1810,20 @@ if (menuShop) {
   menuShop.addEventListener("click", () => {
     renderShopGrid();
     openOverlay("shopPanel");
+    setupShopEvents(); 
   });
 }
    
   /* =====================================================
-     EVENTS - SHOP
+     SHOP
   ===================================================== */
-const shopBackBtn = document.getElementById("shopBackBtn");
-
-if (shopBackBtn) {
-  shopBackBtn.addEventListener("click", () => {
-    closeOverlay("shopPanel");
-  });
+function setupShopEvents() {
+  const shopBackBtn = document.getElementById("shopBackBtn");
+  if (shopBackBtn) {
+    shopBackBtn.onclick = () => {
+      closeOverlay("shopPanel");
+    };
+  }
 }
    
 const ShopItems = {
