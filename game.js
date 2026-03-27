@@ -519,6 +519,7 @@ function openOverlay(id) {
   currentOverlay = id;
   const el = document.getElementById(id);
   if (el) {
+    el.classList.remove("hidden"); 
     el.classList.add("active");
   }
 }
@@ -529,6 +530,7 @@ function closeOverlay(id = null) {
   const el = document.getElementById(targetId);
   if (el) {
     el.classList.remove("active");
+    el.classList.add("hidden"); 
   }
   if (!id || id === currentOverlay) {
     currentOverlay = null;
