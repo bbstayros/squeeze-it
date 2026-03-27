@@ -1699,20 +1699,20 @@ if (State.combo === 4) {
   }
 
   canvas.addEventListener("pointerdown", (e) => {
-    if (!State.gameRunning) return;
-    e.preventDefault();
-    if (!audioUnlocked) unlockAudio();
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-     State.tapEffects.push({
-      x,
-      y,
-      life: 0.22,
-      age: 0
-     });
-    tryHit(x, y);
-    }, { passive: false });
+  if (!State.gameRunning) return;
+  e.preventDefault();
+  if (!audioUnlocked) unlockAudio();
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left) * (State.W / rect.width);
+  const y = (e.clientY - rect.top) * (State.H / rect.height);
+  State.tapEffects.push({
+    x,
+    y,
+    life: 0.22,
+    age: 0
+  });
+  tryHit(x, y);
+}, { passive: false });
 
   /* =====================================================
      LOOP
@@ -1882,6 +1882,7 @@ document.querySelectorAll("#screen-play .level-btn").forEach((btn) => {
   btn.addEventListener("click", async () => {
     State.difficulty = btn.dataset.level;
     setScreen("game");
+    resize(); 
     setTimeout(() => {
       resize();
     }, 50);
