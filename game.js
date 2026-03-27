@@ -1726,15 +1726,6 @@ window.addEventListener("pointerdown", (e) => {
   handleGameTap(e.clientX, e.clientY);
 }, { passive: true });
 
-window.addEventListener("mousedown", (e) => {
-  handleGameTap(e.clientX, e.clientY);
-}, { passive: true });
-
-window.addEventListener("touchstart", (e) => {
-  if (!e.touches || !e.touches[0]) return;
-  handleGameTap(e.touches[0].clientX, e.touches[0].clientY);
-}, { passive: true });
-
   /* =====================================================
      LOOP
   ===================================================== */
@@ -1805,7 +1796,10 @@ window.addEventListener("touchstart", (e) => {
     State.timers.timeTimer = setInterval(() => {
       State.timeLeft--;
       UI.setTime(State.timeLeft);
-      if (State.timeLeft <= 0) endRound();
+      if (State.timeLeft <= 0) {
+        endRound();
+        return; 
+      }
     }, 1000);
   }
 
@@ -1901,10 +1895,6 @@ document.querySelectorAll("#screen-play .level-btn").forEach((btn) => {
   btn.addEventListener("click", async () => {
     State.difficulty = btn.dataset.level;
     setScreen("game");
-    resize(); 
-    setTimeout(() => {
-      resize();
-    }, 50);
     if (!sound.unlocked) {
       await sound.unlock();
     }
