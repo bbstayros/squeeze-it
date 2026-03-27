@@ -40,7 +40,6 @@ async function unlockAudio() {
   const startBtn = document.getElementById("startBtn");
   const countdownEl = document.getElementById("countdown"); 
   const shopPanel = document.getElementById("shopPanel");
-  const closeShop = document.getElementById("closeShop");
   const shopOverlay = document.getElementById("shopOverlay");
   const gemCount = document.getElementById("gemCount");
   const missionsGemCount = document.getElementById("missionsGemCount");
@@ -372,10 +371,6 @@ async function loadSprites() {
       showToast(text);
     }
   };
-
-   closeShop.addEventListener("click", () => {
-    closeOverlay("shopPanel");
-   });
 
 /* =====================================================
    RANK UNLOCK SYSTEM
