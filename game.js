@@ -1748,8 +1748,10 @@ window.addEventListener("touchstart", (e) => {
   if (dt > 0.05) dt = 0.05;
   update(dt);
   draw();
-  State.timers.rafId = requestAnimationFrame(loop);
-}
+  if (State.gameRunning) {  
+   State.timers.rafId = requestAnimationFrame(loop);
+  }
+ }
 
   /* =====================================================
      ROUND FLOW
@@ -1819,18 +1821,13 @@ window.addEventListener("touchstart", (e) => {
 }
 
   function endRound() {
-    updateDailyMissions("round",1); 
+    if (!State.gameRunning) return; 
     State.gameRunning = false;
-
-    if (State.timers.rafId) cancelAnimationFrame(State.timers.rafId);
-    if (State.timers.timeTimer) clearInterval(State.timers.timeTimer);
-
-    State.timers.rafId = null;
-    State.timers.timeTimer = null;
+    updateDailyMissions("round",1);
+    clearTimers();
     // ===== Double Reward Progress Logic =====
     if (!State.doubleReady) {
     State.roundsSinceDouble++;
-
     if (State.roundsSinceDouble >= 8) {
     State.doubleReady = true;
      }
@@ -1886,9 +1883,9 @@ if (watchAdBtn) {
     watchAdBtn.textContent = `+60 💎 (${count}/${max})`;
     watchAdBtn.disabled = false;
   }
-}     
+}   
+     
 const adsRemaining = Config.AD_DAILY_LIMIT - adCount;
-
 if (State.doubleReady && adsRemaining > 0) {
   doubleBtn.classList.remove("hidden");
   doubleBtn.textContent = "x2 Gems (" + adsRemaining + " left)";
