@@ -139,7 +139,7 @@ async function unlockAudio() {
     roundSeconds: 45,
 
     entityRadius: 30,
-    baseSpeed: 140,
+    baseSpeed: 220,
     maxEntities: 23,
 
     comboTimeoutSec: 1.2,
@@ -539,16 +539,18 @@ function closeOverlay(id = null) {
      RESIZE
 ===================================================== */
   function resize() {
-    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-    canvasRect = canvas.getBoundingClientRect();
-    const rect = canvasRect;
-    State.W = Math.floor(rect.width);
-    State.H = Math.floor(rect.height);
-    canvas.width = Math.floor(State.W * dpr);
-    canvas.height = Math.floor(State.H * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    SPRITE_SCALE = Math.max(1.4, State.H / 650); 
-  }
+  const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+  canvasRect = canvas.getBoundingClientRect();
+  const rect = canvasRect;
+  State.W = Math.floor(rect.width);
+  State.H = Math.floor(rect.height);
+  canvas.width = Math.floor(State.W * dpr);
+  canvas.height = Math.floor(State.H * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  canvas.style.touchAction = "none";
+  canvas.style.userSelect = "none";
+  SPRITE_SCALE = Math.max(1.4, State.H / 650);
+}
   window.addEventListener("resize", resize);
 
   /* =====================================================
@@ -1381,8 +1383,8 @@ if (!State.bonusSpawned) {
 }
     // spawn rhythm (cap)
     State.spawnTimerMs += dt * 1000;
-    if (State.spawnTimerMs >= State.spawnIntervalMs) {
-      State.spawnTimerMs = 0;
+    while (State.spawnTimerMs >= State.spawnIntervalMs) {
+      State.spawnTimerMs -= State.spawnIntervalMs;
       if (State.entities.length < Config.maxEntities) spawnEntity();
     }
 
@@ -1583,22 +1585,6 @@ for(const t of State.tapEffects){
   /* =====================================================
      INPUT / HIT DETECTION
   ===================================================== */
-function getPointerPos(evt) {
-  const rect = canvas.getBoundingClientRect();
-  const clientX = evt.touches && evt.touches[0]
-    ? evt.touches[0].clientX
-    : evt.clientX;
-  const clientY = evt.touches && evt.touches[0]
-    ? evt.touches[0].clientY
-    : evt.clientY;
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
-  return {
-    x: (clientX - rect.left) * scaleX,
-    y: (clientY - rect.top) * scaleY
-  };
-}
-
   function tryHit(x, y) {
     if (State.playerFrozen) return;
     for (let i = State.entities.length - 1; i >= 0; i--) {
@@ -1606,7 +1592,8 @@ function getPointerPos(evt) {
       if (e.hit) continue;
       const dx = x - e.x;
       const dy = y - e.y;
-      if (dx * dx + dy * dy <= e.r * e.r) {
+      const hitRadius = e.r * SPRITE_SCALE * 1.05;
+  if (dx * dx + dy * dy <= hitRadius * hitRadius) {
          if(e.type==="bonus"){
   sound._playBuffer("claim",{volume:1});
   State.totalGems += 10;
@@ -1711,32 +1698,32 @@ if (State.combo === 4) {
     }
   }
 
-  function onPointerDown(evt) {
+  canvas.addEventListener("pointerdown", (e) => {
     if (!State.gameRunning) return;
-    evt.preventDefault();
-    const p = getPointerPos(evt);
-    State.tapEffects.push({
-     x: p.x,
-     y: p.y,
-     life: 0.22,
-     age: 0
-    }); 
-    tryHit(p.x, p.y);
-  }
-
-  canvas.addEventListener("mousedown", onPointerDown);
-  canvas.addEventListener("touchstart", onPointerDown, { passive: false });
+    e.preventDefault();
+    if (!audioUnlocked) unlockAudio();
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+     State.tapEffects.push({
+      x,
+      y,
+      life: 0.22,
+      age: 0
+     });
+    tryHit(x, y);
+    }, { passive: false });
 
   /* =====================================================
      LOOP
   ===================================================== */
-  let lastTs = 0;
+  let lastTs = performance.now();
 
  function loop(ts) {
   if (!State.gameRunning) return;
   const dt = (ts - lastTs) / 1000 || 0;
   lastTs = ts;
-  const safeDt = Math.min(dt, 0.05);
+  const safeDt = Math.min(dt, 0.033);
   update(safeDt);
   draw();
   State.timers.rafId = requestAnimationFrame(loop);
@@ -1786,7 +1773,7 @@ if (State.combo === 4) {
     State.spawnIntervalMs = Config.spawnIntervalMs[State.difficulty] || Config.spawnIntervalMs.medium;
     State.gameRunning = true;
 
-    lastTs = 0;
+    lastTs = performance.now();
     if (State.timers.rafId) cancelAnimationFrame(State.timers.rafId);
     State.timers.rafId = requestAnimationFrame(loop);
 
