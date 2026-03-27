@@ -260,27 +260,30 @@
   <!-- ================= SHOP OVERLAY ================= -->
   <div id="shopOverlay" class="hidden overlay"></div>
 
-  <!-- ================= SHOP PANEL ================= -->
+  <!-- HEADER -->
   <div id="shopPanel" class="hidden">
-    <h2>Shop</h2>
+  <div class="shop-header">
+  <div class="shop-gems">
+    💎 <span id="shopGemCount">0</span>
+  </div>
+  <div class="shop-title">Shop</div>
+  <button id="shopBackBtn" class="shop-back">Back</button>
+</div>
 
-    <div class="shop-balance">
-      Gems: <span id="gemCount">0</span> 💎
-    </div>
-
-    <div id="themeList" class="theme-list"></div>
-
+    <!-- TABS -->
     <div class="shop-tabs">
       <button class="shop-tab active" data-tab="characters">Characters</button>
       <button class="shop-tab" data-tab="finger">Finger</button>
       <button class="shop-tab" data-tab="backgrounds">Backgrounds</button>
     </div>
 
+    <!-- FILTER -->
     <div class="shop-subtabs">
       <button class="shop-subtab active" data-subtab="buy">Buy</button>
       <button class="shop-subtab" data-subtab="owned">Owned</button>
     </div>
 
+    <!-- CONTENT -->
     <div class="shop-content">
       <div class="shop-category active" id="characters">
         <div class="shop-grid">
@@ -290,6 +293,7 @@
             <button class="shop-btn equipped">Equipped</button>
           </div>
 
+          <!-- items -->
           <div class="shop-item">
             <img src="assets/skins/zombie.png" alt="Zombie">
             <div class="shop-item-name">Zombie</div>
@@ -352,8 +356,6 @@
         </div>
       </div>
     </div>
-
-    <button id="closeShop" class="btn close-btn">Close</button>
   </div>
 
   <!-- ================= END PANEL ================= -->
