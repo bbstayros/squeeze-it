@@ -549,6 +549,7 @@ function closeOverlay(id = null) {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   canvas.style.touchAction = "none";
   canvas.style.userSelect = "none";
+  canvas.style.pointerEvents = "auto";
   SPRITE_SCALE = Math.max(1.4, State.H / 650);
 }
   window.addEventListener("resize", resize);
@@ -1698,13 +1699,21 @@ if (State.combo === 4) {
     }
   }
 
-  canvas.addEventListener("pointerdown", (e) => {
+  function handleGameTap(clientX, clientY) {
   if (!State.gameRunning) return;
-  e.preventDefault();
-  if (!audioUnlocked) unlockAudio();
   const rect = canvas.getBoundingClientRect();
-  const x = (e.clientX - rect.left) * (State.W / rect.width);
-  const y = (e.clientY - rect.top) * (State.H / rect.height);
+  // Αν το tap είναι έξω από το canvas, αγνόησέ το
+  if (
+    clientX < rect.left ||
+    clientX > rect.right ||
+    clientY < rect.top ||
+    clientY > rect.bottom
+  ) {
+    return;
+  }
+  if (!audioUnlocked) unlockAudio();
+  const x = (clientX - rect.left) * (State.W / rect.width);
+  const y = (clientY - rect.top) * (State.H / rect.height);
   State.tapEffects.push({
     x,
     y,
@@ -1712,7 +1721,20 @@ if (State.combo === 4) {
     age: 0
   });
   tryHit(x, y);
-}, { passive: false });
+}
+
+window.addEventListener("pointerdown", (e) => {
+  handleGameTap(e.clientX, e.clientY);
+}, { passive: true });
+
+window.addEventListener("mousedown", (e) => {
+  handleGameTap(e.clientX, e.clientY);
+}, { passive: true });
+
+window.addEventListener("touchstart", (e) => {
+  if (!e.touches || !e.touches[0]) return;
+  handleGameTap(e.touches[0].clientX, e.touches[0].clientY);
+}, { passive: true });
 
   /* =====================================================
      LOOP
