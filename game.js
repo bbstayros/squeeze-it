@@ -387,15 +387,15 @@ async function loadSprites() {
       timeEl.textContent = v;
     },
     setGems(v) {
-      if (gemCount) gemCount.textContent = v;
-      if (missionsGemCount) missionsGemCount.textContent = v;
-      if (menuGemCount) menuGemCount.textContent = v;
-      const shopGemCount = document.getElementById("shopGemCount");
-      if (shopGemCount) shopGemCount.textContent = v;
-}
-    setFrozen(isFrozen) {
-      canvas.style.filter = isFrozen ? "grayscale(1) blur(2px)" : "none";
-    },
+  if (gemCount) gemCount.textContent = v;
+  if (missionsGemCount) missionsGemCount.textContent = v;
+  if (menuGemCount) menuGemCount.textContent = v;
+  const shopGemCount = document.getElementById("shopGemCount");
+  if (shopGemCount) shopGemCount.textContent = v;
+}, 
+setFrozen(isFrozen) {
+  canvas.style.filter = isFrozen ? "grayscale(1) blur(2px)" : "none";
+},
     show(el) {
       el.classList.remove("hidden");
     },
@@ -1867,9 +1867,9 @@ function setupShopEvents() {
 }
    
 const SKINS = [
-  // 🟢 BUYABLE
-  { id: "alien", price: 1000 },
   { id: "caveman", price: 0 },
+
+  { id: "alien", price: 1000 },
   { id: "fruit", price: 350 },
   { id: "ghost", price: 400 },
   { id: "knight", price: 600 },
@@ -1879,7 +1879,7 @@ const SKINS = [
   { id: "viking", price: 900 },
   { id: "zombie", price: 300 },
 
-  // 🔒 RANK ONLY
+  // 🔒 rank themes
   { id: "bronze", rank: 120 },
   { id: "diamond", rank: 1000 },
   { id: "emerald", rank: 1500 },
