@@ -218,6 +218,7 @@ async function loadSprites() {
 
         const p = new Promise((resolve, reject) => {
           const img = new Image();
+           
           img.onload = () => {
             SpriteManifest.caveman[type][dir].push(img);
             resolve();
