@@ -372,6 +372,7 @@ async function loadSprites() {
 
   function equipSkin(skin) {
   State.equipped[currentCategory] = skin.id;
+  State.currentThemeKey = skin.id; 
   saveSkins();
   renderShopGrid();
 }
@@ -1891,46 +1892,6 @@ const SKINS = [
   { id: "silver", rank: 250 }
 ];
 
-function saveShop() {
-  localStorage.setItem("squeeze_shop", JSON.stringify(ShopItems));
-}
-
-function loadShop() {
-  const data = JSON.parse(localStorage.getItem("squeeze_shop"));
-  if (!data) return;
-  Object.keys(data).forEach(cat => {
-    data[cat].forEach(savedItem => {
-      const item = ShopItems[cat].find(i => i.id === savedItem.id);
-      if (item) {
-        item.unlocked = savedItem.unlocked;
-        item.equipped = savedItem.equipped;
-      }
-    });
-  });
-}
-
-function buyItem(category, item) {
-  if (State.totalGems < item.price) {
-    UI.toast("Not enough gems 💎");
-    return;
-  }
-  State.totalGems -= item.price;
-  item.unlocked = true;
-  Storage.saveGems();
-  saveShop();
-  UI.setGems(State.totalGems);
-  UI.toast("Purchased ✅");
-  renderShopGrid();
-}
-   
-function equipItem(category, item) {
-  ShopItems[category].forEach(i => i.equipped = false);
-  item.equipped = true;
-  saveShop();
-  UI.toast("Equipped 🎮");
-  renderShopGrid();
-}
-
 let currentCategory = "characters";
 let currentFilter = "buy";
    
@@ -1947,7 +1908,7 @@ function renderShopGrid() {
     if (currentFilter === "owned" && !unlocked) return;
     const card = document.createElement("div");
     card.className = "shop-item";
-    const path = `assets/${currentCategory}/${skin.id}.png`;
+    const path = `assets/themes/${skin.id}/${skin.id}-finger.png`;
     card.innerHTML = `
       <img src="${path}">
       <div>${skin.id}</div>
@@ -1992,7 +1953,6 @@ document.querySelectorAll(".shop-subtab").forEach(tab => {
   });
 });
    
-loadShop();
 renderShopGrid();
 
 if (shopOverlay) {
