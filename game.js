@@ -1904,12 +1904,24 @@ function renderShopGrid() {
     const unlocked = State.unlockedSkins.includes(skin.id);
     const equipped = State.equipped[currentCategory] === skin.id;
     // 🔒 hide rank skins αν δεν έχουν ξεκλειδωθεί
-    if (skin.rank && !unlocked) return;
+    if (skin.rank && !unlocked && currentFilter === "owned") return;
     if (currentFilter === "buy" && unlocked) return;
     if (currentFilter === "owned" && !unlocked) return;
     const card = document.createElement("div");
     card.className = "shop-item";
-    const path = `assets/themes/${skin.id}/${skin.id}-finger.png`;
+    let path = "";
+
+    if (currentCategory === "characters") {
+     path = `assets/themes/${skin.id}/${skin.id}.png`;
+    }
+
+    if (currentCategory === "finger") {
+     path = `assets/themes/${skin.id}/${skin.id}-finger.png`;
+    }
+
+    if (currentCategory === "backgrounds") {
+     path = `assets/themes/${skin.id}/background-${skin.id}.png`;
+    }
     card.innerHTML = `
       <img src="${path}">
       <div>${skin.id}</div>
