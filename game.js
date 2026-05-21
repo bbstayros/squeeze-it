@@ -1903,8 +1903,7 @@ function renderShopGrid() {
   SKINS.forEach(skin => {
     const unlocked = State.unlockedSkins.includes(skin.id);
     const equipped = State.equipped[currentCategory] === skin.id;
-    // 🔒 hide rank skins αν δεν έχουν ξεκλειδωθεί
-    if (skin.rank && !unlocked && currentFilter === "owned") return;
+    if (skin.rank && !unlocked) return;
     if (currentFilter === "buy" && unlocked) return;
     if (currentFilter === "owned" && !unlocked) return;
     const card = document.createElement("div");
