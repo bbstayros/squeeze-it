@@ -1903,11 +1903,14 @@ function renderShopGrid() {
   SKINS.forEach(skin => {
     const unlocked = State.unlockedSkins.includes(skin.id);
     const equipped = State.equipped[currentCategory] === skin.id;
-    if (skin.rank && !unlocked) return;
     if (currentFilter === "buy" && unlocked) return;
     if (currentFilter === "owned" && !unlocked) return;
     const card = document.createElement("div");
     card.className = "shop-item";
+    const lockedRankSkin = skin.rank && !unlocked;
+    if (lockedRankSkin) {
+    card.classList.add("locked");
+    }
     let path = "";
 
     if (currentCategory === "characters") {
@@ -1922,14 +1925,24 @@ function renderShopGrid() {
      path = `assets/themes/${skin.id}/background-${skin.id}.png`;
     }
     card.innerHTML = `
-      <img src="${path}">
-      <div>${skin.id}</div>
-    `;
+  <img src="${path}">
+  
+  <div class="shop-item-name">
+    ${lockedRankSkin ? "🔒 LOCKED" : skin.id}
+  </div>
+
+  ${
+    lockedRankSkin
+      ? `<div class="shop-lock-text">Unlock at Level ${skin.rank}</div>`
+      : ""
+  }
+`;
     const btn = document.createElement("button");
-    if (!unlocked && skin.price) {
-      btn.textContent = skin.price + " 💎";
-      btn.onclick = () => buySkin(skin);
-    }
+    if (lockedRankSkin) {
+  btn.textContent = "LOCKED";
+  btn.disabled = true;
+}
+else if (!unlocked && skin.price) {
     else if (equipped) {
       btn.textContent = "Equipped";
       btn.disabled = true;
