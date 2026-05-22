@@ -1937,20 +1937,23 @@ function renderShopGrid() {
       : ""
   }
 `;
-    const btn = document.createElement("button");
-    if (lockedRankSkin) {
+const btn = document.createElement("button");
+if (lockedRankSkin) {
   btn.textContent = "LOCKED";
   btn.disabled = true;
 }
 else if (!unlocked && skin.price) {
-    else if (equipped) {
-      btn.textContent = "Equipped";
-      btn.disabled = true;
-    }
-    else {
-      btn.textContent = "Equip";
-      btn.onclick = () => equipSkin(skin);
-    }
+  btn.textContent = skin.price + " 💎";
+  btn.onclick = () => buySkin(skin);
+}
+else if (equipped) {
+  btn.textContent = "Equipped";
+  btn.disabled = true;
+}
+else {
+  btn.textContent = "Equip";
+  btn.onclick = () => equipSkin(skin);
+}
     card.appendChild(btn);
     grid.appendChild(card);
   });
