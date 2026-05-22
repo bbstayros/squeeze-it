@@ -2046,10 +2046,6 @@ canvas#game{
   transition: transform 0.35s ease;
 }
 
-#rankUnlockPopup.show .rank-popup-card {
-  transform: scale(1);
-}
-
 .rank-popup-top {
   color: #ffcc7a;
 
