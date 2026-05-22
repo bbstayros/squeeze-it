@@ -1958,3 +1958,40 @@ canvas#game{
     height: 95px;
   }
 }
+
+/* =========================================
+   LOCKED SHOP ITEMS
+========================================= */
+
+.shop-item.locked {
+  opacity: 0.72;
+  filter: grayscale(1);
+  position: relative;
+  overflow: hidden;
+}
+
+.shop-item.locked img {
+  filter: blur(2px) brightness(0.5);
+}
+
+.shop-lock-text {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffb347;
+  margin-top: -4px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.shop-item.locked::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,0.04),
+      rgba(0,0,0,0.22)
+    );
+  pointer-events: none;
+}
