@@ -1958,7 +1958,7 @@ else {
     grid.appendChild(card);
   });
 }
-
+   
 document.querySelectorAll(".shop-tab").forEach(tab => {
   tab.addEventListener("click", () => {
     currentCategory = tab.dataset.tab;
