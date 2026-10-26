@@ -1386,7 +1386,8 @@ ctx.translate(offsetX, offsetY);
 for (const e of State.entities) {
   if (e.hit) continue;
   let type = e.type;
-  if (!SpriteManifest.caveman[type]) type = "normal";
+  const character = characterSpriteReady[State.equipped.characters] ? State.equipped.characters : "caveman";
+  if (!SpriteManifest[character][type]) type = "normal";
   const dir =
     Math.abs(e.vx) > Math.abs(e.vy)
       ? (e.vx > 0 ? "east" : "west")
@@ -1397,10 +1398,11 @@ for (const e of State.entities) {
     drawDir = "east";
     flip = true;
   }
-  const frames = SpriteManifest.caveman[type][drawDir];
+  const frames = SpriteManifest[character][type][drawDir];
   if (!frames || frames.length === 0) continue;
 
   const frame = frames[e.frameIndex % frames.length];
+  if (!frame || !frame.complete || !frame.naturalWidth) continue;
   ctx.save();
   const size = e.r * 2 * SPRITE_SCALE;
 
