@@ -174,13 +174,10 @@ async function unlockAudio() {
 ===================================================== */
 
 const SpriteManifest = {
-  caveman: {
-    normal: {},
-    shield: {},
-    spike: {},
-    bonus: {}
-  }
+  caveman: { normal: {}, shield: {}, spike: {}, bonus: {} },
+  ninja: { normal: {}, shield: {}, spike: {}, bonus: {} }
 };
+const characterSpriteReady = { caveman: false, ninja: false };
 
 const Directions = ["east", "north", "south"];
 const FRAME_COUNT = 6;
@@ -222,39 +219,38 @@ bgImage.onload = () => {
 };
 
 async function loadSprites() {
-  const promises = [];
-
-  for (let type of Object.keys(SpriteManifest.caveman)) {
-    SpriteManifest.caveman[type] = {};
-
-    for (let dir of Directions) {
-      SpriteManifest.caveman[type][dir] = [];
-
-      for (let i = 0; i < (type === "bonus" ? 4 : FRAME_COUNT); i++) {
-        const path = `assets/themes/caveman/character/${type}/${dir}/frame_00${i}.png`;
-
-        const p = new Promise((resolve, reject) => {
-          const img = new Image();
-           
-          img.onload = () => {
-            SpriteManifest.caveman[type][dir][i] = img;
-            resolve();
-          };
-          img.onerror = () => {
-           console.warn("Missing sprite:", path);
-           resolve();
-          };
-          img.src = path;
-        });
-
-        promises.push(p);
+  // Keep frames in their correct numbered slots, regardless of network load order.
+  const tasks = [];
+  for (const character of ["caveman", "ninja"]) {
+    for (const type of ["normal", "shield", "spike", "bonus"]) {
+      for (const dir of Directions) {
+        const frames = SpriteManifest[character][type][dir] = [];
+        const count = type === "bonus" ? 4 : FRAME_COUNT;
+        for (let i = 0; i < count; i++) {
+          const path = `assets/themes/${character}/character/${type}/${dir}/frame_${String(i).padStart(3, "0")}.png`;
+          tasks.push(new Promise(resolve => {
+            const img = new Image();
+            img.onload = () => { frames[i] = img; resolve(); };
+            img.onerror = () => { console.warn("Missing sprite:", path); resolve(); };
+            img.src = path;
+          }));
+        }
       }
     }
   }
-
-  await Promise.all(promises);
+  await Promise.all(tasks);
+  for (const character of Object.keys(characterSpriteReady)) {
+    characterSpriteReady[character] = ["normal", "shield", "spike", "bonus"].every(type =>
+      Directions.every(dir => {
+        const frames = SpriteManifest[character][type][dir];
+        return frames.length === (type === "bonus" ? 4 : FRAME_COUNT) &&
+          frames.every(img => img && img.complete && img.naturalWidth > 0);
+      })
+    );
+  }
+  if (!characterSpriteReady.ninja) console.warn("Ninja sprites incomplete: character remains unavailable in Shop.");
 }
-   
+
   /* =====================================================
      STATE
   ===================================================== */
@@ -318,6 +314,8 @@ async function loadSprites() {
     JSON.parse(localStorage.getItem(Config.CLAIMED_KEY)) || [],
 
     unlockedSkins: JSON.parse(localStorage.getItem("squeeze_unlocked")) || ["caveman"],
+    // Character purchases are separate from finger/background purchases.
+    unlockedCharacters: JSON.parse(localStorage.getItem("squeeze_unlocked_characters")) || ["caveman"],
     equipped: {
       characters: localStorage.getItem("eq_char") || "caveman",
       finger: localStorage.getItem("eq_finger") || "caveman",
@@ -370,37 +368,46 @@ async function loadSprites() {
 
   function saveSkins() {
     localStorage.setItem("squeeze_unlocked", JSON.stringify(State.unlockedSkins));
+    localStorage.setItem("squeeze_unlocked_characters", JSON.stringify(State.unlockedCharacters));
     localStorage.setItem("eq_char", State.equipped.characters);
     localStorage.setItem("eq_finger", State.equipped.finger);
     localStorage.setItem("eq_bg", State.equipped.backgrounds);
   }
 
   function buySkin(skin) {
-   if (currentCategory === "characters" && skin.id !== "caveman") {
-     UI.toast("Character animations coming soon");
-     return;
-   }
-   if (State.totalGems < skin.price) {
-     UI.toast("Not enough gems 💎");
-     return;
-   }
-   State.totalGems -= skin.price;
-   State.unlockedSkins.push(skin.id);
-   Storage.saveGems();
-   saveSkins();
-   UI.setGems(State.totalGems);
-   renderShopGrid();
-  } 
+    if (currentCategory === "characters") {
+      if (!characterSpriteReady[skin.id]) {
+        UI.toast("Character animations not available yet");
+        return;
+      }
+      if (State.unlockedCharacters.includes(skin.id)) return;
+    } else if (State.unlockedSkins.includes(skin.id)) {
+      return;
+    }
+    if (State.totalGems < skin.price) {
+      UI.toast("Not enough gems 💎");
+      return;
+    }
+    State.totalGems -= skin.price;
+    if (currentCategory === "characters") State.unlockedCharacters.push(skin.id);
+    else State.unlockedSkins.push(skin.id);
+    Storage.saveGems();
+    saveSkins();
+    UI.setGems(State.totalGems);
+    renderShopGrid();
+  }
 
   function equipSkin(skin) {
-  State.equipped[currentCategory] = skin.id;
-  State.currentThemeKey = skin.id;
-  if (currentCategory === "finger") applyFingerSkin();
-  if (currentCategory === "backgrounds") applyBackgroundSkin();
-  saveSkins();
-  renderShopGrid();
-}
-   
+    if (currentCategory === "characters" &&
+        (!characterSpriteReady[skin.id] || !State.unlockedCharacters.includes(skin.id))) return;
+    State.equipped[currentCategory] = skin.id;
+    State.currentThemeKey = skin.id;
+    if (currentCategory === "finger") applyFingerSkin();
+    if (currentCategory === "backgrounds") applyBackgroundSkin();
+    saveSkins();
+    renderShopGrid();
+  }
+
   /* =====================================================
      UI HELPERS
   ===================================================== */
@@ -1926,10 +1933,12 @@ function renderShopGrid() {
   if (!grid) return;
   grid.innerHTML = "";
   SKINS.forEach(skin => {
-    const unlocked = State.unlockedSkins.includes(skin.id);
+    const unlocked = currentCategory === "characters"
+      ? State.unlockedCharacters.includes(skin.id)
+      : State.unlockedSkins.includes(skin.id);
     const equipped = State.equipped[currentCategory] === skin.id;
-    // Character animations are not ready; do not offer them for purchase.
-    if (currentCategory === "characters" && skin.id !== "caveman") return;
+    // Show only characters whose complete animation set was loaded successfully.
+    if (currentCategory === "characters" && !characterSpriteReady[skin.id]) return;
     if (currentFilter === "buy" && unlocked) return;
     if (currentFilter === "owned" && !unlocked) return;
     const card = document.createElement("div");
