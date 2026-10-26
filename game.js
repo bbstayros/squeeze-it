@@ -183,19 +183,36 @@ const SpriteManifest = {
 };
 
 const Directions = ["east", "north", "south"];
-const FRAME_COUNT = 4;
+const FRAME_COUNT = 6;
 const FRAME_SIZE = 48;
 /* =====================================================
    FINGER TAP SPRITE
 ===================================================== */
 
 const fingerImg = new Image();
+function applyFingerSkin() {
+  const id = State.equipped.finger;
+  fingerImg.src = `assets/themes/${id}/${id}-finger.png`;
+  fingerImg.onerror = () => {
+    fingerImg.onerror = null;
+    fingerImg.src = "assets/themes/caveman/caveman-finger.png";
+  };
+}
 fingerImg.src = "assets/themes/caveman/caveman-finger.png";
    /* =====================================================
    BACKGROUND TILE SYSTEM
 ===================================================== */
 
 const bgImage = new Image();
+function applyBackgroundSkin() {
+  const id = State.equipped.backgrounds;
+  bgPattern = null;
+  bgImage.src = `assets/themes/${id}/background-${id}.png`;
+  bgImage.onerror = () => {
+    bgImage.onerror = null;
+    bgImage.src = "assets/themes/caveman/background-caveman.png";
+  };
+}
 bgImage.src = "assets/themes/caveman/background-caveman.png";
 
 let bgPattern = null;
@@ -213,14 +230,14 @@ async function loadSprites() {
     for (let dir of Directions) {
       SpriteManifest.caveman[type][dir] = [];
 
-      for (let i = 0; i < FRAME_COUNT; i++) {
+      for (let i = 0; i < (type === "bonus" ? 4 : FRAME_COUNT); i++) {
         const path = `assets/themes/caveman/character/${type}/${dir}/frame_00${i}.png`;
 
         const p = new Promise((resolve, reject) => {
           const img = new Image();
            
           img.onload = () => {
-            SpriteManifest.caveman[type][dir].push(img);
+            SpriteManifest.caveman[type][dir][i] = img;
             resolve();
           };
           img.onerror = () => {
@@ -359,6 +376,10 @@ async function loadSprites() {
   }
 
   function buySkin(skin) {
+   if (currentCategory === "characters" && skin.id !== "caveman") {
+     UI.toast("Character animations coming soon");
+     return;
+   }
    if (State.totalGems < skin.price) {
      UI.toast("Not enough gems 💎");
      return;
@@ -373,7 +394,9 @@ async function loadSprites() {
 
   function equipSkin(skin) {
   State.equipped[currentCategory] = skin.id;
-  State.currentThemeKey = skin.id; 
+  State.currentThemeKey = skin.id;
+  if (currentCategory === "finger") applyFingerSkin();
+  if (currentCategory === "backgrounds") applyBackgroundSkin();
   saveSkins();
   renderShopGrid();
 }
@@ -1008,7 +1031,8 @@ function rewardLabel(reward) {
 
 function claimRankReward(reward) {
   const lvl = reward.level;
-  if (State.claimedRankRewards.includes(reward.id)) return;
+  const claimId = `${getCurrentRank(State.playerLevel).key}:${reward.id}`;
+  if (State.claimedRankRewards.includes(claimId)) return;
   if (State.playerLevel < lvl) return;
 
   // apply
@@ -1021,7 +1045,7 @@ function claimRankReward(reward) {
     // for now we just toast
   }
 
-  State.claimedRankRewards.push(reward.id);
+  State.claimedRankRewards.push(claimId);
   Storage.saveClaimedRankRewards();
 
   sound._playBuffer("claim", { volume: 0.8 });
@@ -1109,7 +1133,7 @@ function renderRankScreen() {
   const rewards = generateRankRewards(rank);
 
   rewards.forEach(rw => {
-    const claimed = State.claimedRankRewards.includes(rw.id);
+    const claimed = State.claimedRankRewards.includes(`${rank.key}:${rw.id}`);
     const unlocked = State.playerLevel >= rw.level;
 
     const card = document.createElement("div");
@@ -1223,7 +1247,7 @@ if (State.footprints.length < 15 && Math.random() < 0.03) {
 e.frameTimer += dt;
 
 if (e.frameTimer > 0.1) {
-  e.frameIndex = (e.frameIndex + 1) % FRAME_COUNT;
+  e.frameIndex = (e.frameIndex + 1) % (e.type === "bonus" ? 4 : FRAME_COUNT);
   e.frameTimer = 0;
 }
 
@@ -1844,6 +1868,7 @@ if (watchAdBtn) {
 if (menuRanks) {
   menuRanks.addEventListener("click", () => {
     setScreen("ranks");
+    renderRankScreen();
   });
 }
    
@@ -1903,6 +1928,8 @@ function renderShopGrid() {
   SKINS.forEach(skin => {
     const unlocked = State.unlockedSkins.includes(skin.id);
     const equipped = State.equipped[currentCategory] === skin.id;
+    // Character animations are not ready; do not offer them for purchase.
+    if (currentCategory === "characters" && skin.id !== "caveman") return;
     if (currentFilter === "buy" && unlocked) return;
     if (currentFilter === "owned" && !unlocked) return;
     const card = document.createElement("div");
@@ -2083,6 +2110,15 @@ if (soundToggleBtn) {
   /* =====================================================
      INIT
   ===================================================== */
+  // Sync previously earned rank skins, including Lapiz at level 1.
+  for (const skin of SKINS) {
+    if (skin.rank && State.playerLevel >= skin.rank && !State.unlockedSkins.includes(skin.id)) {
+      State.unlockedSkins.push(skin.id);
+    }
+  }
+  saveSkins();
+  applyFingerSkin();
+  applyBackgroundSkin();
   UI.setGems(State.totalGems);
   updateXPUI();
   const savedLastScore = localStorage.getItem("squeeze_last_score");
